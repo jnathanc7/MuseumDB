@@ -5,7 +5,7 @@ const App = () => {
     <>
     Start from scratch Muesuem DB. 
     testing - duc
-    testing again - duc
+    testing again - ducc
     </>
       )
 }
