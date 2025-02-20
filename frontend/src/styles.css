@@ -1,0 +1,69 @@
+/* Header Styling */
+.header {
+    background-color: rgb(165, 42, 42); /* Blue background */
+    color: white;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header-title {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .header-link {
+    background-color: white;
+    color: #1e40af;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .header-link:hover {
+    background-color: #e5e7eb; /* Light gray background on hover */
+  }
+  
+  /* Ticket Page Styling */
+  .ticket-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f3f4f6; /* Light gray background */
+  }
+  
+  .ticket-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #3b82f6; /* Blue color */
+  }
+  
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .logo a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+  }
+  
+  .nav-links a:hover {
+    text-decoration: underline;
+  }
+  
