@@ -1,23 +1,27 @@
-import { Link } from "react-router-dom";
+import '@fontsource-variable/jetbrains-mono';
+import AnimatedLink from "./AnimatedLink";
 
 const Header = () => {
   return (
     <header className="header">
       <h1 className="logo">
-        <Link to="/">Museum</Link>
+        <AnimatedLink to="/">Museum</AnimatedLink>
       </h1>
       <nav className="nav-links">
-        <Link to="/giftshop">Gift Shop</Link>
-        <Link to="/tickets">Tickets</Link>
-        <Link to="/exhibitions">Exhibitions</Link>
-        <Link to="/donations">Donations</Link>
-        <Link to="/Auth">Login</Link>
+        <AnimatedLink to="/giftshop">Gift Shop</AnimatedLink>
+        <AnimatedLink to="/tickets">Tickets</AnimatedLink>
+        <AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink>
+        <AnimatedLink to="/donations">Donations</AnimatedLink>
+        <AnimatedLink to="/Auth" className="login">Login</AnimatedLink>
       </nav>
     </header>
   );
 };
 
 export default Header;
+
+
+
 
 
 

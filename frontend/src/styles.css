@@ -1,69 +1,70 @@
+
+body {
+  background-color: #f5e1c8; /* Sand-like background */
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
 /* Header Styling */
 .header {
-    background-color: rgb(165, 42, 42); /* Blue background */
-    color: white;
-    padding: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  font-family: 'JetBrains Mono', monospace;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white; /* Slightly lighter than background */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 999; /* Ensures the header stays on top */
+}
+
+/* Museum Logo */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  gap: 15px;
+  flex-grow: 1; /* Allows proper spacing */
+  align-items: center;
+}
+
+.login {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+  margin-left: auto;
+}
+
+
+.homepage {
+  background-color: #f4e1c1; /* Sand-like color */
+  min-height: 100vh; /* Ensure it covers the full height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Roboto Mono", monospace;
+}
   
-  .header-title {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .header-link {
-    background-color: white;
-    color: #1e40af;
-    padding: 8px 16px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 16px;
-  }
-  
-  .header-link:hover {
-    background-color: #e5e7eb; /* Light gray background on hover */
-  }
-  
-  /* Ticket Page Styling */
-  .ticket-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #f3f4f6; /* Light gray background */
-  }
-  
-  .ticket-title {
-    font-size: 32px;
-    font-weight: bold;
-    color: #3b82f6; /* Blue color */
-  }
-  
-  
-  .logo {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .logo a {
-    color: white;
-    text-decoration: none;
-  }
-  
-  .nav-links {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .nav-links a {
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-  }
-  
-  .nav-links a:hover {
-    text-decoration: underline;
-  }
-  
+
+ /* Ticket Page Styling */
+ .ticket-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f3f4f6; /* Light gray background */
+}
+
+.ticket-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #3b82f6; /* Blue color */
+}
