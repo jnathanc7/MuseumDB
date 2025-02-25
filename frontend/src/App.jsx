@@ -5,6 +5,11 @@ import Ticket from './pages/Ticket';
 import Home from './pages/Home';
 import Exhibitions from './pages/Exhibitions';
 import Giftshop from './pages/Giftshop';
+import PropTypes from 'prop-types';
+
+PageTransition.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 const PageTransition = ({ children }) => {
   return (
