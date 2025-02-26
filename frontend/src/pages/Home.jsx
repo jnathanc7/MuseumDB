@@ -1,12 +1,15 @@
 // src/pages/Home.jsx
 
+import '@fontsource-variable/roboto-mono';
+
 const Home = () => {
   return (
-    <div className="main-page-container">
+    <div className="homepage">
+
       <h1>Welcome to the Museum!</h1>
       <p>Explore the amazing exhibits we have to offer.</p>
-      <button className="main-page-btn">Get Started</button>
-      
+      <p>Get Started!</p>
+
     </div>
   );
 };
