@@ -6,6 +6,7 @@ const Home = () => {
       <h1>Welcome to the Museum!</h1>
       <p>Explore the amazing exhibits we have to offer.</p>
       <button className="main-page-btn">Get Started</button>
+      
     </div>
   );
 };
