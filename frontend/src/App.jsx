@@ -7,9 +7,6 @@ import Exhibitions from './pages/Exhibitions';
 import Giftshop from './pages/Giftshop';
 import PropTypes from 'prop-types';
 
-PageTransition.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 const PageTransition = ({ children }) => {
   return (
@@ -22,6 +19,10 @@ const PageTransition = ({ children }) => {
       {children}
     </motion.div>
   );
+};
+
+PageTransition.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 function AnimatedRoutes() {
