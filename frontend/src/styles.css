@@ -44,15 +44,62 @@ body {
 }
 
 
+/* Homepage Layout *//* Homepage Layout */
 .homepage {
   background-color: #f4e1c1; /* Sand-like color */
   min-height: 100vh; /* Ensure it covers the full height */
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column; /* Arrange items vertically */
+  justify-content: flex-start; /* Align to the left */
+  align-items: center; /* Vertically center the content */
+  /*  padding: 20px; Optional: add some padding around the content */
   font-family: "Roboto Mono", monospace;
+   /* gap: 30px; Space between text and image */
 }
+
+/* Text Section */
+.text-container {
+  text-align: center; /* Center text */
+  margin-top: 70px; /* Push text down */
+  transform: translateX(-160px); /* Move text slightly to the left */
+}
+
+/* Title and Text Styling */
+.home-title {
+  font-size: 100px;
+  font-family: 'Roboto Mono', monospace;
+  transform: translateX(-70px);
+  margin-bottom: -40px;
+}
+
+.home-text {
+  font-size: 40px;
+  font-family: 'Roboto Mono', monospace;
+  margin-bottom: 20px;
+  transform: translateX(93px);
+}
+
+/* Slideshow Container */
+.slideshow-container {
+  width: 700px; /* Adjust width as needed */
+  height: 300px; /* Adjust height for desired image size */
+  overflow: hidden;
+  position: relative;
+  border-radius: 10px; /* Optional: adds rounded corners */
+  transform: translateX(-100px); /* Move images slightly to the left */
+
   
+}
+
+/* Slideshow Image */
+.slideshow-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: opacity 1s ease-in-out;
+}
 
  /* Ticket Page Styling */
  .ticket-container {

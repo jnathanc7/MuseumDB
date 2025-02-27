@@ -1,7 +1,7 @@
 //setting up giftshop
 const Giftshop = () =>{
     return(
-    <div>
+    <div className="homepage">
         <h1>this is the giftshop!</h1>
     </div>
     )

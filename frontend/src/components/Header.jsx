@@ -1,4 +1,3 @@
-import '@fontsource-variable/jetbrains-mono';
 import AnimatedLink from "./AnimatedLink";
 
 const Header = () => {
