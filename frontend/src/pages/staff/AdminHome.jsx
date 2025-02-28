@@ -1,7 +1,6 @@
 // just seeing an example of how to do a page
 // src/pages/staff/home.jsx
 
-import React from 'react';
 //import '../index.css';
 
 const AdminHome = () => {

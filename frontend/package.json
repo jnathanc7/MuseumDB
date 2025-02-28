@@ -12,6 +12,7 @@
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.1.2",
     "@fontsource-variable/roboto-mono": "^5.1.1",
+    "@fontsource/merriweather": "^5.1.1",
     "@fontsource/roboto": "^5.1.1",
     "framer-motion": "^12.4.7",
     "prop-types": "^15.8.1",

@@ -1,9 +1,10 @@
-
-body {
-  background-color: #f5e1c8; /* Sand-like background */
-  font-family: Arial, sans-serif;
-  color: #333;
+/* Ensure html and body take up the full height of the viewport */
+html, body {
+  height: 100%;
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
 }
+
 
 /* Header Styling */
 .header {
@@ -44,39 +45,54 @@ body {
 }
 
 
-/* Homepage Layout *//* Homepage Layout */
+/* Homepage with Fullscreen Background */
 .homepage {
-  background-color: #f4e1c1; /* Sand-like color */
-  min-height: 100vh; /* Ensure it covers the full height */
+  position: relative;
+  width: 100%;
+  height: 100vh;  /* Full viewport height */
+  background-size: cover; /* Ensures the image covers the entire viewport */
+  background-position: center center; /* Centers the image in the viewport */
+  background-repeat: no-repeat;
+  transition: background-image 1s ease-in-out;
   display: flex;
-  flex-direction: column; /* Arrange items vertically */
-  justify-content: flex-start; /* Align to the left */
-  align-items: center; /* Vertically center the content */
-  /*  padding: 20px; Optional: add some padding around the content */
-  font-family: "Roboto Mono", monospace;
-   /* gap: 30px; Space between text and image */
+  align-items: center;
+  padding-left: 50px; /* Push text away from the left edge */
+  background-attachment: fixed; /* Optional: Keep background fixed when scrolling */
 }
 
-/* Text Section */
+/* Dark Overlay for Readability */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+/* Text Container Aligned to Left */
 .text-container {
-  text-align: center; /* Center text */
-  margin-top: 70px; /* Push text down */
-  transform: translateX(-160px); /* Move text slightly to the left */
+  position: relative;
+  z-index: 2; /* Ensure text appears above the overlay */
+  color: white;
+  text-align: left; /* Align text to the left */
+  max-width: 40%; /* Prevent text from being too wide */
+  padding-bottom: 10px; /* Slight padding to ensure the text doesn't stick to the bottom */
 }
 
-/* Title and Text Styling */
+/* Title Styling */
 .home-title {
-  font-size: 100px;
-  font-family: 'Roboto Mono', monospace;
-  transform: translateX(-70px);
-  margin-bottom: -40px;
+  font-size: 54px;
+  font-family: "Roboto Mono", monospace;
+  margin-bottom: 10px;
 }
 
+/* Subtitle Styling */
 .home-text {
-  font-size: 40px;
-  font-family: 'Roboto Mono', monospace;
-  margin-bottom: 20px;
-  transform: translateX(93px);
+  font-size: 27px;
+  font-family: "Roboto Mono", monospace;
+  margin-bottom: 8px;
 }
 
 /* Slideshow Container */
@@ -86,9 +102,7 @@ body {
   overflow: hidden;
   position: relative;
   border-radius: 10px; /* Optional: adds rounded corners */
-  transform: translateX(-100px); /* Move images slightly to the left */
-
-  
+  /*  transform: translateX(-90px); Move images slightly to the left */
 }
 
 /* Slideshow Image */
@@ -101,8 +115,8 @@ body {
   transition: opacity 1s ease-in-out;
 }
 
- /* Ticket Page Styling */
- .ticket-container {
+/* Ticket Page Styling */
+.ticket-container {
   display: flex;
   align-items: center;
   justify-content: center;
