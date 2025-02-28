@@ -1,13 +1,14 @@
 // src/pages/Home.jsx
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Footer from "../components/Footer";
 
 const Home = () => {
   const text = "Welcome!";
-  const subText = "To the Museum of Fine Arts!";
+  const subText = "To the Houston Museum of Fine Arts!";
   const [displayedText, setDisplayedText] = useState("");
   const [displayedSubText, setDisplayedSubText] = useState("");
-
+  
   useEffect(() => {
     let i = 0;
     const fullText = text + " " + subText;
@@ -47,23 +48,29 @@ const Home = () => {
   }, [images.length]);
 
   return (
-    <div
-      className="homepage"
-      style={{
-        backgroundImage: `url(${images[currentImage]})`,
-      }}
-    >
-      <div className="overlay"></div>
+    <div className="page-container">
+      <div className="content">
+        <div
+          className="homepage"
+          style={{
+            backgroundImage: `url(${images[currentImage]})`,
+          }}
+        >
+          <div className="overlay"></div>
 
-      <motion.div
-        className="text-container"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      >
-        <h1 className="home-title">{displayedText}</h1>
-        <p className="home-text">{displayedSubText}</p>
-      </motion.div>
+          <motion.div
+            className="text-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          >
+            <h1 className="home-title">{displayedText}</h1>
+            <p className="home-text">{displayedSubText}</p>
+          </motion.div>
+        </div>
+      </div>
+
+      <Footer />
     </div>
   );
 };
