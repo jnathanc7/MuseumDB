@@ -1,9 +1,10 @@
-
-body {
-  background-color: #f5e1c8; /* Sand-like background */
-  font-family: Arial, sans-serif;
-  color: #333;
+/* Ensure html and body take up the full height of the viewport */
+html, body {
+  height: 100%;
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
 }
+
 
 /* Header Styling */
 .header {
@@ -44,18 +45,78 @@ body {
 }
 
 
+/* Homepage with Fullscreen Background */
 .homepage {
-  background-color: #f4e1c1; /* Sand-like color */
-  min-height: 100vh; /* Ensure it covers the full height */
+  position: relative;
+  width: 100%;
+  height: 100vh;  /* Full viewport height */
+  background-size: cover; /* Ensures the image covers the entire viewport */
+  background-position: center center; /* Centers the image in the viewport */
+  background-repeat: no-repeat;
+  transition: background-image 1s ease-in-out;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-family: "Roboto Mono", monospace;
+  padding-left: 50px; /* Push text away from the left edge */
+  background-attachment: fixed; /* Optional: Keep background fixed when scrolling */
 }
-  
 
- /* Ticket Page Styling */
- .ticket-container {
+/* Dark Overlay for Readability */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+/* Text Container Aligned to Left */
+.text-container {
+  position: relative;
+  z-index: 2; /* Ensure text appears above the overlay */
+  color: white;
+  text-align: left; /* Align text to the left */
+  max-width: 40%; /* Prevent text from being too wide */
+  padding-bottom: 10px; /* Slight padding to ensure the text doesn't stick to the bottom */
+}
+
+/* Title Styling */
+.home-title {
+  font-size: 54px;
+  font-family: "Roboto Mono", monospace;
+  margin-bottom: 10px;
+}
+
+/* Subtitle Styling */
+.home-text {
+  font-size: 27px;
+  font-family: "Roboto Mono", monospace;
+  margin-bottom: 8px;
+}
+
+/* Slideshow Container */
+.slideshow-container {
+  width: 700px; /* Adjust width as needed */
+  height: 300px; /* Adjust height for desired image size */
+  overflow: hidden;
+  position: relative;
+  border-radius: 10px; /* Optional: adds rounded corners */
+  /*  transform: translateX(-90px); Move images slightly to the left */
+}
+
+/* Slideshow Image */
+.slideshow-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: opacity 1s ease-in-out;
+}
+
+/* Ticket Page Styling */
+.ticket-container {
   display: flex;
   align-items: center;
   justify-content: center;
