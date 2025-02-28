@@ -5,28 +5,23 @@ html, body {
   padding: 0; /* Remove default padding */
 }
 
-
-/* Header Styling */
-.header {
-  font-family: 'JetBrains Mono', monospace;
-  position: fixed;
-  top: 0;
-  left: 0;
+.footer {
   width: 100%;
-  background-color: white; /* Slightly lighter than background */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 999; /* Ensures the header stays on top */
+  background-color: #222; /* Dark background */
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  position: bottom;
+  bottom: 0;
 }
+
 
 /* Museum Logo */
 .logo {
   font-size: 24px;
   font-weight: bold;
   margin-right: 20px;
+  color: white;
 }
 
 /* Navigation Links */
@@ -35,12 +30,13 @@ html, body {
   gap: 15px;
   flex-grow: 1; /* Allows proper spacing */
   align-items: center;
+  color: white;
 }
 
 .login {
   font-weight: bold;
   font-size: 16px;
-  color: #333;
+  color: white;
   margin-left: auto;
 }
 
@@ -83,16 +79,39 @@ html, body {
 
 /* Title Styling */
 .home-title {
-  font-size: 54px;
-  font-family: "Roboto Mono", monospace;
+  font-size: 80px;
+  font-family: 'Merriweather', serif;
   margin-bottom: 10px;
 }
 
 /* Subtitle Styling */
 .home-text {
-  font-size: 27px;
-  font-family: "Roboto Mono", monospace;
+  font-size: 50px;
+  font-family: 'Merriweather', serif;
   margin-bottom: 8px;
+}
+
+
+
+/* Header Styling */
+.header {
+  font-family: 'JetBrains Mono', monospace;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: transparent; /* Initially transparent */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.header.scrolled {
+  background-color: white; /* Turns white when scrolled */
 }
 
 /* Slideshow Container */
