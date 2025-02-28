@@ -158,6 +158,32 @@ html, body {
   transform: scale(1.1);
   background-color: rgba(0,0,0,0.1);
 }
+.giftshop-wrapper{
+  display: flex;
+  flex-direction: column; /* Stacks hero and categories */
+  align-items: center;
+  width: 100%;
+  max-width: 1200px; /* Prevents it from stretching too wide */
+  padding-top: 300px;
+  
+}
+
+.giftshop-hero{
+  width: 100vw;
+  height:100vh;
+  text-align: center;
+  padding: 80px 20px; /* Adjust padding to move it down */
+  margin-top: 120px; /* Pushes the hero down below the header */
+  background-color: #f5f5f5; /* Light background for visibility */
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-size:cover;
+  background-position: center;
+  background-repeat: no-repeat 
+}
 
 .giftshop-container{
   display:grid;
@@ -165,5 +191,5 @@ html, body {
   gap:20px;
   justify-content:center;/*centers content within the container*/
   padding:20px;
-  margin-top: 100px; /*fits the grid under the header*/
+  margin-top: 10px; /*fits the grid under the header*/
 }

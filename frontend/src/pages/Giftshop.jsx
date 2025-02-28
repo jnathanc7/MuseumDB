@@ -16,14 +16,22 @@ const Giftshop = () =>{
                                                    {id:6, name:"", img: ""}]);
     return(
     <div className = "homepage">
-        {/* <h1>this is the giftshop!</h1> */}
-        <div className = "giftshop-container"> 
-            {categories.map((category) => (/*maps through the array map calls the function on every element in the array */
-                /*creates a new category for each index */
-                <div key = {category.id} className = "category" style = {{backgroundImage: `url(${category.img})`}}>
-                    <p className = "category-text">{category.name}</p>
-                </div>
-            ))}
+        <div className = "giftshop-wrapper">
+            {/*Hero Section */}
+            <div className = "giftshop-hero" style = {{backgroundImage: `url(${"/giftshophero.jpg"})`}}>
+            <h1>Welcome to our Museum Giftshop</h1>
+            <p>Discover a curated selection of art prints, handcrafted jewelry, unique souvenirs, and more. Take home a piece of history today!</p>
+            </div>
+
+            {/* Categories Section */}
+            <div className = "giftshop-container"> 
+                {categories.map((category) => (/*maps through the array map calls the function on every element in the array */
+                    /*creates a new category for each index */
+                    <div key = {category.id} className = "category" style = {{backgroundImage: `url(${category.img})`}}>
+                        <p className = "category-text">{category.name}</p>
+                    </div>
+                ))}
+            </div>
         </div>
     </div>
     )
