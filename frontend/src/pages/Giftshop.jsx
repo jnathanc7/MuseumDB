@@ -15,7 +15,7 @@ const Giftshop = () =>{
                                                    {id:5, name:"", img: ""},
                                                    {id:6, name:"", img: ""}]);
     return(
-    <div className = "homepage">
+        /*I removed the "homepage" div that wrapped everything  */
         <div className = "giftshop-wrapper">
             {/*Hero Section */}
             <div className = "giftshop-hero" style = {{backgroundImage: `url(${"/giftshophero.jpg"})`}}>
@@ -33,7 +33,6 @@ const Giftshop = () =>{
                 ))}
             </div>
         </div>
-    </div>
     )
 }
 

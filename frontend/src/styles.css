@@ -147,6 +147,7 @@ html, body {
   background-repeat: no-repeat 
 }
 .category-text{
+  font-family: "Roboto Mono", monospace ;
   font-size: 22px;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
   color: white;
@@ -164,7 +165,8 @@ html, body {
   align-items: center;
   width: 100%;
   max-width: 1200px; /* Prevents it from stretching too wide */
-  padding-top: 300px;
+  max-width: 100%;
+  overflow-x:hidden;
   
 }
 
@@ -172,9 +174,7 @@ html, body {
   width: 100vw;
   height:100vh;
   text-align: center;
-  padding: 80px 20px; /* Adjust padding to move it down */
-  margin-top: 120px; /* Pushes the hero down below the header */
-  background-color: #f5f5f5; /* Light background for visibility */
+  padding: 0 20px; /* Adjust padding to move it down */
   min-height: 200px;
   display: flex;
   flex-direction: column;
@@ -182,7 +182,8 @@ html, body {
   align-items: center;
   background-size:cover;
   background-position: center;
-  background-repeat: no-repeat 
+  background-repeat: no-repeat;
+  background-attachment: fixed;  
 }
 
 .giftshop-container{
@@ -191,5 +192,5 @@ html, body {
   gap:20px;
   justify-content:center;/*centers content within the container*/
   padding:20px;
-  margin-top: 10px; /*fits the grid under the header*/
+  margin-top: 10px; /*fits the grid under the hero*/
 }
