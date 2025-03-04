@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Exhibitions from "./pages/Exhibitions";
 import Giftshop from "./pages/Giftshop";
 import PropTypes from "prop-types";
+import Auth from './pages/Auth';
 
 const PageTransition = ({ children }) => {
   return (
@@ -34,6 +35,7 @@ function AnimatedRoutes() {
         <Route path="/tickets" element={<PageTransition><Ticket /></PageTransition>} />
         <Route path="/Exhibitions" element={<PageTransition><Exhibitions /></PageTransition>} />
         <Route path="/Giftshop" element={<PageTransition><Giftshop /></PageTransition>} />
+        <Route path="/Auth" element={<PageTransition><Auth /></PageTransition>} />
       </Routes>
     </AnimatePresence>
   );

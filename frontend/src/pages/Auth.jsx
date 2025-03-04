@@ -1,7 +1,4 @@
-// Import React and useState to manage our component’s state
 import React, { useState } from 'react';
-// Import the CSS file dedicated to the auth page styles.
-// The CSS file uses prefixed class names (e.g. "auth-container") to avoid interfering with global styles.
 import '../styles/auth.css';
 
 // Auth is a functional component representing the sign in/up page.
@@ -14,15 +11,13 @@ const Auth = () => {
   // This sets our state to true, activating the sign-up panel.
   const handleSignUpClick = () => setRightPanelActive(true);
 
-  // Handler for when the "Sign In" button is clicked.
-  // This resets our state to false, activating the sign-in panel.
+  // Handler for when the "Sign In" button is clicked.s
+  // This resets our state to false, activating the sign-in panel.sd
   const handleSignInClick = () => setRightPanelActive(false);
 
   return (
     // The outer div has a unique "auth-page" class to scope styles specific to this page.
     <div className="auth-page">
-      {/* Header for the auth page */}
-      <h2>Weekly Coding Challenge #1: Sign in/up Form</h2>
 
       {/* 
           Main container for the forms and overlay.
@@ -46,7 +41,7 @@ const Auth = () => {
               <a href="#" className="social">
                 <i className="fab fa-facebook-f"></i>
               </a>
-              <a href="#" className="social">
+              <a href="#" className="social"> 
                 <i className="fab fa-google-plus-g"></i>
               </a>
               <a href="#" className="social">
@@ -128,23 +123,11 @@ const Auth = () => {
       */}
       <footer>
         <p>
-          Created with <i className="fa fa-heart"></i> by{' '}
-          <a target="_blank" rel="noopener noreferrer" href="https://florin-pop.com">
-            Florin Pop
-          </a>{' '}
-          - Read how I created this and how you can join the challenge{' '}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/"
-          >
-            here
-          </a>.
+        © 2025 Houston Museum of Fine Arts. All Rights Reserved.
         </p>
       </footer>
     </div>
   );
 };
 
-// Export the Auth component for use in other parts of the application
 export default Auth;
