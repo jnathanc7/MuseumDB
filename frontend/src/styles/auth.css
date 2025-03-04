@@ -270,7 +270,7 @@
   #81766D (a lighter taupe for subtle contrast)
   #7F766D (dusty taupe)
   */
-  color: #fff; /* Darker text for better visibility */
+  color: #fff;
   font-size: 14px;
   bottom: 0;
   position: fixed;
@@ -282,7 +282,7 @@
 
 .auth-page footer p {
   margin: 10px 0;
-  color: #eaeaea ;
+  color: #eaeaea;
 }
 
 .auth-page footer i {
