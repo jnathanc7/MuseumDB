@@ -1,0 +1,295 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+/* Apply box-sizing to all elements */
+* {
+  box-sizing: border-box;
+}
+
+/* Center the entire auth page using Flexbox and set a darker, medium grey background */
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #544F3E  ; 
+  /*deep olive brown; other possible colors below 
+  #665C54 (a warm, medium-dark taupe)
+  #5C534A (cocoa brown) 
+  */  
+}
+
+/* Typography styles scoped under .auth-page */
+.auth-page h1 {
+  font-weight: bold;
+  margin: 0;
+  color: #222; /* Darker text for contrast */
+}
+
+.auth-page h2 {
+  text-align: center;
+  color: #222;
+}
+
+.auth-page p {
+  font-size: 14px;
+  font-weight: 100;
+  line-height: 20px;
+  letter-spacing: 0.5px;
+  margin: 20px 0 30px;
+  color: #333;
+}
+
+.auth-page span {
+  font-size: 12px;
+  color: #333;
+}
+
+.auth-page a {
+  color: #222;
+  font-size: 14px;
+  text-decoration: none;
+  margin: 15px 0;
+}
+
+/* Button styling - default uses blue palette. 
+   Alternative palettes:
+     - Burgundy: Replace #4A90E2 with #A83232 
+       (and #357ABD with #8B0000 in the overlay)
+     - Deep Purple: Replace #4A90E2 with #6A1B9A 
+       (and #357ABD with #8E24AA in the overlay)
+*/
+.auth-page button {
+  border-radius: 20px;
+  border: 1px solid #4A90E2;
+  background-color: #4A90E2;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 12px 45px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: transform 80ms ease-in;
+}
+
+.auth-page button:active {
+  transform: scale(0.95);
+}
+
+.auth-page button:focus {
+  outline: none;
+}
+
+.auth-page button.ghost {
+  background-color: transparent;
+  border-color: #FFFFFF;
+}
+
+/* Form styles */
+.auth-page form {
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 50px;
+  height: 100%;
+  text-align: center;
+}
+
+.auth-page input {
+  background-color: #eee;
+  border: none;
+  padding: 12px 15px;
+  margin: 8px 0;
+  width: 100%;
+  color: #333;
+}
+
+/* Auth Container wrapping the sign in/up component */
+.auth-container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25),
+              0 10px 10px rgba(0,0,0,0.22);
+  position: relative;
+  overflow: hidden;
+  width: 768px;
+  max-width: 100%;
+  min-height: 480px;
+}
+
+/* Generic form container styles for both sign in and sign up forms */
+.auth-form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s ease-in-out;
+}
+
+/* Sign In Form: visible by default on the left */
+.auth-sign-in-container {
+  left: 0;
+  width: 50%;
+  z-index: 2;
+}
+
+/* Slide the sign in form out when the right-panel (sign-up) is active */
+.auth-container.auth-right-panel-active .auth-sign-in-container {
+  transform: translateX(100%);
+}
+
+/* Sign Up Form: initially hidden (opacity 0) on the left */
+.auth-sign-up-container {
+  left: 0;
+  width: 50%;
+  opacity: 0;
+  z-index: 1;
+}
+
+/* Slide the sign up form in when active */
+.auth-container.auth-right-panel-active .auth-sign-up-container {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+  animation: auth-show 0.6s;
+}
+
+/* Keyframes for sign-up form appearance */
+@keyframes auth-show {
+  0%, 49.99% {
+    opacity: 0;
+    z-index: 1;
+  }
+  
+  50%, 100% {
+    opacity: 1;
+    z-index: 5;
+  }
+}
+
+/* Overlay container holds the sliding panels */
+.auth-overlay-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+  z-index: 100;
+}
+
+/* Slide the overlay container when active */
+.auth-container.auth-right-panel-active .auth-overlay-container {
+  transform: translateX(-100%);
+}
+
+/* Overlay: the colorful background spanning the panels - default uses blue gradient */
+/* Alternative palettes:
+     - Burgundy: linear-gradient(to right, #A83232, #8B0000);
+     - Deep Purple: linear-gradient(to right, #6A1B9A, #8E24AA);
+*/
+.auth-overlay {
+  background: -webkit-linear-gradient(to right, #c9b994, #8f7d5d );
+  background: linear-gradient(to right, #c9b994, #8f7d5d );
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 0 0;
+  color: #FFFFFF;
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.6s ease-in-out;
+}
+
+/* Adjust overlay position when the panel is active */
+.auth-container.auth-right-panel-active .auth-overlay {
+  transform: translateX(50%);
+}
+
+/* Overlay panels for the left and right sections */
+.auth-overlay-panel {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  text-align: center;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  transform: translateX(0);
+  transition: transform 0.6s ease-in-out;
+}
+
+/* Left overlay panel: slightly shifted left by default */
+.auth-overlay-left {
+  transform: translateX(-20%);
+}
+
+/* Reset left overlay when active */
+.auth-container.auth-right-panel-active .auth-overlay-left {
+  transform: translateX(0);
+}
+
+/* Right overlay panel: aligned to the right by default */
+.auth-overlay-right {
+  right: 0;
+  transform: translateX(0);
+}
+
+/* Shift right overlay slightly when active */
+.auth-container.auth-right-panel-active .auth-overlay-right {
+  transform: translateX(20%);
+}
+
+/* Social media icon container within the auth component */
+.auth-social-container {
+  margin: 20px 0;
+}
+
+.auth-social-container a {
+  border: 1px solid #DDDDDD;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 5px;
+  height: 40px;
+  width: 40px;
+}
+
+/* Footer styles scoped under the auth-page class - lightened footer */
+.auth-page footer {
+  background-color: #706B58 ; /* slightly lighter olive 
+  Possible colors: 
+  #81766D (a lighter taupe for subtle contrast)
+  #7F766D (dusty taupe)
+  */
+  color: #fff; /* Darker text for better visibility */
+  font-size: 14px;
+  bottom: 0;
+  position: fixed;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 999;
+}
+
+.auth-page footer p {
+  margin: 10px 0;
+  color: #eaeaea ;
+}
+
+.auth-page footer i {
+  color: #fff;
+}
+
+.auth-page footer a {
+  color: #fff;
+  text-decoration: none;
+}
