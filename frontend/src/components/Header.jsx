@@ -12,7 +12,7 @@ const Header = () => {
         <AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink>
         <AnimatedLink to="/donations">Donations</AnimatedLink>
         <AnimatedLink to="/Auth" className="login">Login</AnimatedLink>
-        /* this  is just so we can see what we have for the admin page, will have to be removed eventually */
+        {/* this  is just so we can see what we have for the admin page, will have to be removed eventually */}
         <AnimatedLink to="/adminhome">Admin</AnimatedLink>
 
       </nav>
