@@ -45,3 +45,112 @@
     width: 200px;
     margin: 10px auto;
 }
+
+
+/* Below is for file ManageEmployees */
+
+/* Page container */
+.manage-employees-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+
+    background-image: url('/adminhomepic.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    width: 100%;
+}
+
+/* Title */
+.page-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #313639;
+    margin-bottom: 20px;
+}
+
+/* Employee Table */
+.employee-table-container {
+    width: 80%;
+    margin-bottom: 20px;
+}
+
+.employee-table {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.employee-table th, .employee-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+
+.employee-table th {
+    background-color: #313639;
+    color: white;
+}
+
+.employee-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Buttons */
+.inactive-button {
+    padding: 5px 10px;
+    background-color: rgb(147, 37, 37);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.active-button {
+    padding: 5px 10px;
+    background-color: rgb(19, 106, 100);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Add Employee Form */
+.add-employee-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.input-field {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 80%;
+}
+
+.add-employee-button {
+    display: block;
+    padding: 10px 15px;
+    background-color: #313639;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-employee-button:hover {
+    background-color: #5a5a5a;
+}
