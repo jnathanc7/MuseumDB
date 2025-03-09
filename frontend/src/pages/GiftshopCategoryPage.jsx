@@ -1,0 +1,1 @@
+//displaying products based on the category

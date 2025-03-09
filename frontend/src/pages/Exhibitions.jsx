@@ -1,7 +1,7 @@
 
 function Exhibitions(){
     return(
-        <div className = "Exhibitions">
+        <div className = "Exhibitions-wrapper">
             <h1 className ="Exhibits">Exhibits</h1>
             <h2>Art Collection</h2>
             <ul className="Art Collection">
