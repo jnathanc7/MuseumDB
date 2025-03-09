@@ -8,7 +8,7 @@ const Giftshop = () =>{
     updates array if not dont show and present the current state of the array */
     /*categories is the current state, setCategories will update the state of the array */
     /*instead of hard coding data make new entity in data base and fetch the info from the table */
-    const [categories, setCategories] = useState([{id:1, name: "Paintings", img: "/paintings.jpg"},
+    const [categories, ] = useState([{id:1, name: "Paintings", img: "/paintings.jpg"},
                                                    {id:2, name: "Jewlery", img: "/Jewlery.jpg"}, 
                                                    {id:3, name:"Books", img: "/books.jpg"},
                                                    {id:4, name:"Toys", img: ""},

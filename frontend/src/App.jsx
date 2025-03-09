@@ -6,6 +6,9 @@ import Home from "./pages/Home";
 import Exhibitions from "./pages/Exhibitions";
 import Giftshop from "./pages/Giftshop";
 import PropTypes from "prop-types";
+import Auth from './pages/Auth';
+import AdminHome from "./pages/staff/AdminHome";
+
 
 const PageTransition = ({ children }) => {
   return (
@@ -30,39 +33,13 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route
-          path="/"
-          element={
-            <PageTransition>
-              <Home />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/tickets"
-          element={
-            <PageTransition>
-              <Ticket />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/Exhibitions"
-          element={
-            <PageTransition>
-              <Exhibitions />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/Giftshop"
-          element={
-            <PageTransition>
-              <Giftshop />
-            </PageTransition>
-          }
-        />
-      </Routes>
+        <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+        <Route path="/tickets" element={<PageTransition><Ticket /></PageTransition>} />
+        <Route path="/Exhibitions" element={<PageTransition><Exhibitions /></PageTransition>} />
+        <Route path="/Giftshop" element={<PageTransition><Giftshop /></PageTransition>} />
+        <Route path="/Auth" element={<PageTransition><Auth /></PageTransition>} />
+        <Route path="/adminhome" element={<PageTransition><AdminHome /></PageTransition>} />
+        </Routes>
     </AnimatePresence>
   );
 }
