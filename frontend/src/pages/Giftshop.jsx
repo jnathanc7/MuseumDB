@@ -1,5 +1,5 @@
 //setting up giftshop
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 
 const Giftshop = () =>{
@@ -8,7 +8,7 @@ const Giftshop = () =>{
     updates array if not dont show and present the current state of the array */
     /*categories is the current state, setCategories will update the state of the array */
     /*instead of hard coding data make new entity in data base and fetch the info from the table */
-    const [categories, ] = useState([{id:1, name: "Paintings", img: "/paintings.jpg"},
+    const [categories, setCategories ] = useState([{id:1, name: "Paintings", img: "/paintings.jpg"},
                                                    {id:2, name: "Jewlery", img: "/Jewlery.jpg"}, 
                                                    {id:3, name:"Books", img: "/books.jpg"},
                                                    {id:4, name:"Toys", img: ""},
@@ -17,8 +17,8 @@ const Giftshop = () =>{
     return(
         /*I removed the "homepage" div that wrapped everything  */
         <div className = "giftshop-wrapper">
-            {/*Hero Section */}
-            <div className = "giftshop-hero" style = {{backgroundImage: `url(${"/giftshophero.jpg"})`}}>
+            {/*Hero Section */}          
+            <div className = "giftshop-hero" >
             <h1>Welcome to our Museum Giftshop</h1>
             <p>Discover a curated selection of art prints, handcrafted jewelry, unique souvenirs, and more. Take home a piece of history today!</p>
             </div>

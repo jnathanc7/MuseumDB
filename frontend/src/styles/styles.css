@@ -185,13 +185,13 @@ html, body {
   width: 100%; /* Prevents it from stretching too wide */
   max-width: 100%;
   overflow-x:hidden;
-  
 }
 
 .giftshop-hero{
   width: 100%;
-  height:100vh;
+  height:90vh;
   text-align: center;
+  color:  white; 
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -199,7 +199,8 @@ html, body {
   background-size:cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;  
+  background-attachment: scroll;
+  background-image: url('/giftshophero.jpg'); 
 }
 
 .giftshop-container{
