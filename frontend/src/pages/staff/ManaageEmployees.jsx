@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Footer from "../../components/Footer";
+
 import "../../styles/admin.css"; // Make sure your CSS handles modal styles
 
 // this is just a tatic table for now
@@ -50,11 +52,12 @@ const ManageEmployees = () => {
 
     return (
         <main className="manage-employees-container">
+        <div className="manage-header"></div>
+
+        <div className="manage-header">
             <h1 className="page-title">Manage Employees</h1>
-
-            {/* "Add Employee" Button - Opens the modal */}
             <button className="open-modal-button" onClick={() => setIsModalOpen(true)}>Add Employee</button>
-
+        </div>
             {/* Employee Table */}
             <div className="employee-table-container">
                 <table className="employee-table">
@@ -133,7 +136,13 @@ const ManageEmployees = () => {
                     </div>
                 </div>
             )}
+        
+        
+            <Footer />
+        
         </main>
+    
+
     );
 };
 

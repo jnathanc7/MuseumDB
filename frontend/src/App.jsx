@@ -9,6 +9,8 @@ import PropTypes from "prop-types";
 import Auth from './pages/Auth';
 import AdminHome from "./pages/staff/AdminHome";
 import ManaageEmployees from "./pages/staff/ManaageEmployees";
+import Profile from "./pages/staff/Profile";
+
 
 
 const PageTransition = ({ children }) => {
@@ -41,6 +43,8 @@ function AnimatedRoutes() {
         <Route path="/Auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/adminhome" element={<PageTransition><AdminHome /></PageTransition>} />
         <Route path="/admin/manage-employees" element={<ManaageEmployees />} />
+        <Route path="/profile" element={<Profile />} /> {/* Add Profile Route */}
+        {/* Add other routes here */}
 
         </Routes>
     </AnimatePresence>

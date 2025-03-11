@@ -1,5 +1,5 @@
 import "../../styles/admin.css";
-
+import Footer from "../../components/Footer";
 import { useNavigate } from "react-router-dom";
 
 const AdminHome = () => {
@@ -21,10 +21,15 @@ const AdminHome = () => {
 
     return (
         <main className="admin-container">
+          <div className="admin-title-container"></div>
         <div className="admin-dashboard">
+            
+        <div className="admin-title-container">
             <h3 className="text-[#313639] text-4xl mb-2 tracking-wide">
                 Admin Dashboard
             </h3>
+        </div>
+        
     
             {/* Profile Button */}
             <button onClick={() => navigate('/profile')} className="admin-button">
@@ -48,7 +53,10 @@ const AdminHome = () => {
                 <option value="/admin/manage-giftshop">Manage Gift Shop</option>
             </select>
         </div>
+        <Footer />
+
     </main>
+    
     
     );
 };
