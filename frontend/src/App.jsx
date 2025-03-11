@@ -9,7 +9,8 @@ import PropTypes from "prop-types";
 import Auth from './pages/Auth';
 import AdminHome from "./pages/staff/AdminHome";
 import ManaageEmployees from "./pages/staff/ManaageEmployees";
-import Profile from "./pages/staff/profile";
+import Profile from "./pages/staff/Profile";
+
 
 
 const PageTransition = ({ children }) => {
