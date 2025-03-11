@@ -18,15 +18,16 @@ const Profile = () => {
 
   const [newUser, setNewUser] = useState({ ...user });
 
+  // for editing the prifile
   const handleEdit = () => {
     setIsEditing(true);
   };
-
+// saving new user data
   const handleSave = () => {
     setUser(newUser);
     setIsEditing(false);
   };
-
+// handling changes in the form
   const handleChange = (e) => {
     setNewUser({ ...newUser, [e.target.name]: e.target.value });
   };
