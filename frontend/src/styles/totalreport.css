@@ -1,0 +1,65 @@
+.total-report-container {
+    width: 100vw; 
+    height: 100vh; 
+    background-image: url('/manageemployees.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: left;
+    justify-content: flex-start; 
+    padding-top: 90px; /* Add some spacing at the top */
+}
+
+.report-title {
+    font-size: 2.5rem;
+    padding-bottom: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-left: 30px;
+}
+
+/* Filters (Dropdowns & Search Bars) */
+.filters {
+    display: flex;
+    justify-content: left;
+    gap: 35px;
+    margin-bottom: 20px;
+
+    margin-left: 30px;
+}
+
+.report-dropdown,
+.report-search {
+    padding: 10px;
+    position: relative;
+
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+
+
+}
+
+/* Report Table */
+.report-table {
+    
+    width: 90%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-left: 30px;
+}
+
+.report-table th,
+.report-table td {
+    padding: 15px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.report-table th {
+    background-color: #313639;
+    color: white;
+}

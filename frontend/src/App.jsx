@@ -10,6 +10,8 @@ import Auth from './pages/Auth';
 import AdminHome from "./pages/staff/AdminHome";
 import ManaageEmployees from "./pages/staff/ManaageEmployees";
 import Profile from "./pages/staff/Profile";
+import TotalReport from "./pages/staff/TotalReport";
+
 
 
 
@@ -44,6 +46,7 @@ function AnimatedRoutes() {
         <Route path="/adminhome" element={<PageTransition><AdminHome /></PageTransition>} />
         <Route path="/admin/manage-employees" element={<ManaageEmployees />} />
         <Route path="/profile" element={<Profile />} /> {/* Add Profile Route */}
+        <Route path="/admin/total-report" element={<TotalReport/>} /> 
         {/* Add other routes here */}
 
         </Routes>
