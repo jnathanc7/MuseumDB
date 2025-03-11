@@ -1,0 +1,60 @@
+/* Profile Page */
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    background-image: url('/manageemployees.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Profile Card */
+.profile-card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    text-align: left;
+}
+
+/* Title */
+.profile-title {
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+/* Profile Info */
+.profile-info p {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+/* Input Fields */
+.profile-edit input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Buttons */
+.edit-button, .save-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.save-button {
+    background-color: #28a745;
+}
