@@ -7,6 +7,13 @@ import Exhibitions from "./pages/Exhibitions";
 import Giftshop from "./pages/Giftshop";
 import PropTypes from "prop-types";
 import Auth from './pages/Auth';
+import AdminHome from "./pages/staff/AdminHome";
+import ManaageEmployees from "./pages/staff/ManaageEmployees";
+import Profile from "./pages/staff/Profile";
+import TotalReport from "./pages/staff/TotalReport";
+
+
+
 
 const PageTransition = ({ children }) => {
   return (
@@ -36,7 +43,13 @@ function AnimatedRoutes() {
         <Route path="/Exhibitions" element={<PageTransition><Exhibitions /></PageTransition>} />
         <Route path="/Giftshop" element={<PageTransition><Giftshop /></PageTransition>} />
         <Route path="/Auth" element={<PageTransition><Auth /></PageTransition>} />
-      </Routes>
+        <Route path="/adminhome" element={<PageTransition><AdminHome /></PageTransition>} />
+        <Route path="/admin/manage-employees" element={<ManaageEmployees />} />
+        <Route path="/profile" element={<Profile />} /> {/* Add Profile Route */}
+        <Route path="/admin/total-report" element={<TotalReport/>} /> 
+        {/* Add other routes here */}
+
+        </Routes>
     </AnimatePresence>
   );
 }

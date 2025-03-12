@@ -1,41 +1,64 @@
-// just seeing an example of how to do a page
-// src/pages/staff/home.jsx
-
-//import '../index.css';
+import "../../styles/admin.css";
+import Footer from "../../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 const AdminHome = () => {
+    const navigate = useNavigate(); 
+
+    // Function to handle dropdown selection
+    const handleNavigation = (event) => {
+        const selectedValue = event.target.value;
+        console.log("Dropdown Selected:", selectedValue); // Debugging output
+
+        if (!selectedValue) {
+            console.warn("No option selected!");
+            return;  // Stop execution if no value is selected
+        }
+
+        navigate(selectedValue);
+        event.target.value = "";  // Reset dropdown to allow reselection
+    };
+
     return (
-        <main className="min-h-screen bg-[#EFEDE5] w-screen" style={{
-            backgroundImage: `url('./adminbg.svg')`,
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover'
-        }}>
-            <div className="w-full flex flex-row justify-center">
-                <div className="flex mt-20 w-2/3 justify-center">
-                    <div className="flex flex-col items-center">
-                        <h3 className="text-[#313639] text-4xl justify-center mb-2 tracking-wide w-fit items-center text-nowrap">
-                            Admin Dashboard
-                        </h3>
-                        <div className="flex flex-col tracking-wide">
-                            <a href="/profile"><button onClick={() => console.log('View/Edit Profile')} className="admin-button">Profile</button></a>
-                            <select className="admin-button text-center " onChange={(e) => window.location.href = e.target.value}>    <option value="">View Reports...</option>
-                                <option value="/admin/total-report">View Total Sale Reports</option>
-                                <option value="/admin/exhibit-report">View Exhibit Reports</option>
-                                <option value="/admin/view-complaints">View Complaints</option>
-                            </select>
-                            <select className="admin-button text-center " onChange={(e) => window.location.href = e.target.value}>
-                                <option value="">Management Options</option>
-                                <option value="/admin/manage-employees">Manage Employees</option>
-                                <option value="/admin/manage-artworks">Manage Artworks</option>
-                                <option value="/admin/manage-exhibits">Manage Exhibits</option>
-                                <option value="/admin/manage-giftshop">Manage Gift Shop</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+        <main className="admin-container">
+          <div className="admin-title-container"></div>
+        <div className="admin-dashboard">
+            
+        <div className="admin-title-container">
+            <h3 className="text-[#313639] text-4xl mb-2 tracking-wide">
+                Admin Dashboard
+            </h3>
+        </div>
+        
+    
+            {/* Profile Button */}
+            <button onClick={() => navigate('/profile')} className="admin-button">
+                Profile
+            </button>
+    
+            {/* View Reports Dropdown */}
+            <select name="reports" className="admin-button admin-dropdown" onChange={handleNavigation}>
+                <option value="">View Reports...</option>
+                <option value="/admin/total-report">View Total Sale Reports</option>
+                <option value="/admin/exhibit-report">View Exhibit Reports</option>
+                <option value="/admin/view-complaints">View Complaints</option>
+            </select>
+    
+            {/* Management Options Dropdown */}
+            <select name="management" className="admin-button admin-dropdown" onChange={handleNavigation}>
+                <option value="">Management Options</option>
+                <option value="/admin/manage-employees">Manage Employees</option>
+                <option value="/admin/manage-artworks">Manage Artworks</option>
+                <option value="/admin/manage-exhibits">Manage Exhibits</option>
+                <option value="/admin/manage-giftshop">Manage Gift Shop</option>
+            </select>
+        </div>
+        <Footer />
+
+    </main>
+    
+    
     );
-}
+};
 
 export default AdminHome;

@@ -266,7 +266,7 @@
 /* Footer styles scoped under the auth-page class - lightened footer */
 .auth-page footer {
   background-color: #706B58 ; /* slightly lighter olive 
-  Possible colors: 
+  Possible colors:
   #81766D (a lighter taupe for subtle contrast)
   #7F766D (dusty taupe)
   */
@@ -283,13 +283,4 @@
 .auth-page footer p {
   margin: 10px 0;
   color: #eaeaea;
-}
-
-.auth-page footer i {
-  color: #fff;
-}
-
-.auth-page footer a {
-  color: #fff;
-  text-decoration: none;
 }
