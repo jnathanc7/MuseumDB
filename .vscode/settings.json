@@ -1,0 +1,22 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Enabled",
+                "ssl": {
+                    "ca": ""
+                }
+            },
+            "previewLimit": 50,
+            "server": "museum-db.mysql.database.azure.com",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Mysql local",
+            "database": "db",
+            "username": "dbadmin",
+            "connectionTimeout": 30,
+            "askForPassword": true
+        }
+    ]
+}
