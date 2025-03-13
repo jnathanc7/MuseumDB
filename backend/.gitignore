@@ -1,0 +1,14 @@
+# Ignore MySQL dumps or logs
+*.sql
+*.log
+
+# Ignore compiled files
+dist/
+build/
+
+# Ignore database config
+/config/db.js
+
+# ignore env files & sensitive configuration files
+.env
+config/db.js
