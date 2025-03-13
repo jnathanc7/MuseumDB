@@ -5,7 +5,7 @@ import "../../styles/admin.css"; // Make sure your CSS handles modal styles
 const ManageEmployees = () => {
     const [employees, setEmployees] = useState([]);
     const [newEmployee, setNewEmployee] = useState({
-        firstName: "", lastName: "", phoneNumber: "", email:"", department:"" , position: "", hireDate: "", salary: ""
+        firstName: "", lastName: "", phoneNumber: "", email:"", department:"" , position: "", hireDate: "", salary: "", status: true
     });
     
 
@@ -66,6 +66,39 @@ const ManageEmployees = () => {
             console.error("Failed to add employee:", error);
         }
     };
+    // Toggle employee status
+    const toggleStatus = async (staffId) => {
+        try {
+            const response = await fetch(`http://localhost:3000/employees/toggle?id=${staffId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+            });
+    
+            const result = await response.json();
+    
+            if (response.ok) {
+                // ✅ Ensure the UI updates correctly based on the actual returned value
+                console.log("Before Update:", employees);
+
+                setEmployees((prevEmployees) =>
+                    prevEmployees.map((emp) =>
+                        emp.Staff_ID === staffId ? { ...emp, Active_Status: !Boolean(emp.Active_Status) } : emp
+                    )
+                );
+                console.log("After Update:", employees);
+
+                
+            } else {
+                alert("Error toggling status");
+            }
+        } catch (error) {
+            console.error("Error toggling status:", error);
+        }
+    };
+    
+    
+    
+    
     
 
 
@@ -91,6 +124,9 @@ const ManageEmployees = () => {
                             <th>Job Title</th>
                             <th>Hire Date</th>
                             <th>Salary ($)</th>
+                            <th>Status</th>
+                         
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -105,6 +141,26 @@ const ManageEmployees = () => {
                                 <td>{emp.Job_title}</td>
                                 <td>{new Date(emp.Hire_Date).toLocaleDateString()}</td>
                                 <td>${emp.Salary.toLocaleString()}</td>
+                                <td>
+    <button
+        className={emp.Active_Status ? "deactivate-button" : "activate-button"}
+        style={{
+            backgroundColor: emp.Active_Status ? "red" : "green",
+            color: "white",
+            border: "none",
+            padding: "8px 12px",
+            cursor: "pointer",
+        }}
+        onClick={() => toggleStatus(emp.Staff_ID)}
+    >
+        {emp.Active_Status === 1 || emp.Active_Status === true ? "Deactivate" : "Activate"}
+    </button>
+</td>
+
+
+
+
+                                
                             </tr>
                         ))}
                     </tbody>
