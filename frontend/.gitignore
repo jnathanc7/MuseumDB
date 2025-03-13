@@ -27,9 +27,7 @@ dist-ssr
 *.sln
 *.sw?
 
-backend/connect.js
-backend/combined-ca.pem
-backend/db.js
+.env   
+backend/combined-ca.pem    
 
-.env     
 
