@@ -23,3 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 backend/connect.js
+backend/combined-ca.pem
+
