@@ -1,4 +1,4 @@
-const connection = require('./connect.js');
+const connection = require('./config/db.js');
 
 connection.query('SELECT 1', (err, results) => {
     if (err) {
