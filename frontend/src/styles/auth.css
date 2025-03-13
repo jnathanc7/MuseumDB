@@ -125,6 +125,11 @@
   top: 0;
   height: 100%;
   transition: all 0.6s ease-in-out;
+  
+}
+
+.auth-form-container h1{
+  margin-bottom: 15px; /* Adjust this value as needed */  
 }
 
 /* Sign In Form: visible by default on the left */
@@ -247,30 +252,14 @@
   transform: translateX(20%);
 }
 
-/* Social media icon container within the auth component */
-.auth-social-container {
-  margin: 20px 0;
-}
-
-.auth-social-container a {
-  border: 1px solid #DDDDDD;
-  border-radius: 50%;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 5px;
-  height: 40px;
-  width: 40px;
-}
-
 /* Footer styles scoped under the auth-page class - lightened footer */
 .auth-page footer {
   background-color: #706B58 ; /* slightly lighter olive 
-  Possible colors: 
+  Possible colors:
   #81766D (a lighter taupe for subtle contrast)
   #7F766D (dusty taupe)
   */
-  color: #fff; /* Darker text for better visibility */
+  color: #fff;
   font-size: 14px;
   bottom: 0;
   position: fixed;
@@ -282,14 +271,5 @@
 
 .auth-page footer p {
   margin: 10px 0;
-  color: #eaeaea ;
-}
-
-.auth-page footer i {
-  color: #fff;
-}
-
-.auth-page footer a {
-  color: #fff;
-  text-decoration: none;
+  color: #eaeaea;
 }
