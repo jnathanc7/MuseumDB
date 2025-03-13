@@ -5,7 +5,7 @@ import "../../styles/admin.css"; // Make sure your CSS handles modal styles
 const ManageEmployees = () => {
     const [employees, setEmployees] = useState([]);
     const [newEmployee, setNewEmployee] = useState({
-        firstName: "", lastName: "", position: "", hireDate: "", salary: ""
+        firstName: "", lastName: "", phoneNumber: "", email:"", department:"" , position: "", hireDate: "", salary: ""
     });
     
 
@@ -36,7 +36,7 @@ const ManageEmployees = () => {
 
     // Add a new employee
     const addEmployee = async () => {
-        if (!newEmployee.firstName || !newEmployee.lastName || !newEmployee.position || !newEmployee.hireDate || !newEmployee.salary) {
+        if (!newEmployee.firstName || !newEmployee.lastName || !newEmployee.phoneNumber || !newEmployee.email|| !newEmployee.department ||!newEmployee.position || !newEmployee.hireDate || !newEmployee.salary) {
             alert("Please fill out all fields.");
             return;
         }
@@ -57,7 +57,7 @@ const ManageEmployees = () => {
                 await fetchEmployees(); // Refresh employee list
                 // Add new employee to UI
 
-                setNewEmployee({ firstName: "", lastName:"",  position: "", hireDate: "", salary: "" }); // Reset form
+                setNewEmployee({ firstName: "", lastName:"", phoneNumber:"",  position: "", email: "", hireDate: "", salary: "" }); // Reset form
                 setIsModalOpen(false); // Close modal
             } else {
                 alert("Error adding employee.");
@@ -82,8 +82,12 @@ const ManageEmployees = () => {
                 <table className="employee-table">
                     <thead>
                         <tr>
+                            <th>Staff ID</th>
                             <th>First Name</th>
                             <th>Last Name</th>
+                            <th>Phone Number</th>
+                            <th>Email</th>
+                            <th>Department</th>
                             <th>Job Title</th>
                             <th>Hire Date</th>
                             <th>Salary ($)</th>
@@ -92,8 +96,12 @@ const ManageEmployees = () => {
                     <tbody>
                         {employees.map(emp => (
                             <tr key={emp.Staff_ID}>
+                                <td>{emp.Staff_ID}</td>
                                 <td>{emp.First_Name}</td>
                                 <td>{emp.Last_Name}</td>
+                                <td>{emp.Phone_Number}</td>
+                                <td>{emp.Email}</td>
+                                <td>{emp.Department}</td>
                                 <td>{emp.Job_title}</td>
                                 <td>{new Date(emp.Hire_Date).toLocaleDateString()}</td>
                                 <td>${emp.Salary.toLocaleString()}</td>
@@ -111,6 +119,20 @@ const ManageEmployees = () => {
                         <input type="text" name="firstName" placeholder="Employee Name" value={newEmployee.firstName}  onChange={handleInputChange} className="input-field" />
 
                         <input type="text" name="lastName" placeholder="Last Name" value={newEmployee.lastName} onChange={handleInputChange} className="input-field" />
+
+                        <input type="text" name="phoneNumber" placeholder="Phone Number" value={newEmployee.phoneNumber} onChange={handleInputChange} className="input-field" />
+
+                        <input type="email" name="email" placeholder="Email" value={newEmployee.email} onChange={handleInputChange} className="input-field" />
+
+                        <select name="department" value={newEmployee.department} onChange={handleInputChange} className="input-field">
+                            <option value="">Select Department</option>  
+                            <option value="Exhibitions">Exhibitions</option>
+                            <option value="Events">Events</option>
+                            <option value="Security">Security</option>
+                            <option value="Administration">Administration</option>
+                            <option value="Special Exhibitions">Special Exhibitions</option>
+                        </select>
+
 
                         <input type="text" name="position" placeholder="Position" value={newEmployee.position} onChange={handleInputChange} className="input-field"  />
 
