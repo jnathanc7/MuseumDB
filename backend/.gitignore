@@ -11,4 +11,3 @@ build/
 
 # ignore env files & sensitive configuration files
 .env
-config/db.js
