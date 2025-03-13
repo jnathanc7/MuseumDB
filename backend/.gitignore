@@ -6,8 +6,5 @@
 dist/
 build/
 
-# Ignore database config
-/config/db.js
-
 # ignore env files & sensitive configuration files
 .env
