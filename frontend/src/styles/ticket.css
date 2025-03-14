@@ -1,58 +1,121 @@
-/* Ticket Page Styling */
-html, body {
-  height: 100%;
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
+div {
+  font-family: 'IBM Plex Mono', monospace;
 }
 
-
-.ticket-container {
+.ticket-page {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 40px;
+  background-color: white;
+  min-height: 100vh;
+}
+
+.ticket-left {
+  width: 60%;
+  background: white;
+  margin-top: 30px;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.ticket-right {
+  width: 35%;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  margin-top: 30px;
+  text-align: center;
+}
+
+/* Icon Buttons */
+.icon-button {
+  background-color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
   align-items: center;
-  justify-content: flex-start; /* Align content to the top */
-  min-height: 100vh; /* Ensure page fills the screen */
-  background-color: #544f3e; /* Elegant brown background */
-  padding: 20px;
-  padding-bottom: 60px; /* Adds space at the bottom to avoid footer overlap */
-  
+  justify-content: center;
 }
 
-.ticket-title {
-  font-size: 32px;
-  font-weight: bold;
-  color: #8b5e3c; /* Elegant brown */
-  margin-bottom: 20px;
+.icon-button:hover {
+  background-color: black;
 }
 
-.ticket-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.icon-button:focus {
+  outline: none;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  color: #5a3e2b; /* Default color for icons */
+  transition: color 0.3s; /* Smooth transition for color change */
+}
+
+.icon-button:hover .icon {
+  color: white; /* Change icon color to white on hover */
+}
+
+/* Calendar Icon */
+.calendar-icon {
+  width: 24px;
+  height: 24px;
+  color: #5a3e2b; /* default color */
+  margin-right: 10px;
+}
+
+.date-picker-input {
+  border: none;
+  font-size: 16px;
+  padding: 8px;
+  cursor: pointer;
+  background: none;
+  outline: none;
   width: 100%;
-  max-width: 500px;
-  flex: 1; /* Allow ticket list to take up remaining space */
-  overflow-y: auto; /* Enable scrolling when content overflows */
 }
 
-.ticket-item {
+.calendar-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.calendar-box:hover {
+  border-color: black;
+}
+
+
+/* Ticket Options */
+.ticket-options {
+  margin-top: 10px;
+}
+
+.ticket-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px 0;
+  border-bottom: 1px solid #ccc;
 }
 
 .ticket-type {
-  font-size: 18px;
+  flex: 1;
   font-weight: bold;
-  color: #5a3e2b; /* Dark brown */
+  color: #5a3e2b;
 }
 
 .ticket-price {
-  font-size: 18px;
+  margin-right: 20px;
+  font-size: 16px;
   color: #8b5e3c;
 }
 
@@ -62,29 +125,67 @@ html, body {
   gap: 10px;
 }
 
-.ticket-counter button {
-  background-color: #8b5e3c; /* Museum-style brown */
+/* Divider */
+.divider {
+  height: 1px;
+  background-color: #ccc;
+  margin: 20px 0;
+}
+
+
+
+
+/* Learn More Button */
+.membership-link {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 15px;
+  background-color: #8b5e3c;
   color: white;
-  border: none;
-  padding: 5px 10px;
-  font-size: 16px;
+  text-decoration: none;
   border-radius: 5px;
-  cursor: pointer;
   transition: 0.3s;
 }
 
-.ticket-counter button:hover {
-  background-color: #5a3e2b; /* Darker on hover */
+.membership-link:hover {
+  background-color: white;
+  color: #8b5e3c;
+  border: 2px solid #8b5e3c;
 }
 
-.ticket-counter span {
-  font-size: 18px;
-  min-width: 30px;
-  text-align: center;
+/* "Next" Button */
+.subtotal {
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #333;
+  font-weight: bold;
+  margin-top: 20px;
 }
 
-.footer {
-  background-color: #222; /* Dark background */
+/* Fix Next Button Layout */
+.next-button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px; /* Ensure space from the subtotal */
+  background-color: black;
   color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
   text-align: center;
+  user-select: none;
+  display: block;
+}
+
+.next-button:hover {
+  background-color: #8B0000;
+  transform: scale(1.05);
+}
+
+.next-button:focus {
+  outline: none;
 }

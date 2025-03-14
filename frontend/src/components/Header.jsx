@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";  // Import useLocation hook
 import AnimatedLink from "./AnimatedLink";
-import "../styles/header.css"
+import "../styles/header.css";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation(); // Get the current location (path)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,8 +16,11 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return ( 
-    <header className={`header ${scrolled ? "scrolled" : ""}`}>
+  // Check if the current page is "Tickets"
+  const isTicketsPage = location.pathname === "/tickets";
+
+  return (
+    <header className={`header ${scrolled ? "scrolled" : ""} ${isTicketsPage ? "tickets-page" : ""}`}>
       <h1 className="logo">
         <AnimatedLink to="/">Museum</AnimatedLink>
       </h1>
@@ -33,6 +38,7 @@ const Header = () => {
 };
 
 export default Header;
+
 
 
 

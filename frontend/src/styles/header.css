@@ -13,7 +13,6 @@
   z-index: 999;
   background-color: transparent; /* Initially transparent */
   box-shadow: none !important; /*using as a bandage */
-  
 }
 
 /* Museum Logo */
@@ -49,7 +48,7 @@
   color: black !important;
 }
 
-/* Navigation Links */ 
+/* Navigation Links */
 .nav-links {
   display: flex;
   gap: 15px;
@@ -59,3 +58,19 @@
   color: white;
 }
 
+/* New class for the Tickets page header (solid background, black text) */
+.header.tickets-page {
+  background-color: white !important;
+  color: black !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* For navigation links on the Tickets page */
+.header.tickets-page .nav-links a {
+  color: black !important;
+}
+
+/* For the logo on the Tickets page */
+.header.tickets-page .logo {
+  color: black !important;
+}
