@@ -1,7 +1,8 @@
 //setting up giftshop
 import { useState } from "react";
+import "../styles/giftShop.css"
 
-
+ 
 const Giftshop = () =>{
     /*if i want to make it dynamic then i would have to add a case to check if the user 
     has authorization to update the store if access is approved then show button that 
@@ -19,8 +20,8 @@ const Giftshop = () =>{
         <div className = "giftshop-wrapper">
             {/*Hero Section */}
             <div className = "giftshop-hero" style = {{backgroundImage: `url(${"/giftshophero.jpg"})`}}>
-            <h1>Welcome to our Museum Giftshop</h1>
-            <p>Discover a curated selection of art prints, handcrafted jewelry, unique souvenirs, and more. Take home a piece of history today!</p>
+            <h1 className="giftshop-text">Museum Giftshop</h1>
+            <p className="giftshop-text2">Discover a curated selection of art, handcrafted jewelry, unqiue souvenirs, and more!</p>
             </div>
 
             {/* Categories Section */}
@@ -34,6 +35,7 @@ const Giftshop = () =>{
             </div>
         </div>
     )
+ 
 }
 
 export default Giftshop

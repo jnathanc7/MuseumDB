@@ -1,8 +1,21 @@
+import { useState, useEffect } from "react";
 import AnimatedLink from "./AnimatedLink";
+import "../styles/header.css"
 
 const Header = () => {
-  return (
-    <header className="header">
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 30);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return ( 
+    <header className={`header ${scrolled ? "scrolled" : ""}`}>
       <h1 className="logo">
         <AnimatedLink to="/">Museum</AnimatedLink>
       </h1>
@@ -12,9 +25,8 @@ const Header = () => {
         <AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink>
         <AnimatedLink to="/donations">Donations</AnimatedLink>
         <AnimatedLink to="/Auth" className="login">Login</AnimatedLink>
-        {/* this  is just so we can see what we have for the admin page, will have to be removed eventually */}
+        {/* Temporary Admin Link */}
         <AnimatedLink to="/adminhome">Admin</AnimatedLink>
-
       </nav>
     </header>
   );

@@ -1,0 +1,61 @@
+/* Default Header (Transparent, White Text) */
+.header {
+  font-family: "JetBrains Mono", monospace;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  z-index: 999;
+  background-color: transparent; /* Initially transparent */
+  box-shadow: none !important; /*using as a bandage */
+  
+}
+
+/* Museum Logo */
+.logo {
+  font-size: 40px;
+  font-weight: bold;
+  margin-right: 20px;
+  color: white;
+}
+
+/* When Scrolled: White Background */
+.header.scrolled {
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Default Link Styles (White) */
+.header a,
+.header .logo {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+/* When Scrolled: Change Text to Black */
+.header.scrolled a,
+.header.scrolled .logo {
+  color: black !important;
+}
+
+/* Ensure Login Button Also Turns Black */
+.header.scrolled .login {
+  color: black !important;
+}
+
+/* Navigation Links */ 
+.nav-links {
+  display: flex;
+  gap: 15px;
+  font-size: 18px;
+  flex-grow: 1; /* Allows proper spacing */
+  align-items: center;
+  color: white;
+}
+

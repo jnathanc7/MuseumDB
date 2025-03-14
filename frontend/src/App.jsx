@@ -13,8 +13,6 @@ import Profile from "./pages/staff/Profile";
 import TotalReport from "./pages/staff/TotalReport";
 
 
-
-
 const PageTransition = ({ children }) => {
   return (
     <motion.div

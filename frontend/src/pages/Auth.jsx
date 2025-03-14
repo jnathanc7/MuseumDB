@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import '../styles/auth.css';
 
 // Auth is a functional component representing the sign in/up page.
@@ -109,11 +109,6 @@ const Auth = () => {
           This section remains at the bottom and includes external links.
           Note the use of rel="noopener noreferrer" for security on external links.
       */}
-      <footer>
-        <p>
-        © 2025 Houston Museum of Fine Arts. All Rights Reserved.
-        </p>
-      </footer>
     </div>
   );
 };

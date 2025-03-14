@@ -1,5 +1,4 @@
-import React, { useState, useEffect  } from "react";
-import Footer from "../../components/Footer";
+import { useState, useEffect  } from "react";
 import "../../styles/admin.css"; // Make sure your CSS handles modal styles
 
 const ManageEmployees = () => {
@@ -17,7 +16,7 @@ const ManageEmployees = () => {
 
     const fetchEmployees = async () => {
         try {
-            const response = await fetch("http://localhost:3000/employees");
+            const response = await fetch("http://localhost:3000/employees"); //azure.net
             const data = await response.json();
             setEmployees(data); // Update state with actual database employees
         } catch (error) {
@@ -146,9 +145,7 @@ const ManageEmployees = () => {
                     </div>
                 </div>
             )}
-        
-        
-            <Footer />
+    
         
         </main>
     

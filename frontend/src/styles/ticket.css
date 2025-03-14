@@ -1,0 +1,90 @@
+/* Ticket Page Styling */
+html, body {
+  height: 100%;
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+}
+
+
+.ticket-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Align content to the top */
+  min-height: 100vh; /* Ensure page fills the screen */
+  background-color: #544f3e; /* Elegant brown background */
+  padding: 20px;
+  padding-bottom: 60px; /* Adds space at the bottom to avoid footer overlap */
+  
+}
+
+.ticket-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #8b5e3c; /* Elegant brown */
+  margin-bottom: 20px;
+}
+
+.ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 500px;
+  flex: 1; /* Allow ticket list to take up remaining space */
+  overflow-y: auto; /* Enable scrolling when content overflows */
+}
+
+.ticket-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-type {
+  font-size: 18px;
+  font-weight: bold;
+  color: #5a3e2b; /* Dark brown */
+}
+
+.ticket-price {
+  font-size: 18px;
+  color: #8b5e3c;
+}
+
+.ticket-counter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ticket-counter button {
+  background-color: #8b5e3c; /* Museum-style brown */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.ticket-counter button:hover {
+  background-color: #5a3e2b; /* Darker on hover */
+}
+
+.ticket-counter span {
+  font-size: 18px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.footer {
+  background-color: #222; /* Dark background */
+  color: white;
+  text-align: center;
+}
