@@ -7,7 +7,7 @@ module.exports = (req, res) => {
 
     // Handle CORS (Allow frontend to communicate with backend)
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST,PUT , OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
     if (method === "OPTIONS") {
@@ -42,16 +42,21 @@ module.exports = (req, res) => {
                 }
 
                 //  Correct SQL query (Staff_ID is auto-increment)
-                const query = `INSERT INTO staff (First_Name, Last_Name, Job_title, Hire_Date, Salary) 
-                               VALUES (?, ?, ?, ?, ?)`;
+                const query = `INSERT INTO Staff (First_Name, Last_Name, Phone_Number, Email, Department, Job_title, Hire_Date, Salary, Active_Status) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-                const values = [
-                    newEmployee.firstName, 
-                    newEmployee.lastName, 
-                    newEmployee.position, 
-                    newEmployee.hireDate, 
-                    parseFloat(newEmployee.salary)
-                ];
+                               const values = [
+                                newEmployee.firstName, 
+                                newEmployee.lastName, 
+                                newEmployee.phoneNumber, 
+                                newEmployee.email, 
+                                newEmployee.department, 
+                                newEmployee.position, 
+                                newEmployee.hireDate, 
+                                parseFloat(newEmployee.salary),
+                                newEmployee.status !== undefined ? newEmployee.status : true // Default to active if not provided
+                                // New employee starts as Active (TRUE)
+                            ];
 
                 db.query(query, values, (err, results) => {
                     if (err) {
@@ -71,9 +76,42 @@ module.exports = (req, res) => {
         });
     }
 
-    // 🔹 Handle Unknown Routes
-    else {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "Route not found" }));
+// 🔹 PUT /employees/toggle - Activate/Deactivate Employee
+else if (parsedUrl.pathname.startsWith("/employees/toggle") && method === "PUT") {
+    const employeeId = parsedUrl.query.id;
+
+    if (!employeeId) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Missing employee ID." }));
     }
+
+    // 🔹 Check if employee exists
+    db.query("SELECT Active_Status FROM Staff WHERE Staff_ID = ?", [employeeId], (err, results) => {
+        if (err || results.length === 0) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({ message: "Error retrieving employee status.", error: err }));
+        }
+
+        const currentStatus = results[0].Active_Status;
+        
+        const newStatus = currentStatus === 1 ? 0 : 1; // Toggle (1 → 0, 0 → 1)
+
+        db.query("UPDATE Staff SET Active_Status = ? WHERE Staff_ID = ?", [newStatus, employeeId], (err) => {
+            if (err) {
+                res.writeHead(500, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({ message: "Error updating employee status.", error: err }));
+            }
+
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ message: `Employee status updated to ${newStatus ? "Active" : "Inactive"}.` }));
+        });
+    });
+}
+
+
+// 🔹 Handle Unknown Routes
+else {
+    res.writeHead(404, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ message: "Route not found" }));
+}
 };
