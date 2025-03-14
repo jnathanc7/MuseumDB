@@ -77,7 +77,7 @@ const ManageEmployees = () => {
             const result = await response.json();
     
             if (response.ok) {
-                // ✅ Ensure the UI updates correctly based on the actual returned value
+                //  Ensure the UI updates correctly based on the actual returned value
                 console.log("Before Update:", employees);
 
                 setEmployees((prevEmployees) =>
@@ -91,16 +91,12 @@ const ManageEmployees = () => {
             } else {
                 alert("Error toggling status");
             }
+
         } catch (error) {
             console.error("Error toggling status:", error);
         }
     };
     
-    
-    
-    
-    
-
 
     return (
         <main className="manage-employees-container">
@@ -142,20 +138,14 @@ const ManageEmployees = () => {
                                 <td>{new Date(emp.Hire_Date).toLocaleDateString()}</td>
                                 <td>${emp.Salary.toLocaleString()}</td>
                                 <td>
-    <button
-        className={emp.Active_Status ? "deactivate-button" : "activate-button"}
-        style={{
-            backgroundColor: emp.Active_Status ? "red" : "green",
-            color: "white",
-            border: "none",
-            padding: "8px 12px",
-            cursor: "pointer",
-        }}
-        onClick={() => toggleStatus(emp.Staff_ID)}
-    >
-        {emp.Active_Status === 1 || emp.Active_Status === true ? "Deactivate" : "Activate"}
-    </button>
-</td>
+                                    <button
+                                        className={emp.Active_Status ? "deactivate-button" : "activate-button"}
+                                        onClick={() => toggleStatus(emp.Staff_ID)}
+                                    >   
+                                        {emp.Active_Status === 1 || emp.Active_Status === true ? "Deactivate" : "Activate"}
+                                    </button>
+
+                                </td>
 
 
 
