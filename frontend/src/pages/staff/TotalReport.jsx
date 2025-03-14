@@ -1,4 +1,3 @@
-import Footer from "../../components/Footer";
 import "../../styles/totalreport.css";
 import { useState, useEffect } from "react";
 

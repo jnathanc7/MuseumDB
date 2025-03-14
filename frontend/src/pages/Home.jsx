@@ -6,10 +6,11 @@ import image1 from '/src/assets/image1.jpg';
 import image2 from '/src/assets/image2.jpg';
 import image3 from '/src/assets/image3.jpg';
 import image4 from '/src/assets/image4.jpg';
+import "../styles/home.css"; 
 
 const Home = () => {
   const text = "Welcome!";
-  const subText = "To the Houston Museum of Fine Arts!";
+  const subText = "To the Houston Museum of Fine Arts";
   const [displayedText, setDisplayedText] = useState("");
   const [displayedSubText, setDisplayedSubText] = useState("");
   
@@ -52,7 +53,7 @@ const [currentImage, setCurrentImage] = useState(0);
       <div className="content">
         <div
           className="homepage"
-          style={{
+          style={{ 
             backgroundImage: `url(${images[currentImage]})`,
           }}
         >

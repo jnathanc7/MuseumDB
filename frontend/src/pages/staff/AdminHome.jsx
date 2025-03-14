@@ -1,5 +1,4 @@
 import "../../styles/admin.css";
-import Footer from "../../components/Footer";
 import { useNavigate } from "react-router-dom";
 
 const AdminHome = () => {
@@ -53,7 +52,6 @@ const AdminHome = () => {
                 <option value="/admin/manage-giftshop">Manage Gift Shop</option>
             </select>
         </div>
-        <Footer />
 
     </main>
     

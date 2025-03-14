@@ -12,7 +12,10 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #544F3E  ; 
+  background-color: #544F3E;
+  padding-top: 60px;
+
+  
   /*deep olive brown; other possible colors below 
   #665C54 (a warm, medium-dark taupe)
   #5C534A (cocoa brown) 

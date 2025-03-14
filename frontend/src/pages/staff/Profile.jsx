@@ -1,5 +1,4 @@
 import "../../styles/profile.css";
-import Footer from "../../components/Footer";
 import { useState } from "react";
 
 const Profile = () => {
@@ -105,7 +104,6 @@ const Profile = () => {
           </div>
         )}
       </div>
-      <Footer />
     </main>
   );
 };
