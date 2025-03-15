@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import '../styles/Giftshop.css';
 import Footer from "../components/Footer";
 
-/*memoizing the individual category div to improve rendering/stop from rerendering when there is no change */
+/*memo the individual category div to improve rendering/stop from rerendering there is no change for child */
 const CategoryItem = memo(({ category }) => (
     <Link className = "category-link" to ={ `/Giftshop/${encodeURIComponent(category.name)}`}>
     <div className="category" data-img={category.img} style={{ backgroundImage: `url(${category.img})` }}>
