@@ -19,12 +19,12 @@ const TotalReport = () => {
                 url = `http://localhost:3000/total-report?type=donations&dateRange=${dateRange}`;
             }
     
-            console.log("Fetching from:", url);  // ✅ Debugging line
+            console.log("Fetching from:", url);  //  Debugging line
     
             const response = await fetch(url);
             const data = await response.json();
     
-            console.log("Received Data:", data);  // ✅ Debugging line
+            console.log("Received Data:", data);  //  Debugging line
     
             setTicketSales(data);
         } catch (error) {
