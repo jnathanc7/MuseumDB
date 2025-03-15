@@ -1,9 +1,12 @@
+require('dotenv').config(); // loads in .env files
 const http = require("http");
-const employeesRoutes = require("./routes/employees"); //  Import Employees Routes
+const db = require('./db'); // imports database connection
+const routes = require("./routes/index"); // import centralized router,
+const { env } = require("process"); // extracts process.env into a shorter variable (env).
 
 // Start HTTP Server
 const server = http.createServer((req, res) => {
-    employeesRoutes(req, res); //  Delegate employee routes
+    routes(req, res); // 
 });
 
 server.listen(3000, () => {
