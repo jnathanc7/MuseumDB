@@ -1,4 +1,5 @@
 const employeesRoutes = require("./employees"); 
+const authRoutes = require("./auth"); 
 const url = require("url");
 
 module.exports = (req, res) => {
@@ -11,6 +12,9 @@ module.exports = (req, res) => {
     else if (parsedUrl.pathname.startsWith("/employees")) {
         employeesRoutes(req, res);
     } 
+    else if (parsedUrl.pathname.startsWith("/auth")){
+        authRoutes(req,res);
+    }
         // can add more routes like:
     // else if (parsedUrl.pathname.startsWith("/auth")) {
     //    authRoutes(req, res);
