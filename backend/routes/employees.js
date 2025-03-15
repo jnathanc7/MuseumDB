@@ -24,6 +24,7 @@ module.exports = (req, res) => {
             }
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(JSON.stringify(results));
+            return; 
         });
     }
 
@@ -34,9 +35,10 @@ module.exports = (req, res) => {
         req.on("end", () => {
             try {
                 const newEmployee = JSON.parse(body);
+                console.log("Received New Employee Data:", newEmployee); //  Debugging log
 
                 //  Validate required fields
-                if (!newEmployee.firstName || !newEmployee.lastName || !newEmployee.position || !newEmployee.hireDate || !newEmployee.salary) {
+                if (!newEmployee.firstName || !newEmployee.lastName || !newEmployee.position  || !newEmployee.hireDate || !newEmployee.salary) {
                     res.writeHead(400, { "Content-Type": "application/json" });
                     return res.end(JSON.stringify({ message: "Missing required fields." }));
                 }
@@ -51,7 +53,7 @@ module.exports = (req, res) => {
                                 newEmployee.phoneNumber, 
                                 newEmployee.email, 
                                 newEmployee.department, 
-                                newEmployee.position, 
+                                newEmployee.position , 
                                 newEmployee.hireDate, 
                                 parseFloat(newEmployee.salary),
                                 newEmployee.status !== undefined ? newEmployee.status : true // Default to active if not provided
@@ -86,7 +88,7 @@ else if (parsedUrl.pathname.startsWith("/employees/toggle") && method === "PUT")
     }
 
     // 🔹 Check if employee exists
-    db.query("SELECT Active_Status FROM Staff WHERE Staff_ID = ?", [employeeId], (err, results) => {
+    db.query("SELECT Active_Status FROM staff WHERE Staff_ID = ?", [employeeId], (err, results) => {
         if (err || results.length === 0) {
             res.writeHead(500, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ message: "Error retrieving employee status.", error: err }));

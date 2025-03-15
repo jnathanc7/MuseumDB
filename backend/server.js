@@ -14,6 +14,7 @@ const server = http.createServer((req, res) => {
   // or reportsRoutes should handle it
   else if (req.url.startsWith("/total-report")) {  // Ensure it calls reportsRoutes correctly
     reportsRoutes(req, res);
+    return;
 } else {
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "Route not found" }));
