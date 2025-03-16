@@ -6,18 +6,39 @@ const TotalReport = () => {
     const [reportType, setReportType] = useState("total-tickets-sales");
     const [ticketSales, setTicketSales] = useState([]);
 
-     useEffect(() => {
-            fetchReportData();
-        }, []);
+    const [dateRange, setDateRange] = useState("all-dates"); // Default: Show all dates
+
     const fetchReportData = async () => {
         try {
-            const response = await fetch("http://localhost:3000/total-report");
+            let url = `http://localhost:3000/total-report?dateRange=${dateRange}`; // Default with date filter
+            if (reportType === "total-ticket-sales") {
+                url = `http://localhost:3000/total-report?type=tickets&dateRange=${dateRange}`;
+            } else if (reportType === "total-giftshop-sales") {
+                url = `http://localhost:3000/total-report?type=giftshop&dateRange=${dateRange}`;
+            } else if (reportType === "total-donations") {
+                url = `http://localhost:3000/total-report?type=donations&dateRange=${dateRange}`;
+            }
+    
+            console.log("Fetching from:", url);  //  Debugging line
+    
+            const response = await fetch(url);
             const data = await response.json();
-            setTicketSales(data); // Update state with actual database employees
+    
+            console.log("Received Data:", data);  //  Debugging line
+    
+            setTicketSales(data);
         } catch (error) {
-            console.error("Error fetching employees:", error);
+            console.error("Error fetching sales report:", error);
         }
-    }
+    };
+    
+    
+
+    useEffect(() => {
+        fetchReportData();
+    }, [reportType, dateRange]);
+    
+        
 
 
     return (
@@ -26,43 +47,51 @@ const TotalReport = () => {
 
             {/* Filters (Dropdowns & Search Bars) */}
             <div className="filters">
-                <select className="report-dropdown"  value={reportType} onChange={(e) => setReportType(e.target.value)}>
-                    <option value="total-sales">Total Sales Report</option>
-                    <option value="total-ticket-sales">Total Tickets Sales </option>
-                </select>
+            <select className="report-dropdown" value={reportType} onChange={(e) => setReportType(e.target.value)}>
+                <option value="total-sales">All Sales</option>
+                <option value="total-ticket-sales">Ticket Sales Only</option>
+                <option value="total-giftshop-sales">Gift Shop Sales Only</option>
+                <option value="total-donations">Donations Only</option>
+            </select>
+
 
                 <input type="text" className="report-search" placeholder="Search by Customer Name" />
-                <select className="report-dropdown">
-                    <option value="all-dates">All Dates</option>
-                    <option value="last-month">Last Month</option>
-                    <option value="last-year">Last Year</option>
-                </select>
+                <select className="report-dropdown" value={dateRange} onChange={(e) => setDateRange(e.target.value)}>
+    <option value="all-dates">All Dates</option>
+    <option value="last-week">Last Week</option>
+    <option value="last-month">Last Month</option>
+    <option value="last-year">Last Year</option>
+</select>
+
             </div>
 
             {/* Report Table */}
             <table className="report-table">
-                <thead>
-                    <tr>
-                        <th>Ticket ID</th>
-                        <th>Customer ID</th>
-                        <th>Ticket Type</th>
-                        <th>Cost</th>
-                        <th>Date</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {ticketSales.map((ticket) => (
-                        <tr key={ticket.Ticket_ID}>
-                            <td>{ticket.Ticket_ID}</td>
-                            <td>{ticket.Customer_ID || "N/A"}</td>
-                            <td>{ticket.Ticket_Type}</td>
-                            <td>${Number(ticket.Price || 0).toFixed(2)}</td>
-                            <td>{new Date(ticket.Date_Purchased).toLocaleDateString()}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+    <thead>
+        <tr>
+            <th>Sale ID</th>
+            <th>Customer ID</th>
+            {reportType === "total-sales" && <th>Type</th>} {/* Only show Sale Type for Total Sales Report */}
+            <th>Amount</th>
+            <th>Payment Method</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+    {ticketSales.map((sale) => (
+        <tr key={sale.Sale_ID || sale.Ticket_ID}>
+            <td>{sale.Sale_ID || sale.Ticket_ID}</td>
+            <td>{sale.Customer_ID || "N/A"}</td>
+            {reportType === "total-sales" && <td>{sale.Sale_Type}</td>}
+            <td>${Number(sale.Amount || sale.Price).toFixed(2)}</td>
+            <td>{sale.Payment_Method || "N/A"}</td>
+            <td>{new Date(sale.Sale_Date || sale.Date_Purchased).toLocaleDateString()}</td>
+        </tr>
+    ))}
+</tbody>
+
+</table>
+
         </main>
     );
 };

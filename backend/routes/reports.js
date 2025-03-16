@@ -7,7 +7,7 @@ module.exports = (req, res) => {
 
     // Handle CORS (Allow frontend to communicate with backend)
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST,PUT , OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
     if (method === "OPTIONS") {
@@ -25,19 +25,19 @@ module.exports = (req, res) => {
                         res.writeHead(500, { "Content-Type": "application/json" });
                         res.end(JSON.stringify({ message: "Error retrieving ticket sales", error: err }));
                     }
+                    return; // 💡 Stops execution after sending the error response
                 }
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify(results));
 
+                if (!res.headersSent) {
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify(results));
+                }
             }
         );
-        return; // Prevents multiple responses
+        return; // 💡 Prevents multiple responses
     }
 
-//  Handle Unknown Routes
-
-    // Ensure 404 error doesn't cause multiple responses
+    // Handle Unknown Routes
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "Route not found" }));
-
 };
