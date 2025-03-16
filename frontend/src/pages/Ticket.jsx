@@ -105,11 +105,11 @@ const Tickets = () => {
         >
           Next
         </div>
-      </div>
+      </div> 
 
       {/* Right Section: Membership Info */}
       <div className="ticket-right">
-        <h2>Become a Member</h2>
+        <h1>Become a Member</h1>
         <p>
           Members receive free admission, exclusive access to exhibitions, and more. 
           Consider joining today!

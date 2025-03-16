@@ -12,7 +12,7 @@ module.exports = (req, res) => {
 
     // Handle GET /tickets - Fetch available tickets
     if (method === 'GET' && parsedUrl.pathname === '/tickets') {
-        const query = 'SELECT * FROM tickets WHERE available > 0'; // Fetch available tickets
+        const query = 'SELECT * FROM tickets'; // Fetch available tickets
         db.query(query, (err, results) => {
             if (err) {
                 res.statusCode = 500;
