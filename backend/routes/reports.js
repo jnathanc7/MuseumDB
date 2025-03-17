@@ -1,7 +1,7 @@
 const url = require("url");
 const db = require("../db"); // Import Database Connection
 
-module.exports = (req, res) => {
+module.exports = (req, res) => { 
     const parsedUrl = url.parse(req.url, true);
     const method = req.method;
 

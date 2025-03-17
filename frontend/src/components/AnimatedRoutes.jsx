@@ -10,6 +10,7 @@ import AdminHome from "../pages/staff/AdminHome";
 import ManaageEmployees from "../pages/staff/ManaageEmployees";
 import Profile from "../pages/staff/Profile";
 import TotalReport from "../pages/staff/TotalReport";
+import Memberships from "../pages/Memberships.jsx";
 import { useEffect } from "react"; // Import useEffect
 
 const PageTransition = ({ children }) => {
@@ -49,6 +50,7 @@ function AnimatedRoutes() {
         <Route path="/admin/manage-employees" element={<ManaageEmployees />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/total-report" element={<TotalReport />} />
+        <Route path="/memberships" element={<Memberships />} />
         {/* Add other routes here */}
       </Routes>
     </AnimatePresence>
