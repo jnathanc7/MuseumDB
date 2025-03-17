@@ -2,10 +2,15 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
+import image1 from '/src/assets/image1.jpg';
+import image2 from '/src/assets/image2.jpg';
+import image3 from '/src/assets/image3.jpg';
+import image4 from '/src/assets/image4.jpg';
+import "../styles/home.css"; 
 
 const Home = () => {
   const text = "Welcome!";
-  const subText = "To the Houston Museum of Fine Arts!";
+  const subText = "To the Houston Museum of Fine Arts";
   const [displayedText, setDisplayedText] = useState("");
   const [displayedSubText, setDisplayedSubText] = useState("");
   
@@ -32,13 +37,9 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const images = [
-    "/src/assets/image1.jpg",
-    "/src/assets/image2.jpg",
-    "/src/assets/image3.jpg",
-    "/src/assets/image4.jpg",
-  ];
-  const [currentImage, setCurrentImage] = useState(0);
+ 
+const images = [image1, image2, image3, image4];
+const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,7 +53,7 @@ const Home = () => {
       <div className="content">
         <div
           className="homepage"
-          style={{
+          style={{ 
             backgroundImage: `url(${images[currentImage]})`,
           }}
         >

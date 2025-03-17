@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import '../styles/auth.css';
 
 // Auth is a functional component representing the sign in/up page.
@@ -64,18 +64,6 @@ const Auth = () => {
         <div className="auth-form-container auth-sign-in-container">
           <form action="#">
             <h1>Sign in</h1>
-            <div className="auth-social-container">
-              <a href="#" className="social">
-                <i className="fab fa-facebook-f"></i>
-              </a>
-              <a href="#" className="social">
-                <i className="fab fa-google-plus-g"></i>
-              </a>
-              <a href="#" className="social">
-                <i className="fab fa-linkedin-in"></i>
-              </a>
-            </div>
-            <span>or use your account</span>
             <input type="email" placeholder="Email" />
             <input type="password" placeholder="Password" />
             <a href="#">Forgot your password?</a>
@@ -121,11 +109,6 @@ const Auth = () => {
           This section remains at the bottom and includes external links.
           Note the use of rel="noopener noreferrer" for security on external links.
       */}
-      <footer>
-        <p>
-        © 2025 Houston Museum of Fine Arts. All Rights Reserved.
-        </p>
-      </footer>
     </div>
   );
 };

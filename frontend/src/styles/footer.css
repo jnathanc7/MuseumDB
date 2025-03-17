@@ -1,0 +1,12 @@
+/* Footer Styling */
+.footer {
+  background-color: #222; /* Dark background */
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%; /* Ensure it spans the entire width */
+}

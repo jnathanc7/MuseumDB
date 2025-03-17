@@ -1,8 +1,26 @@
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";  // Import useLocation hook
 import AnimatedLink from "./AnimatedLink";
+import "../styles/header.css";
 
 const Header = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation(); // Get the current location (path)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 30);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Check if the current page is "Tickets"
+  const isTicketsPage = location.pathname === "/tickets";
+
   return (
-    <header className="header">
+    <header className={`header ${scrolled ? "scrolled" : ""} ${isTicketsPage ? "tickets-page" : ""}`}>
       <h1 className="logo">
         <AnimatedLink to="/">Museum</AnimatedLink>
       </h1>
@@ -12,15 +30,15 @@ const Header = () => {
         <AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink>
         <AnimatedLink to="/donations">Donations</AnimatedLink>
         <AnimatedLink to="/Auth" className="login">Login</AnimatedLink>
-        {/* this  is just so we can see what we have for the admin page, will have to be removed eventually */}
+        {/* Temporary Admin Link */}
         <AnimatedLink to="/adminhome">Admin</AnimatedLink>
-
       </nav>
     </header>
   );
 };
 
 export default Header;
+
 
 
 

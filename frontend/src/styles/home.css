@@ -1,0 +1,80 @@
+/* Ensure html and body take up the full height of the viewport */
+html, body {
+    height: 100%;
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+  }
+  
+
+/* Homepage with Fullscreen Background */
+
+/* Main container that ensures the footer stays at the bottom */
+  
+/* Main container that ensures the footer stays at the bottom */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensures full viewport height */
+  }
+  
+  /* Content expands to push footer down */
+  .content {
+    flex: 1;
+  }
+
+.homepage {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  background-size: cover; /* Ensures the image covers the entire viewport */
+  background-position: center center; /* Centers the image in the viewport */
+  background-repeat: no-repeat;
+  transition: background-image 1s ease-in-out;
+  display: flex;
+  align-items: center;
+  padding-left: 50px; /* Push text away from the left edge */
+  background-attachment: fixed; /* Optional: Keep background fixed when scrolling */
+}
+
+/* Dark Overlay for Readability */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+/* Text Container Aligned to Left */
+.text-container {
+  position: relative;
+  z-index: 2; /* Ensure text appears above the overlay */
+  color: white;
+  text-align: left; /* Align text to the left */
+  max-width: 40%; /* Prevent text from being too wide */
+  padding-bottom: 10px; /* Slight padding to ensure the text doesn't stick to the bottom */
+}
+
+/* Title Styling */
+.home-title {
+  font-size: 80px;
+  font-family: "Merriweather", serif;
+  margin-bottom: 10px;
+}
+
+/* Subtitle Styling */
+.home-text {
+  font-size: 50px;
+  font-family: "Merriweather", serif;
+  margin-bottom: 8px;
+}
+
+/* Museum Logo */
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 20px;
+    color: white;
+  }

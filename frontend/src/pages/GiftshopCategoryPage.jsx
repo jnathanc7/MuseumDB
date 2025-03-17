@@ -15,11 +15,26 @@ const GiftshopCategoryPage = () =>{
     <div className = "CategoryPage-wrapper">
         <h1 className = "product-header">{categoryName}</h1>
         <div className = "product-container">
-            <div className = "product"><p>product</p></div>
-            <div className = "product"><p>product</p></div>
-            <div className = "product"><p>product</p></div>
-            <div className = "product"><p>product</p></div>
-            <div className = "product"><p>product</p></div>
+            <div className = "product">
+                <img src="/painting1.jpg" alt="" />
+                <p>product</p>
+            </div>
+            <div className = "product">
+                <img src="/painting1.jpg" alt="" />
+                <p>product</p>
+            </div>
+            <div className = "product">
+                <img src="/painting1.jpg" alt="" />
+                <p>product</p>
+            </div>
+            <div className = "product">
+                <img src="/painting1.jpg" alt="" />
+                <p>product</p>
+            </div>
+            <div className = "product">
+                <img src="/painting1.jpg" alt="" />
+                <p>product</p>
+            </div>
         </div>
         <Footer />
     </div>

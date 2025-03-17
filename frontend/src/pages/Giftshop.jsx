@@ -1,7 +1,7 @@
 //setting up giftshop
 import { useState, memo } from "react";
 import { Link } from "react-router-dom";
-import '../styles/Giftshop.css';
+import '../styles/giftshop.css';
 import Footer from "../components/Footer";
 
 /*memo the individual category div to improve rendering/stop from rerendering there is no change for child */
@@ -13,7 +13,7 @@ const CategoryItem = memo(({ category }) => (
     </Link>
 ));
 
-
+ 
 const Giftshop = () =>{
     const initialCategories = [
         { id: 1, name: "Paintings", img: "/paintings.jpg" },
@@ -48,6 +48,7 @@ const Giftshop = () =>{
             <Footer />
         </div>
     )
+ 
 }
 
 export default Giftshop;
