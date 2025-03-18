@@ -18,6 +18,7 @@ const ManageEmployees = () => {
         try {
             const response = await fetch("http://localhost:3000/employees"); //azure.net
             const data = await response.json();
+            console.log("Fetched Employees Data:", data); 
             setEmployees(data); // Update state with actual database employees
         } catch (error) {
             console.error("Error fetching employees:", error);
@@ -39,6 +40,7 @@ const ManageEmployees = () => {
             alert("Please fill out all fields.");
             return;
         }
+        console.log("Sending New Employee Data:", JSON.stringify(newEmployee));
         
     
         try {
@@ -51,6 +53,7 @@ const ManageEmployees = () => {
             });
     
             const result = await response.json();
+            console.log("Server Response:", result);  // Log the server response
             if (response.ok) {
                 alert(result.message);
                 await fetchEmployees(); // Refresh employee list
@@ -135,7 +138,8 @@ const ManageEmployees = () => {
                                 <td>{emp.Department}</td>
                                 <td>{emp.Job_title}</td>
                                 <td>{new Date(emp.Hire_Date).toLocaleDateString()}</td>
-                                <td>${emp.Salary.toLocaleString()}</td>
+                                <td>${emp.Salary !== null ? emp.Salary.toLocaleString() : "N/A"}</td>
+
                                 <td>
                                     <button
                                         className={emp.Active_Status ? "deactivate-button" : "activate-button"}

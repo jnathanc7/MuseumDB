@@ -2,7 +2,7 @@ const url = require("url");
 const db = require("../db"); // Import Database Connection
 const authMiddleware = require("../middleware/authMiddleware"); // Import Authentication Middleware
 
-module.exports = (req, res) => {
+module.exports = (req, res) => { 
     const parsedUrl = url.parse(req.url, true);
     const method = req.method;
 
@@ -27,6 +27,7 @@ module.exports = (req, res) => {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify(results));
             });
+
         });
     }
 
@@ -81,6 +82,7 @@ module.exports = (req, res) => {
         });
     }
 
+
     // 🔹 PUT /employees/toggle - Activate/Deactivate Employee (PROTECTED)
     else if (parsedUrl.pathname.startsWith("/employees/toggle") && method === "PUT") {
         return authMiddleware("staff")(req, res, () => {
@@ -100,12 +102,13 @@ module.exports = (req, res) => {
 
                 const currentStatus = results[0].Active_Status;
                 const newStatus = currentStatus === 1 ? 0 : 1; // Toggle (1 → 0, 0 → 1)
-
+              
                 db.query("UPDATE Staff SET Active_Status = ? WHERE Staff_ID = ?", [newStatus, employeeId], (err) => {
                     if (err) {
                         res.writeHead(500, { "Content-Type": "application/json" });
                         return res.end(JSON.stringify({ message: "Error updating employee status.", error: err }));
                     }
+
 
                     res.writeHead(200, { "Content-Type": "application/json" });
                     res.end(JSON.stringify({ message: `Employee status updated to ${newStatus ? "Active" : "Inactive"}.` }));
