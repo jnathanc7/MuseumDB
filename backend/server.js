@@ -1,6 +1,7 @@
 const http = require("http");
 const employeesRoutes = require("./routes/employees"); //  Import Employees Routes
 const reportsRoutes = require("./routes/reports"); //
+const giftshopRoutes = require("./routes/giftshop")
 
 // Start HTTP Server
 const server = http.createServer((req, res) => {
@@ -15,7 +16,11 @@ const server = http.createServer((req, res) => {
   else if (req.url.startsWith("/total-report")) {  // Ensure it calls reportsRoutes correctly
     reportsRoutes(req, res);
     return;
-} else {
+} 
+else if (req.url.startsWith("/giftshop")) { 
+    giftshopRoutes(req, res);
+    return;
+}else {
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "Route not found" }));
 }
