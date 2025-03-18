@@ -1,6 +1,6 @@
 The following is an explanation of the file structure:
 
--- Config folder: holds the Database configuration connecting backend to server (ensure db.js, which is the only file and the file that connects backend to database, is added to your .gitignore file)
+-- db.js: holds the Database configuration connecting backend to server (ensure db.js, which is the only file and the file that connects backend to database, is added to your .gitignore file)
 
 When a user performs an action (e.g., signing up), this is what happens step by step:
 
@@ -36,7 +36,7 @@ Function: The controller processes the request, validates input, and calls the m
 The model interacts directly with MySQL and sends data back to the controller.
 
 💡 Dependency:
-✅ Relies on config/db.js to connect to MySQL.
+✅ Relies on db.js to connect to MySQL.
 ✅ Gets called by controllers/authController.js.
 ✅ Executes SQL queries & sends results back to the controller.
 
@@ -79,8 +79,13 @@ If login is successful, the frontend redirects to the dashboard.
 
 📌 Summary Table
 Folder	               Function	                                          Depends On
+
 routes/	               Defines API endpoints & forwards requests	      Calls controllers/
+
 controllers/	       Handles request logic & calls models               Calls models/
+
 models/	               Interacts with MySQL (database queries)	          Calls config/db.js
+
 middleware/	           Adds extra security (e.g., authentication)	      Used in routes/
+
 config/	               Stores database connection	                      Used in models/
