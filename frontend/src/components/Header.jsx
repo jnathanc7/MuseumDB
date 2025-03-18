@@ -19,6 +19,7 @@ const Header = () => {
   // Check if the current page is "Tickets"
   const isTicketsPage = location.pathname === "/tickets";
   const isMembershipPage = location.pathname === "/memberships";
+  // need to change this to prevent white header on categorypage
 
   return (
     <header className={`header ${scrolled ? "scrolled" : ""} ${isTicketsPage || isMembershipPage ? "tickets-page" : ""}`}>
