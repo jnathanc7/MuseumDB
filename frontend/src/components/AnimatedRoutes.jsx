@@ -11,6 +11,7 @@ import ManaageEmployees from "../pages/staff/ManaageEmployees";
 import Profile from "../pages/staff/Profile";
 import TotalReport from "../pages/staff/TotalReport";
 import Memberships from "../pages/Memberships.jsx";
+import ViewComplaints from "../pages/staff/ViewComplaints"; 
 import { useEffect } from "react"; // Import useEffect
 
 const PageTransition = ({ children }) => {
@@ -51,6 +52,8 @@ function AnimatedRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/total-report" element={<TotalReport />} />
         <Route path="/memberships" element={<Memberships />} />
+        <Route path="/admin/view-complaints" element={<PageTransition><ViewComplaints /></PageTransition>} />
+
         {/* Add other routes here */}
       </Routes>
     </AnimatePresence>
