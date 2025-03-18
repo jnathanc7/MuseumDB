@@ -1,11 +1,12 @@
 import Footer from "../components/Footer";
 import { useParams } from 'react-router-dom';
 import { useState, memo, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const ProductItem = memo(({product}) =>(
     <div className = "product">
         <img src={product.Image_URL} alt={product.Name} />
-        <p>{product.Name}</p>
+        <p>{product.Name} <br /> ${product.Price}</p>
      </div>
 ));
 
@@ -36,12 +37,12 @@ const GiftshopCategoryPage = () =>{
     return(
     <div className = "CategoryPage-wrapper">
         <h1 className = "product-header">{categoryName}</h1>
-        <div className = "product-container">
+        <div className = "product-container"> 
             {products.length > 0 ? (products.map((product) => (
             <ProductItem key={product.Product_ID} product={product} />
             ))
         ) : (
-            <p>No products available.</p> // ✅ Prevents .map() error on empty results
+            <p>No products available.</p> //implemented a conditional statement to check whether or not there are products or not
         )}
         </div>
         <Footer />

@@ -47,6 +47,7 @@ function AnimatedRoutes() {
         <Route path="/Exhibitions" element={<PageTransition><Exhibitions /></PageTransition>} />
         <Route path="/Giftshop" element={<PageTransition><Giftshop /></PageTransition>} />
         <Route path = "/Giftshop/:categoryName" element={<PageTransition><GiftshopCategoryPage /></PageTransition>}/>
+        <Route path = "/Giftshop/:categoryName/:productID" element={<PageTransition><GiftshopCategoryPage /></PageTransition>}/>
         <Route path="/Auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/adminhome" element={<PageTransition><AdminHome /></PageTransition>} />
         <Route path="/admin/manage-employees" element={<ManaageEmployees />} />
