@@ -9,25 +9,25 @@ module.exports = (allowedRoles = []) => {
     return (req, res, next) => {
         try {
             const token = extractToken(req);
-            if (!token) {
+            // also exempts /auth/reset-password and /auth/forgot-password from requiring a JWT, allowing unauthenticated users to reset passwords
+            if (!token) { 
                 return respondWithError(res, 401, "Access denied. No token provided.");
             }
-
-            // Verify JWT
+    
+            // verify JWT
             jwt.verify(token, env.JWT_SECRET, (err, decoded) => {
                 if (err) {
-                    console.error("🔴 JWT Verification Error:", err); // DEBUGGING ADMIN LACK OF PERM
                     return respondWithError(res, 403, "Invalid or expired token.");
                 }
 
-                req.user = decoded; // Attach user data to request
+                req.user = decoded; // attach user data to request
 
-                // Role-based access check (supports multiple roles)
+                // role-based access check (supports multiple roles)
                 if (allowedRoles.length && !allowedRoles.includes(req.user.role)) {
                     return respondWithError(res, 403, "Access denied. Insufficient permissions.");
                 }
 
-                next(); // Proceed to next middleware or route handler
+                next(); // proceed to next middleware or route handler
             });
 
         } catch (error) {
@@ -37,14 +37,14 @@ module.exports = (allowedRoles = []) => {
     };
 };
 
-// Helper to extract JWT from cookies
+// helper to extract JWT from cookies
 function extractToken(req) {
     if (!req.headers.cookie) return null;
     const cookies = cookie.parse(req.headers.cookie);
     return cookies.jwt || null; // Extract 'jwt' cookie if available
 }
 
-// Generic error response helper
+// generic error response helper
 function respondWithError(res, statusCode, message) {
     res.writeHead(statusCode, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: message }));
