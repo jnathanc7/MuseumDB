@@ -12,6 +12,7 @@ import Profile from "../pages/staff/Profile";
 import TotalReport from "../pages/staff/TotalReport";
 import Memberships from "../pages/Memberships.jsx";
 import { useEffect } from "react"; // Import useEffect
+import Ceramic from "../pages/ceramic";
 
 const PageTransition = ({ children }) => {
   return (
@@ -51,6 +52,7 @@ function AnimatedRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/total-report" element={<TotalReport />} />
         <Route path="/memberships" element={<Memberships />} />
+        <Route path="/ceramic" element={<PageTransition><Ceramic/></PageTransition>}/>
         {/* Add other routes here */}
       </Routes>
     </AnimatePresence>
