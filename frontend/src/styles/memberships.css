@@ -1,0 +1,153 @@
+.donations-container {
+  display: flex;
+  font-family: 'IBM Plex Mono', monospace;
+  justify-content: center; /* Centers content */
+  align-items: flex-start;
+  padding: 50px 10%;
+  gap: 80px; /* Increase gap for better spacing */
+}
+
+/* LEFT SIDE: Membership Info */
+
+.membership-info {
+  flex: 1;
+  max-width: 45%; /* Move it slightly to the right */
+  margin-top: 70px;
+}
+
+.membership-info h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.membership-info ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.membership-info li {
+  margin-bottom: 15px;
+}
+
+.membership-info ul ul {
+  margin-top: 5px;
+  padding-left: 20px;
+  font-size: 14px;
+}
+
+/* Membership Tier Separator */
+
+.membership-info .tier-line {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin-top: 15px;
+}
+
+/* RIGHT SIDE: Donation Form */
+
+.donation-form {
+  flex: 1;
+  max-width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f8f8f8;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 80px; /* Moves donation form lower */
+}
+
+.donation-form h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.donation-form form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+}
+
+.donation-form label {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.donation-form input,
+.donation-form select {
+  padding: 10px;
+  width: 80%;
+  font-size: 16px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.donation-form button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.donation-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Custom Select */
+
+.custom-select {
+  position: relative;
+  width: 80%;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.selected-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.selected-option:hover,
+.dropdown-option:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: none;
+}
+
+.custom-select:hover .dropdown-options {
+  display: block;
+}
+
+.dropdown-option {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dropdown-option svg {
+  margin-right: 10px;
+}
+
+.dropdown-option:hover {
+  background-color: #f1f1f1;
+}

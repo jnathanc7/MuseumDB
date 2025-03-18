@@ -4,7 +4,7 @@ const employeesRoutes = require("./routes/employees"); // Import employees route
 const reportsRoutes = require("./routes/reports"); // Import reports routes
 const authRoutes = require("./routes/auth"); // Import authentication routes
 const authMiddleware = require("./middleware/authMiddleware"); // Import authentication middleware
-
+ 
 // Start HTTP Server
 const server = http.createServer((req, res) => {
     // Parse the incoming request URL into a structured object, allows us to separate url into chunks
@@ -66,7 +66,9 @@ const server = http.createServer((req, res) => {
     }
 });
 
-// starts server on port 3000
-server.listen(3000, () => {
-    console.log("🚀 Server is running on http://localhost:3000");
+const PORT = process.env.PORT || 3000; // Use Render's assigned port or default to 3000 locally
+
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
+
