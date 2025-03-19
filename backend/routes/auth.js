@@ -115,7 +115,7 @@ function handleLogin(req, res) {
 
                    
                     const headers = {
-                        "Set-Cookie": `jwt=${token}; HttpOnly; Secure; SameSite=Strict`
+                        "Set-Cookie": `jwt=${token}; HttpOnly; Secure; SameSite=None`
                     };
 
                     sendResponse(res, 200, { 

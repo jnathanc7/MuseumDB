@@ -6,7 +6,27 @@ const authRoutes = require("./routes/auth"); // Import authentication routes
 const authMiddleware = require("./middleware/authMiddleware"); // Import authentication middleware
  
 // Start HTTP Server
-const server = http.createServer((req, res) => {
+const server = http.createServer((req, res) => { 
+    
+    // CORS Headers below
+    res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/");
+    // if testing locally with frontend being ran thru npm run dev
+    // res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+
+    // allows the methods you expect from the frontend access
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    // lists which headers the frontend can send (content-type: JSON requests) and (authorization: allows sending JWT tokens in request headers)
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    // necessary for cross-origin requests involving cookies:
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+
+    // for preflight requests (OPTIONS - HTTP method that asks server what it allows before sending an actual request):
+    if (req.method === "OPTIONS") {
+        // eror 204 = No Content (frontend request is good to go)
+        res.writeHead(204);
+        return res.end();
+    }
+
     // Parse the incoming request URL into a structured object, allows us to separate url into chunks
     const parsedUrl = url.parse(req.url, true); 
 
