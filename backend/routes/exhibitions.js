@@ -16,7 +16,7 @@ module.exports = (req, res) => {
     }
 
     // Retreive all artwork records from the database
-    if (parsedUrl.pathname === "/artworks" && method === "GET") {
+    if (parsedUrl.pathname === "/exhibitions" && method === "GET") {
         return authMiddleware(["staff", "admin"])(req, res, () => {
             db.query("SELECT * FROM artworks", (err, results) => {
                 if (err) {
@@ -31,7 +31,7 @@ module.exports = (req, res) => {
     }
 
     // Retrieve all Exhibition artworks records from the database
-    if(parsedUrl.pathname === "/exhibitions_artworks" && method === "GET"){
+    if(parsedUrl.pathname === "/exhibitions" && method === "GET"){
         return authMiddleware(["staff", "admin"])(req, res, () =>{
             db.query("SELECT * FROM exhibitions_artworks", (err, results) => {
                 if(err){
@@ -60,7 +60,7 @@ module.exports = (req, res) => {
     }
 
     // Retrieve all Special Exhibtion records from the data
-    if(parsedUrl.pathname === "/special_exhibitions" && method === "GET"){
+    if(parsedUrl.pathname === "/exhibitions" && method === "GET"){
         return authMiddleware(["staff", "admin"])(req, res, () =>{
             db.query("SELECT * FROM special_exhibitions", (err, results) => {
                 if(err){
@@ -74,7 +74,7 @@ module.exports = (req, res) => {
     }
 
     // Retrieve all records from exhibition staff
-    if(parsedUrl.pathname === "/exhibitions_staff" && method === "GET"){
+    if(parsedUrl.pathname === "/exhibitions" && method === "GET"){
         return authMiddleware(["staff", "admin"])(req, res, () =>{
             db.query("SELECT * FROM exhibition_staff", (err, results) => {
                 if(err){
@@ -88,7 +88,7 @@ module.exports = (req, res) => {
     }
 
     // Retrieve all records from special exhibitions staff
-    if(parsedUrl.pathname === "/special_exhibitions_staff" && method === "GET"){
+    if(parsedUrl.pathname === "/exhibitions" && method === "GET"){
         return authMiddleware(["staff", "admin"])(req, res, () =>{
             db.query("SELECT * FROM special_exhibition_staff", (err, results) => {
                 if(err){
