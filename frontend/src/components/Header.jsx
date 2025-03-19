@@ -19,10 +19,10 @@ const Header = () => {
   // Check if the current page is "Tickets"
   const isTicketsPage = location.pathname === "/tickets";
   const isMembershipPage = location.pathname === "/memberships";
-  // need to change this to prevent white header on categorypage
-
+  // checks if the current page is a subpage of giftshop
+  const isGiftshopPage = location.pathname.startsWith("/Giftshop") && location.pathname != "/Giftshop";
   return (
-    <header className={`header ${scrolled ? "scrolled" : ""} ${isTicketsPage || isMembershipPage ? "tickets-page" : ""}`}>
+    <header className={`header ${scrolled ? "scrolled" : ""} ${isTicketsPage || isMembershipPage || isGiftshopPage ? "tickets-page" : ""}`}>
       <h1 className="logo">
         <AnimatedLink to="/">Museum</AnimatedLink>
       </h1>

@@ -19,8 +19,26 @@ module.exports = (req, res) => {
         return res.end();
     }
 
+    //  GET /giftshop/(categoryname)/(productid) - Retrieve the specific product 
+    if (pathSegments[0] === 'giftshop' && pathSegments.length === 3 && method === "GET") {
+        const productid = decodeURIComponent(pathSegments[2]);
+        console.log(`i am category: ${productid}`)
+        db.query("SELECT P.* FROM products AS P WHERE P.Product_ID = ?", [productid], (err, results) => {
+            if (err) {
+                console.log("Database Query failed", err);
+                res.writeHead(500, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({ message: "Error retrieving categories", error: err }));                
+            }
+            console.log("Query results",results);
+            res.writeHead(200, { "Content-Type": "application/json" });//we arent able to send it to the frontend
+            res.end(JSON.stringify(results));
+            console.log("I am here for the product type shi");
+            return; 
+        });
+    }
+
     //  GET /giftshop/(categoryname) - Retrieve all products of given category from database
-    if (pathSegments[0] === 'giftshop' && pathSegments.length === 2 && method === "GET") {
+    else if (pathSegments[0] === 'giftshop' && pathSegments.length === 2 && method === "GET") {
         const category = decodeURIComponent(pathSegments[1]);
         console.log(`i am category: ${category}`)
         db.query("SELECT P.* FROM products AS P, product_categories AS PC WHERE P.Category_ID = PC.Category_ID AND PC.Name = ?", [category], (err, results) => {

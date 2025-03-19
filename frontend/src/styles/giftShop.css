@@ -83,7 +83,7 @@
   width: 100vw;  /* Full viewport width */
   height: 100vh;
   background-color: white;
-  padding: 80px;
+  padding: 100px;
   flex-direction: column;
   align-items: center;
   text-align: center;
@@ -107,4 +107,63 @@
   height: 300px; /* Fixed height for uniform display */
   object-fit: cover; /* Crops excess without stretching */
   border-radius: 5px;
+}
+
+.product-link{
+  text-decoration: none; /* Removes the underline */
+  color: inherit; /* Keeps text color the same as the parent */
+  display: block; /* Ensures the link takes up the full box */
+}
+
+/*GiftshopProduct css*/
+.product-wrapper{
+  height: 100vh;
+  display: flex;
+  margin-top: 20px;
+  padding: 50px;
+  justify-content: center;
+  gap:50px;
+}
+
+.product-left {
+  background: white;
+  padding: 30px;
+  margin-top: 90px;
+}
+
+.product-right {
+  width: 500px;
+  height: 80%;
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  margin-top: 30px;
+  text-align: left;
+
+}
+
+.product-right p{
+  font-size: 18px;
+}
+
+.product-counter {
+  display:flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-button{
+  width: 100%;
+  background-color: black;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+.cart-button:hover{
+  background-color: white;
+  color: black;
+  transition: 0.5s;
 }
