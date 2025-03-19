@@ -12,7 +12,11 @@ import Profile from "../pages/staff/Profile";
 import TotalReport from "../pages/staff/TotalReport";
 import Memberships from "../pages/Memberships.jsx";
 import { useEffect } from "react"; // Import useEffect
-
+import Ceramic from "../pages/ceramic";
+import Prints from "../pages/prints";
+import Painting from "../pages/painting";
+import Sculptures from "../pages/sculptures";
+import Photographs from "../pages/photographs";
 const PageTransition = ({ children }) => {
   return (
     <motion.div
@@ -51,6 +55,11 @@ function AnimatedRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/total-report" element={<TotalReport />} />
         <Route path="/memberships" element={<Memberships />} />
+        <Route path="/ceramic" element={<PageTransition><Ceramic/></PageTransition>}/>
+        <Route path="/prints" element={<PageTransition><Prints/></PageTransition>}/>
+        <Route path="/paintings" element={<PageTransition><Painting/></PageTransition>}/>
+        <Route path="/sculptures" element={<PageTransition><Sculptures/></PageTransition>}/>
+        <Route path="/photographs" element={<PageTransition><Photographs/></PageTransition>}/>
         {/* Add other routes here */}
       </Routes>
     </AnimatePresence>
