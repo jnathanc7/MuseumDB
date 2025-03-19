@@ -9,9 +9,9 @@ const authMiddleware = require("./middleware/authMiddleware"); // Import authent
 const server = http.createServer((req, res) => { 
     
     // CORS Headers below
-    res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/");
-    // if testing locally with frontend being ran thru npm run dev
-    // res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    // res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/");
+    // if testing locally, change port accordingly
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
 
     // allows the methods you expect from the frontend access
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -43,16 +43,16 @@ const server = http.createServer((req, res) => {
     }
     // check if employeesRoutes should handle the request
     else if (parsedUrl.pathname.startsWith("/employees")) {
-        authMiddleware(["staff", "admin"])(req, res, () => {
+        // authMiddleware(["staff", "admin"])(req, res, () => {
             employeesRoutes(req, res, parsedUrl); // Pass parsed URL to employee routes
-        });
+        // });
         return;
     }
     // or reportsRoutes should handle it (will implement auth-access)
     else if (parsedUrl.pathname.startsWith("/total-report")) { // Ensure it calls reportsRoutes correctly
-        authMiddleware("admin")(req, res, () => {
+        // authMiddleware("admin")(req, res, () => {
             reportsRoutes(req, res);
-        });
+        // });
         return;
     }
     // REFERENCE EMPLOYEE ROUTE TO SEE HOW TO RESTICT USER ACCESS while wrapping with authMiddleware
