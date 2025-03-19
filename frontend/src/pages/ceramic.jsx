@@ -36,7 +36,8 @@ export default function CeramicGallery() {
                 className="w-full h-auto rounded-lg shadow-lg"
               />
               <p className="mt-2 text-center text-gray-700 font-semibold">
-                {image.artist}
+              <div>{image.alt}</div>
+              <div>{image.artist}</div>
               </p>
             </CardContent>
           </Card>
