@@ -133,7 +133,7 @@ function handleLogin(req, res) {
                     );
 
                     const headers = {
-                        "Set-Cookie": `jwt=${token}; HttpOnly; Secure; SameSite=Strict`
+                        "Set-Cookie": `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`
                     };
 
                     sendResponse(res, 200, { 
@@ -154,8 +154,8 @@ function handleLogin(req, res) {
 function handleLogout(req, res) {
     // overwrite the existing 'jwt' cookie with an empty value and an immediate expiration date
     const headers = {
-        // the Expires or Max-Age attributes ensure the cookie is invalid immediately.
-        "Set-Cookie": "jwt=; HttpOnly; Secure; SameSite=Strict; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        // the Expires attributes (or Max-Age) ensure the cookie is invalid immediately.
+        "Set-Cookie": "jwt=; HttpOnly; Secure; SameSite=Strict; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
     };
 
     // NOW BAM the client now has no valid JWT cookie hee hee

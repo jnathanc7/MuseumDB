@@ -9,7 +9,6 @@ module.exports = (allowedRoles = []) => {
     return (req, res, next) => {
         try {
             const token = extractToken(req);
-            // also exempts /auth/reset-password and /auth/forgot-password from requiring a JWT, allowing unauthenticated users to reset passwords
             if (!token) { 
                 return respondWithError(res, 401, "Access denied. No token provided.");
             }
