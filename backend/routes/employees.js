@@ -15,7 +15,7 @@ module.exports = (req, res) => {
         res.writeHead(204);
         return res.end();
     }
-
+ 
     // GET /employees - Retrieve all employees from the database (PROTECTED)
     if (parsedUrl.pathname === "/employees" && method === "GET") {
         return authMiddleware(["staff", "admin"])(req, res, () => {
