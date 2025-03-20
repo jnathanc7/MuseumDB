@@ -1,79 +1,50 @@
 // src/pages/Home.jsx
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import Footer from "../components/Footer";
+import AnimatedLink from "../components/AnimatedLink";
 import image1 from '/src/assets/image1.jpg';
-import image2 from '/src/assets/image2.jpg';
-import image3 from '/src/assets/image3.jpg';
-import image4 from '/src/assets/image4.jpg';
-import "../styles/home.css"; 
+import "../styles/home.css";
 
 const Home = () => {
-  const text = "Welcome!";
-  const subText = "To the Houston Museum of Fine Arts";
-  const [displayedText, setDisplayedText] = useState("");
-  const [displayedSubText, setDisplayedSubText] = useState("");
-  
-  useEffect(() => {
-    let i = 0;
-    const fullText = text + " " + subText;
-    let tempText = "";
-
-    const interval = setInterval(() => {
-      if (i < fullText.length) {
-        tempText += fullText[i];
-
-        if (i < text.length) {
-          setDisplayedText(tempText);
-        } else {
-          setDisplayedSubText(tempText.slice(text.length + 1));
-        }
-      } else {
-        clearInterval(interval);
-      }
-      i++;
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
-
- 
-const images = [image1, image2, image3, image4];
-const [currentImage, setCurrentImage] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [images.length]);
-
   return (
     <div className="page-container">
-      <div className="content">
-        <div
-          className="homepage"
-          style={{ 
-            backgroundImage: `url(${images[currentImage]})`,
-          }}
-        >
-          <div className="overlay"></div>
-
-          <motion.div
-            className="text-container"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
-            <h1 className="home-title">{displayedText}</h1>
-            <p className="home-text">{displayedSubText}</p>
-          </motion.div>
-        </div>
+      <div className="sidebar">
+        <h1 className="museum-name">Houston Museum of Fine Arts</h1>
+        <nav className="nav-links">
+          <ul>
+            <li><AnimatedLink to="/auth">Login</AnimatedLink></li>
+            <li><AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink></li>
+            <li><AnimatedLink to="/tickets">Tickets</AnimatedLink></li>
+            <li><AnimatedLink to="/memberships">Memberships</AnimatedLink></li>
+            <li><AnimatedLink to="/giftshop">Gift Shop</AnimatedLink></li>
+            <li><AnimatedLink to="/contact">Contact</AnimatedLink></li>
+          </ul>
+        </nav>
       </div>
-
-      <Footer />
+      <div className="main-content">
+        <motion.div
+          className="text-section"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1 }}
+        >
+          <h2 className="main-title">The Art of the 21st Century</h2>
+          <p className="subtitle">
+            Explore the evolution of artistic expression through contemporary exhibitions and timeless masterpieces.
+          </p>
+          <AnimatedLink to="/exhibitions" className="cta-button">Discover More</AnimatedLink>
+        </motion.div>
+        <motion.div
+          className="image-frame"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+        >
+          <img src={image1} alt="Featured Artwork" className="featured-image" />
+        </motion.div>
+      </div>
     </div>
   );
 };
 
 export default Home;
+
