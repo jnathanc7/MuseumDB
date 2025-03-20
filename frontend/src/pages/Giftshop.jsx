@@ -1,7 +1,7 @@
 //setting up giftshop
 import { useState, memo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import '../styles/giftshop.css';
+import '../styles/giftShop.css';
 import Footer from "../components/Footer";
 
 /*memo the individual category div to improve rendering/stop from rerendering there is no change for child */

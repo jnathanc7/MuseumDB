@@ -1,6 +1,7 @@
 import Footer from "../components/Footer";
 import { useParams } from 'react-router-dom';
 import { useState, memo, useEffect } from "react";
+import '../styles/giftShop.css';
 import { Link } from "react-router-dom";
 
 const ProductItem = memo(({product, categoryName}) =>(
