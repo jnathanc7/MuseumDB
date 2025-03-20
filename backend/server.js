@@ -11,9 +11,9 @@ const complaintsRoutes = require("./routes/complaints"); // Import complaints ro
 const server = http.createServer((req, res) => { 
     
     // CORS Headers below
-    // res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/");
+    res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/"); //*
     // if testing locally, change port accordingly
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    // res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
 
     // allows the methods you expect from the frontend access
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -81,7 +81,7 @@ const server = http.createServer((req, res) => {
     // } else if (parsedUrl.pathname.startsWith("/tickets")) { **ANYONE CAN ACCESS /tickts
     //    ticketsRoutes(req, res);
     // }
-    else if (req.url.startsWith("/complaints")) {
+    else if (parsedUrl.pathname.startsWith("/complaints")) {
         complaintsRoutes(req, res);
         return;
     }

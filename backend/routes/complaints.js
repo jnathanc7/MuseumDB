@@ -17,6 +17,7 @@ module.exports = (req, res) => {
 
     // 🔹 GET /complaints - Retrieve all complaints from the database
     if (parsedUrl.pathname === "/complaints" && method === "GET") {
+        console.log("Fetching complaints...");
         db.query("SELECT * FROM complaints", (err, results) => {
             if (err) {
                 res.writeHead(500, { "Content-Type": "application/json" });
