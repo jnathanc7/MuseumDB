@@ -53,6 +53,7 @@ function AnimatedRoutes() {
         <Route path="/Auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/adminhome" element={<PageTransition><AdminHome /></PageTransition>} />
         <Route path="/admin/manage-employees" element={<ManaageEmployees />} />
+        <Route path="/admin/view-complaints" element={<PageTransition><ViewComplaints /></PageTransition>} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/total-report" element={<TotalReport />} />
         <Route path="/memberships" element={<Memberships />} />
