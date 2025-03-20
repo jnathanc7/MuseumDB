@@ -1,0 +1,126 @@
+[33m417c4b6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature-staff[m[33m)[m Resolved merge conflicts in server.js
+[33m0f7a239[m[33m ([m[1;31mupstream/main[m[33m, [m[1;31mupstream/HEAD[m[33m)[m testing on how to deploy backend on render.
+[33m59aae30[m Merge pull request #32 from Gabriel-Valenzona/feature/login-page
+[33mfdb345d[m Merge branch 'main' into feature/login-page
+[33m5efd413[m View complaints is now working, connected to backend and frontend
+[33mb5837e6[m Merge pull request #31 from jnathanc7/feature-staff
+[33m3a57610[m Implemented role-based access control (RBAC) and protected routes
+[33me10e27e[m[33m ([m[1;31morigin/feature-staff[m[33m)[m Merge branch 'main' of https://github.com/ArsalJafri/MuseumDB into feature-staff
+[33mcd6991e[m Updated total-report endpoint with filtering and fixed query logic
+[33m2f68a75[m Updated the size and font for ticket.jsx, minor change.
+[33mcbfac20[m created tickets.js page in the backend, haven't tested yet
+[33mc695f29[m Merge pull request #30 from jnathanc7/feature-staff
+[33m63e5952[m error
+[33m46a15b7[m fixed the filtering buttons to display all sold items, or filter by tickets, items, or donations, dates too
+[33mc7435f4[m formatting:
+[33mce5e4ab[m created the membership page
+[33m839dc61[m Fixed issues gotten from updating my code
+[33m5ed8bb6[m Merge pull request #29 from jnathanc7/feature-staff
+[33m0fa40a1[m implemented user registration with password hashing. Added /auth/register endpoint in outes/auth.js. Integrated bcryptjs to securely hash passwords before storing them in MySQL. Ensured unique email validation to prevent duplicate user accounts.
+[33m1687ec2[m 🛠️ Refactored server structure to use a centralized router (routes/index.js), and integrated (.env). Also changed database structure and all tables because I had to create a users table.
+[33mab9484e[m Merge branch 'main' of https://github.com/ArsalJafri/MuseumDB into feature-staff  br# the commit. anch.
+[33m877a1fb[m Saving my changes before merging
+[33mdc7a3de[m connected totalReport with backend
+[33m94205e3[m Merge branch 'main' of https://github.com/ArsalJafri/MuseumDB
+[33m2ddda67[m I created the tickets page, moved all routes from App.jsx to AnimatedRoutes.jsx for a ore modular control and coding, allows our App.jsx to be much cleaner. Also fixed the header.jsx
+[33md4a8fc8[m Merge pull request #28 from jnathanc7/feature-staff
+[33m1788610[m Updated css styles for every page, updated and fixed the header, fixed minor mistakes in each page, and some other stuff.
+[33m573bdb8[m Fixed the Employee activation and deactivation style
+[33ma4e099b[m Added Activate and deactivate button for employees
+[33m99c96bc[m Fixed the backend connection issues, by getting rid of config folder and moving up the db.js file. Should be working no.
+[33me20731c[m Merge pull request #27 from Gabriel-Valenzona/feature/login-page
+[33m28498e8[m Merge branch 'main' into feature/login-page
+[33md5d1f90[m edited db.js (connection between DB and backend) to include environment path variables pt. 2
+[33m777cabe[m edited db.js (connection between DB and backend) to include environment path variables
+[33me20bc50[m hid node Modules in the main directory
+[33mb4ed0cc[m Merge pull request #26 from jnathanc7/feature-staff
+[33m32c33f3[m Merge branch 'main' into feature-staff
+[33m055a5a6[m Merge pull request #25 from Gabriel-Valenzona/feature/login-page
+[33m24f7d19[m fixed accidental .gitignore deletions in frontend folder
+[33m48def06[m fixed employee table added email, key, phone number
+[33md8cd41f[m Frontend: Adjusted log-in page slightly by removing icons that allow user to sign in via google/linkednin. Backend: installed node into backend along with dependencies, set-up file structure, created entry point file (server.js), added a README.md that details the role of each folder along with the logical flow.
+[33m37fbf8b[m Removed sensitive files from Git tracking
+[33m6eb69cc[m Connected the Manageemployee frontend with backend, we cannow add new employees
+[33m8b9e144[m Merge remote-tracking branch 'origin/main' into feature/login-page
+[33m550e6b3[m edited some comments and useless CSS
+[33me7cec1a[m Merge pull request #23 from jnathanc7/feature-staff
+[33me86c415[m Structured the totalreport file and the css for it
+[33m699b646[m Merge pull request #22 from jnathanc7/feature-staff
+[33m59cd8f0[m Added a general structure for profile veiw and edit c
+[33m7fa9a7b[m Added a general structure for profile veiw and edit
+[33m65be915[m Merge pull request #21 from jnathanc7/feature-staff
+[33m9fd032a[m Fixed import path issue for Profile.jsx
+[33mb446d00[m Fix case sensitivity issue for Profile.jsx
+[33mc9249bc[m Temporary rename Profile.jsx to profile-temp.jsx
+[33m1476b66[m added the footer, and fixed the ManageEmployees title issue
+[33mfcbc506[m attempt1 on fixing routing issues on refresh
+[33m93377a5[m Stop tracking backend/connect.js
+[33m18cbe11[m test
+[33mf5245c8[m Connect.js stop tracking
+[33m1142303[m Stop tracking connect.js
+[33ma4b6e70[m Merge pull request #18 from jnathanc7/feature-staff
+[33me216a0a[m Made some adjuments  to ManageEmployees
+[33mc7bf5d8[m Updated the assets page to figure out why vercel is not loading those images.
+[33m0d4f076[m[33m ([m[1;32mmain[m[33m)[m Merge pull request #17 from jnathanc7/feature-staff
+[33ma4f9ba2[m Updated Mange Employees page
+[33m5517dd8[m Merge pull request #16 from jnathanc7/feature-staff
+[33m1e8ba53[m Added background pic
+[33m23b7faf[m Fixed JSX comment issue in Header.jsx
+[33m24e62b0[m Updated Admin Dashboard styles and layout
+[33ma8b507c[m Merged changes from origin/main and resolved conflicts
+[33m3f440bc[m Added a small backend query to test our database, play around with it if u want.
+[33m20e6a4c[m Merge pull request #15 from Gabriel-Valenzona/feature/login-page
+[33m806b016[m minor changes to spacing and comments
+[33ma72b611[m completed most of login front-end, only adjustments needed are colors and maybe incorporating google/facebook/linkedin login? (might be too much lol)
+[33m3102952[m Merge pull request #14 from Scadrial/main
+[33m679c974[m Added some names aof art pieces I want to use Added tabs for each category of art Added events section with event name and date
+[33m26da8f0[m Merge branch 'main' of https://github.com/ArsalJafri/MuseumDB into feature/login-page
+[33mfaecb81[m Merge pull request #13 from DucPham5/main
+[33m133eab7[m Updating the giftshopppp
+[33m0c2cb37[m Updating the giftshop
+[33m44b31af[m Merge branch 'main' of https://github.com/ArsalJafri/MuseumDB
+[33md3b6751[m implemented most of auth.jsx frontend and its styling, not finished yet!
+[33m9a7326f[m Merge pull request #11 from DucPham5/main
+[33md5e277c[m Merge branch 'main' of https://github.com/ArsalJafri/MuseumDB
+[33ma046778[m polishing up the hero section of giftshop
+[33m25c2c33[m Updated Home.jsx and added a simple footer, will clean it up further. Made the Images a total background for design.
+[33ma544c0c[m add hero section to giftshop
+[33mb340c80[m Pulling main changes
+[33m2988cf1[m saving current giftshop state
+[33m73cab06[m Updated the homepage, allowed for a more dynamic page look and keeping it consistent with the vision we have with the project.
+[33md8d9546[m Merge pull request #10 from jnathanc7/feature-staff
+[33m7e8df10[m create categories for giftshop
+[33m1e58d8d[m Updated the home page again, adding a slideshow image updated some fonts and made the website home page more dynamic. Added an assets folder for dynamic images in the Home.jsx
+[33mbb2fb88[m Resolved merge conflicts
+[33md1b6d44[m Saved changes before pulling from up stream
+[33m63010b4[m added Admin profile
+[33mbc9ee56[m fixed minor error in App.js and relook at last commit message for more details
+[33m01ef1d3[m added motion for animation and added fontsource for fonts to use and I redid some of the pages and redid the styles.css
+[33m72e331c[m Merge pull request #9 from DucPham5/main
+[33m67a0b62[m Setting up the giftshop
+[33m1270519[m Merge branch 'main' of https://github.com/ArsalJafri/MuseumDB
+[33mb187e2d[m Merge pull request #8 from Scadrial/main
+[33m01e21ef[m Merge pull request #7 from Gabriel-Valenzona/checkout-gabe
+[33mb294ab4[m Added art collection list
+[33m31bc936[m Testing pull request from VS Code CLI
+[33m10579c3[m Merge pull request #6 from Gabriel-Valenzona/checkout-gabe
+[33m0686f32[m Gabe connecting to Github
+[33m021383a[m Merge pull request #5 from Scadrial/main
+[33m2ccf7b8[m Merge branch 'main' of https://github.com/ArsalJafri/MuseumDB
+[33m5809b94[m "Added Exhibitions function to Exhibition.jsx and  imported it to App.jsx"
+[33mb6b6b0e[m Merge pull request #3 from jnathanc7/main
+[33ma0a6390[m[33m ([m[1;31morigin/main[m[33m)[m Testing again
+[33m26d3187[m Test
+[33m73970eb[m Merge branch 'main' of https://github.com/ArsalJafri/MuseumDB
+[33me817df0[m Created a small boilerplate for us to all start working on
+[33m80ac2fe[m Merge remote-tracking branch 'upstream/main'
+[33mbea11a5[m testing extension
+[33m8a19757[m testing extension - duc
+[33m5606e9a[m Merge pull request #1 from DucPham5/main
+[33mfbc9625[m Duc is testing
+[33mecda23d[m Duc is testing
+[33m27ff638[m Duc is testing
+[33md4a8344[m testingg -duc
+[33mdb78b33[m cleaned up the frontend so we can start from scratch
+[33m6a5bddc[m pushing frontend and backend folder
+[33m1c03e70[m Initial commit

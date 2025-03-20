@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "lucide-react": "^0.475.0",
-    "mysql2": "^3.13.0"
+    "mysql2": "^3.13.0",
+    "react-modal-image": "^2.6.0"
   }
 }
