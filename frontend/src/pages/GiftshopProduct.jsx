@@ -1,7 +1,7 @@
 import { useState, memo, useEffect } from "react";
 import { Calendar, Plus, Minus } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import '../styles/giftshop.css';
+import '../styles/giftShop.css';
 import Footer from "../components/Footer";
 
 const GiftshopProduct = () =>{
