@@ -18,7 +18,7 @@ const GiftshopProduct = () =>{
 
     const fetchProduct = async () =>{
             try{
-                const response = await fetch(`http://localhost:3000/giftshop/${encodeURIComponent(categoryName)}/${encodeURIComponent(productID)}`)
+                const response = await fetch(`http://localhost:5000/giftshop/${encodeURIComponent(categoryName)}/${encodeURIComponent(productID)}`)
                 const data = await response.json();
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -35,6 +35,12 @@ const GiftshopProduct = () =>{
             console.log("Fetching product:", productID);
             fetchProduct();
         }, [categoryName,productID])
+
+        const addToCart = () =>{
+        const data = {id: product.Product_ID, name: product.Name, img: product.Image_URL, amount: totalProduct}
+        localStorage.setItem("data", JSON.stringify(data));
+        window.location.href = "/cart";
+        }
 
         return(
             <div className = "product-wrapper">
