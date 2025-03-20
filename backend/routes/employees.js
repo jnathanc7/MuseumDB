@@ -18,7 +18,7 @@ module.exports = (req, res) => {
 
     // GET /employees - Retrieve all employees from the database (PROTECTED)
     if (parsedUrl.pathname === "/employees" && method === "GET") {
-        return authMiddleware(["staff", "admin"])(req, res, () => {
+        //return authMiddleware(["staff", "admin"])(req, res, () => {
             db.query("SELECT * FROM staff", (err, results) => {
                 if (err) {
                     res.writeHead(500, { "Content-Type": "application/json" });
@@ -28,12 +28,12 @@ module.exports = (req, res) => {
                 res.end(JSON.stringify(results));
             });
 
-        });
+        //});
     }
 
     // POST /employees - Add a new employee to the database (PROTECTED)
     else if (parsedUrl.pathname === "/employees" && method === "POST") {
-        return authMiddleware("staff")(req, res, () => {
+        //return authMiddleware("staff")(req, res, () => {
             let body = "";
             req.on("data", (chunk) => { body += chunk; });
             req.on("end", () => {
@@ -79,7 +79,7 @@ module.exports = (req, res) => {
                     res.end(JSON.stringify({ message: "Invalid JSON format" }));
                 }
             });
-        });
+       // });
     }
 
 
