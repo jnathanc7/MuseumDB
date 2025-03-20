@@ -4,6 +4,7 @@ const employeesRoutes = require("./routes/employees"); // Import employees route
 const reportsRoutes = require("./routes/reports"); // Import reports routes
 const authRoutes = require("./routes/auth"); // Import authentication routes
 const authMiddleware = require("./middleware/authMiddleware"); // Import authentication middleware
+const giftshopRoutes = require("./routes/giftshop") //import giftshop routes
  
 // Start HTTP Server
 const server = http.createServer((req, res) => { 
@@ -11,7 +12,7 @@ const server = http.createServer((req, res) => {
     // CORS Headers below
     // res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/");
     // if testing locally, change port accordingly
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5176");
 
     // allows the methods you expect from the frontend access
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -28,8 +29,7 @@ const server = http.createServer((req, res) => {
     }
 
     // Parse the incoming request URL into a structured object, allows us to separate url into chunks
-    const parsedUrl = url.parse(req.url, true); 
-
+    const parsedUrl = url.parse(req.url, true);      
     // public route (home page)
     if (parsedUrl.pathname === "/") {
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -55,6 +55,10 @@ const server = http.createServer((req, res) => {
         // });
         return;
     }
+    else if (parsedUrl.pathname.startsWith("/giftshop")) {
+        giftshopRoutes(req, res);
+        return;
+}
     // REFERENCE EMPLOYEE ROUTE TO SEE HOW TO RESTICT USER ACCESS while wrapping with authMiddleware
 
     // can add more protected routes like for (e.g., tickets, gift shop, admin dashboard):
@@ -90,5 +94,6 @@ const PORT = process.env.PORT || 3000; // Use Render's assigned port or default 
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    
 });
 

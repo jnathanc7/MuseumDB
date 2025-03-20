@@ -4,6 +4,9 @@ import Ticket from "../pages/Ticket.jsx";
 import Home from "../pages/Home";
 import Exhibitions from "../pages/Exhibitions";
 import Giftshop from "../pages/Giftshop";
+import GiftshopCategoryPage from "../pages/GiftshopCategoryPage";
+import GiftshopProduct from "../pages/GiftshopProduct"
+import ShopCart from "../pages/ShopCart"
 import PropTypes from "prop-types";
 import Auth from '../pages/Auth';
 import AdminHome from "../pages/staff/AdminHome";
@@ -49,6 +52,9 @@ function AnimatedRoutes() {
         <Route path="/tickets" element={<PageTransition><Ticket /></PageTransition>} />
         <Route path="/Exhibitions" element={<PageTransition><Exhibitions /></PageTransition>} />
         <Route path="/Giftshop" element={<PageTransition><Giftshop /></PageTransition>} />
+        <Route path = "/Giftshop/:categoryName" element={<PageTransition><GiftshopCategoryPage /></PageTransition>}/>
+        <Route path = "/Giftshop/:categoryName/:productID" element={<PageTransition><GiftshopProduct /></PageTransition>}/>
+        <Route path = "cart" element = {<PageTransition><ShopCart /></PageTransition> }/>
         <Route path="/Auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/adminhome" element={<PageTransition><AdminHome /></PageTransition>} />
         <Route path="/admin/manage-employees" element={<ManaageEmployees />} />
