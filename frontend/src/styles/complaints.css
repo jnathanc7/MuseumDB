@@ -1,0 +1,53 @@
+.view-complaints-container {
+    padding: 60px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    background-image: url('/manageemployees.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+  
+    display: block; /* Remove flex centering */
+}
+
+.complaints-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+    background-color: #afcae6;
+    color: white;
+    border-radius: 5px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 24px;
+}
+
+.complaints-table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.complaints-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.complaints-table th, .complaints-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.complaints-table th {
+    background-color: #5076a0;
+    color: white;
+}
+
+.complaints-table tr:hover {
+    background-color: #f1f1f1;
+}
