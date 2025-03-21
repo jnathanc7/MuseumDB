@@ -10,7 +10,7 @@ const ViewComplaints = () => {
 
     const fetchComplaints = async () => {
         try {
-            const response = await fetch("http://localhost:3000/complaints"); // Adjust endpoint
+            const response = await fetch("http://localhost:5000/complaints"); // Adjust endpoint
             const data = await response.json();
             console.log("Fetched Complaints:", data);
             setComplaints(data);

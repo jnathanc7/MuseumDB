@@ -10,13 +10,13 @@ const TotalReport = () => {
 
     const fetchReportData = async () => {
         try {
-            let url = `http://localhost:3000/total-report?dateRange=${dateRange}`; // Default with date filter
+            let url = `http://localhost:5000/total-report?dateRange=${dateRange}`; // Default with date filter
             if (reportType === "total-ticket-sales") {
-                url = `http://localhost:3000/total-report?type=tickets&dateRange=${dateRange}`;
+                url = `http://localhost:5000/total-report?type=tickets&dateRange=${dateRange}`;
             } else if (reportType === "total-giftshop-sales") {
-                url = `http://localhost:3000/total-report?type=giftshop&dateRange=${dateRange}`;
+                url = `http://localhost:5000/total-report?type=giftshop&dateRange=${dateRange}`;
             } else if (reportType === "total-donations") {
-                url = `http://localhost:3000/total-report?type=donations&dateRange=${dateRange}`;
+                url = `http://localhost:5000/total-report?type=donations&dateRange=${dateRange}`;
             }
     
             console.log("Fetching from:", url);  //  Debugging line
