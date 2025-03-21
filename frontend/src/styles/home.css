@@ -1,80 +1,103 @@
-/* Ensure html and body take up the full height of the viewport */
-html, body {
-    height: 100%;
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
-  }
-  
-
-/* Homepage with Fullscreen Background */
-
-/* Main container that ensures the footer stays at the bottom */
-  
-/* Main container that ensures the footer stays at the bottom */
+/* Ensure styles only apply to Home.jsx */
 .page-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* Ensures full viewport height */
-  }
-  
-  /* Content expands to push footer down */
-  .content {
-    flex: 1;
-  }
-
-.homepage {
-  position: relative;
-  width: 100%;
-  height: 100vh; /* Full viewport height */
-  background-size: cover; /* Ensures the image covers the entire viewport */
-  background-position: center center; /* Centers the image in the viewport */
-  background-repeat: no-repeat;
-  transition: background-image 1s ease-in-out;
   display: flex;
-  align-items: center;
-  padding-left: 50px; /* Push text away from the left edge */
-  background-attachment: fixed; /* Optional: Keep background fixed when scrolling */
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
-/* Dark Overlay for Readability */
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 1;
+/* Sidebar Styling */
+.page-container .sidebar {
+  width: 20%;
+  background-color: #1a1a1a;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* Text Container Aligned to Left */
-.text-container {
-  position: relative;
-  z-index: 2; /* Ensure text appears above the overlay */
+.page-container .museum-name {
+  font-size: 1.8rem;
   color: white;
-  text-align: left; /* Align text to the left */
-  max-width: 40%; /* Prevent text from being too wide */
-  padding-bottom: 10px; /* Slight padding to ensure the text doesn't stick to the bottom */
 }
 
-/* Title Styling */
-.home-title {
-  font-size: 80px;
-  font-family: "Merriweather", serif;
-  margin-bottom: 10px;
+.page-container .nav-links ul {
+  list-style: none;
+  padding: 0;
 }
 
-/* Subtitle Styling */
-.home-text {
-  font-size: 50px;
-  font-family: "Merriweather", serif;
-  margin-bottom: 8px;
+.page-container .nav-links li {
+  margin: 15px 0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
 }
 
-/* Museum Logo */
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    margin-right: 20px;
-    color: white;
-  }
+.page-container .nav-links li a {
+  color: white;
+  text-decoration: none;
+}
+
+.page-container .nav-links li a:hover {
+  color: #d32f2f;
+}
+
+/* Main Content */
+.page-container .main-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px;
+}
+
+/* Text Section */
+.page-container .text-section {
+  max-width: 40%;
+}
+
+.page-container .main-title {
+  font-size: 4rem;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.page-container .subtitle {
+  font-size: 1.2rem;
+  margin-top: 15px;
+  color: #bbb;
+}
+
+.page-container .cta-button {
+  background: none;
+  border: 2px solid white;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.page-container .cta-button:hover {
+  background-color: white;
+  color: black;
+}
+
+/* Image Frame */
+.page-container .image-frame {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-container .featured-image {
+  width: 80%;
+  border: 10px solid gold;
+  box-shadow: 0px 0px 20px rgba(255, 215, 0, 0.5);
+  border-radius: 10px;
+}
+

@@ -29,5 +29,3 @@ dist-ssr
 
 .env   
 backend/combined-ca.pem    
-
-

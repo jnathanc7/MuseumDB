@@ -1,0 +1,1 @@
+INSERT INTO exhibitions (Exhibition_ID, Name, Start_Date, End_Date, Budget, Location, Num_Tickets_Sold, Themes, Num_Of_Artworks) VALUES (1,"Test", "2025-3-16", "2025-3-17", 1000, "Houston", 0, "Horror", 0);

@@ -1,0 +1,60 @@
+.cart-wrapper {
+    flex-direction: column;
+    display: flex; /* Enables flexbox */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    min-height: 100vh;
+    padding: 20px;
+    margin-top: 40px;
+}
+
+.cart-product {
+    display: flex;
+    align-items: flex-start; /* Align items vertically */
+    justify-content: flex-start; /* Align items to the left */
+    gap: 20px; /* Reduce space between elements */
+    padding: 20px; /* Reduce padding */
+    max-width: 800px; /* Set max width */
+    width: 100%;
+    height:auto;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    background-color: white;
+}
+
+.cart-product img {
+    width: 200px; /* Adjust image size */
+    height: auto;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Moves text to the top */
+    align-items: flex-start;
+    gap: 2px;
+    padding-top: 0px; /* Slightly move text up */
+}
+
+.product-info h2,
+.product-info p {
+    margin: 0; /* Removes default spacing */
+    padding: 5px 0; /* Adds slight spacing */
+}
+
+.remove{
+    background-color: red; /* Red background */
+    color: white; /* White text */
+    border: none; /* No border */
+    padding: 10px 15px; /* Button size */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 14px; /* Text size */
+    font-weight: bold; /* Bold text */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.remove:hover {
+    background-color: darkred; /* Darker red on hover */
+}

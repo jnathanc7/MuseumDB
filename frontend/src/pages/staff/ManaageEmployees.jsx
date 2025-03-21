@@ -1,6 +1,7 @@
 import { useState, useEffect  } from "react";
 import "../../styles/admin.css"; // Make sure your CSS handles modal styles
 
+
 const ManageEmployees = () => {
     const [employees, setEmployees] = useState([]);
     const [newEmployee, setNewEmployee] = useState({
@@ -16,7 +17,8 @@ const ManageEmployees = () => {
 
     const fetchEmployees = async () => {
         try {
-            const response = await fetch("http://localhost:3000/employees"); //azure.net
+            //const response = await fetch(`https://museumdb.onrender.com/employees`);  //azure.net
+            const response = await fetch("http://localhost:5000/employees"); // Adjust endpoint
             const data = await response.json();
             console.log("Fetched Employees Data:", data); 
             setEmployees(data); // Update state with actual database employees
@@ -44,7 +46,7 @@ const ManageEmployees = () => {
         
     
         try {
-            const response = await fetch("http://localhost:3000/employees", {
+            const response = await fetch("http://localhost:5000/employees", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -71,7 +73,7 @@ const ManageEmployees = () => {
     // Toggle employee status
     const toggleStatus = async (staffId) => {
         try {
-            const response = await fetch(`http://localhost:3000/employees/toggle?id=${staffId}`, {
+            const response = await fetch(`http://localhost:5000/employees/toggle?id=${staffId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
             });

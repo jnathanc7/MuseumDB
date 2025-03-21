@@ -133,7 +133,7 @@ function handleLogin(req, res) {
                     );
 
                     const headers = {
-                        "Set-Cookie": `jwt=${token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`
+                        "Set-Cookie": `jwt=${token}; HttpOnly; Secure; SameSite=None; Max-Age=3600`
                     };
 
                     sendResponse(res, 200, { 
