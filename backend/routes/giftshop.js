@@ -36,6 +36,56 @@ module.exports = (req, res) => {
             return; 
         });
     }
+    
+    //  POST /giftshop/(categoryname)/(productid) - Send product to shop cart 
+    else if (pathSegments[0] === 'giftshop' && pathSegments.length === 3 && method === "POST") {
+        let body = "";
+        req.on("data", (chunk) => { body += chunk; });
+        req.on("end", () =>{
+            const product = JSON.parse(body);
+            const checkQuery = "SELECT Cart_Item_ID, Quantity FROM shopping_cart WHERE Product_ID = ?";
+            
+            db.query(checkQuery, [product.Product_ID], (err, rows) => {
+                if (err) {
+                    console.log("Database Query failed", err);
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    return res.end(JSON.stringify({ message: "Error checking cart", error: err }));                
+                }
+                if (product.Quantity === 0) {
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    return res.end(JSON.stringify({ message: "Quantity cannot be zero." }));
+                }
+                else if(rows.length > 0){
+                    // we first select all the rows where product_id = ? if we get more than 0 then the cart already contains that product hence we update rather than insert
+                    const updateQuery = "UPDATE shopping_cart SET Quantity = Quantity + ? WHERE Product_ID = ?";
+                    db.query(updateQuery, [product.Quantity, product.Product_ID], (updateErr, updateResults) => {
+                        if (updateErr) {
+                            console.log("Error updating cart:", updateErr);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            return res.end(JSON.stringify({ message: "Error updating cart", error: updateErr }));
+                        }
+                        console.log("Cart updated successfully!", updateResults);
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Quantity updated successfully!" }));
+                    });
+                }
+                else {
+                    // Step 3: If product does NOT exist, insert it (Cart_Item_ID will auto-increment)
+                    const insertQuery = "INSERT INTO shopping_cart (Product_ID, Quantity) VALUES (?, ?)";
+                    db.query(insertQuery, [product.Product_ID, product.Quantity], (insertErr, insertResults) => {
+                        if (insertErr) {
+                            console.log("Error inserting into cart:", insertErr);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            return res.end(JSON.stringify({ message: "Error adding to cart", error: insertErr }));
+                        }
+                        console.log("Product added to cart with ID:", insertResults.insertId);
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Product added to cart successfully!" }));
+                    }); 
+                }
+        });
+    });
+    }
 
     //  GET /giftshop/(categoryname) - Retrieve all products of given category from database
     else if (pathSegments[0] === 'giftshop' && pathSegments.length === 2 && method === "GET") {
