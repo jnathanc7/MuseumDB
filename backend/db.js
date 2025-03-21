@@ -1,6 +1,6 @@
 // mySQL database connection
 require('dotenv').config(); // Load environment variables
-
+ 
 const mySQL = require('mysql2');
 const fs = require("fs"); // had to add this
 const path = require("path"); // Import path module
