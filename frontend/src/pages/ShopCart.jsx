@@ -4,6 +4,24 @@ import "../styles/shopcart.css";
 
 const ShopCart = () => {
   const [cartProducts, setCartProducts] = useState([]);
+
+  const fetchShopCart = async () =>{
+    try{
+      const response = await fetch("http://localhost:5000/cart");
+      const data = await response.json();
+      console.log("Fetched Cart Data", data);
+      setCartProducts(data);
+  }
+  catch(error){
+      console.error("Error fetching from cart:", error);
+  }
+}
+
+useEffect(() => {
+  fetchShopCart();
+}, [])
+    
+
   return (
     <div className="cart-wrapper">
       <h1>Shopping Cart</h1>

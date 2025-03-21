@@ -64,7 +64,16 @@ const GiftshopProduct = () =>{
             setShowPopup(true);
         }
 
-        return(        
+        return(  
+            <>
+            {showPopup && (
+                <div className="popup-overlay">
+                  <div className="popup-message">
+                  <button onClick={() => setShowPopup(false)}>x</button>
+                    Added to cart!
+                  </div>
+                </div>
+              )}      
             <div className = "product-wrapper">
                 <div className = "product-left" style = 
                 {{backgroundImage: `url(${product?.Image_URL})`,//need to change to BLOB right now its just statically retreiving the url and matching with our files
@@ -108,7 +117,8 @@ const GiftshopProduct = () =>{
                         <p>Loading product...</p>
                     )}
                 </div>
-            </div>            
+            </div>   
+            </>         
         )
 }
 

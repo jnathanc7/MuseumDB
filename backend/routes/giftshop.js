@@ -69,6 +69,7 @@ module.exports = (req, res) => {
                         res.end(JSON.stringify({ message: "Quantity updated successfully!" }));
                     });
                 }
+                //maintain autoincrement consistency; increment only when a new product is added rather than a dupe
                 else {
                     // Step 3: If product does NOT exist, insert it (Cart_Item_ID will auto-increment)
                     const insertQuery = "INSERT INTO shopping_cart (Product_ID, Quantity) VALUES (?, ?)";
