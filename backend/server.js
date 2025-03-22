@@ -6,6 +6,8 @@ const authRoutes = require("./routes/auth"); // Import authentication routes
 const authMiddleware = require("./middleware/authMiddleware"); // Import authentication middleware
 const giftshopRoutes = require("./routes/giftshop") //import giftshop routes
 const complaintsRoutes = require("./routes/complaints");
+const exhibitionReportRoutes = require("./routes/exhibitionReport"); 
+
  
 // Start HTTP Server
 const server = http.createServer((req, res) => { 
@@ -56,16 +58,21 @@ const server = http.createServer((req, res) => {
         // });
         return;
     }
-        // Complaints route
-else if (req.url.startsWith("/complaints")) {
-    complaintsRoutes(req, res);
-    return;
-}
-
-    else if (parsedUrl.pathname.startsWith("/giftshop")) {
-        giftshopRoutes(req, res);
+    else if (parsedUrl.pathname.startsWith("/exhibition-report")) {  // New exhibition report route
+        exhibitionReportRoutes(req, res);
         return;
-}
+    }
+
+        // Complaints route
+    else if (req.url.startsWith("/complaints")) {
+        complaintsRoutes(req, res);
+        return;
+    }
+
+        else if (parsedUrl.pathname.startsWith("/giftshop")) {
+            giftshopRoutes(req, res);
+            return;
+    }
     // REFERENCE EMPLOYEE ROUTE TO SEE HOW TO RESTICT USER ACCESS while wrapping with authMiddleware
 
     // can add more protected routes like for (e.g., tickets, gift shop, admin dashboard):
