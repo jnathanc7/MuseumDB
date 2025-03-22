@@ -21,7 +21,8 @@ const ExhibitionReport = () => {
 
   const fetchExhibitions = async () => {
     try {
-      const response = await fetch("https://museumdb.onrender.com/exhibitions");
+      // const response = await fetch("https://museumdb.onrender.com/exhibitions");
+         const response = await fetch("http://localhost:5000/exhibition-report");
       if (!response.ok) {
         throw new Error("Failed to fetch exhibitions");
       }
@@ -57,7 +58,8 @@ const ExhibitionReport = () => {
     }
 
     try {
-      const response = await fetch("https://museumdb.onrender.com/exhibitions", {
+      // const response = await fetch("https://museumdb.onrender.com/exhibitions", {
+       const response = awaitfetch("http://localhost:5000/exhibition-report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
