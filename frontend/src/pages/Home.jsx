@@ -1,11 +1,27 @@
 // src/pages/Home.jsx
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import AnimatedLink from "../components/AnimatedLink";
 import image1 from '/src/assets/image1.jpg';
+import image2 from '/src/assets/image2.jpg';
+import image3 from '/src/assets/image3.jpg';
+import image4 from '/src/assets/image4.jpg';
 import "../styles/home.css";
 
+const images = [image1, image2, image3, image4];
+
 const Home = () => {
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
+    <div className="home-background"> {/* Apply background only to Home.jsx */}
     <div className="page-container">
       <div className="sidebar">
         <h1 className="museum-name">Houston Museum of Fine Arts</h1>
@@ -39,8 +55,9 @@ const Home = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
         >
-          <img src={image1} alt="Featured Artwork" className="featured-image" />
+            <img src={images[currentImage]} alt="Featured Artwork" className="featured-image" />
         </motion.div>
+        </div>
       </div>
     </div>
   );
