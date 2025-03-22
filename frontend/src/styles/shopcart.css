@@ -1,11 +1,11 @@
 .cart-wrapper {
     flex-direction: column;
     display: flex; /* Enables flexbox */
-    justify-content: center; /* Centers horizontally */
+    justify-content: flex-start; /* Centers horizontally */
     align-items: center; /* Centers vertically */
-    min-height: 100vh;
+    height: 100vh;
     padding: 20px;
-    margin-top: 40px;
+    margin-top: 70px;
 }
 
 .cart-product {

@@ -15,19 +15,20 @@ module.exports = (req, res) => {
     }
     
     else if (parsedUrl.pathname === "/cart" && method === "GET") {
-        
+        const query = "select S.Cart_Item_ID, S.Product_ID, S.Quantity, P.Price, P.Name, P.Description, P.Image_URL  FROM products AS P, shopping_cart AS S Where S.Product_ID = P.Product_ID;";
         //change this query to link the product table
-        db.query("SELECT * FROM shoppingCart", (err, results) => {
+        db.query(query, (err, results) => {
             if (err) {
                 res.writeHead(500, { "Content-Type": "application/json" });
                 return res.end(JSON.stringify({ message: "Error retrieving categories", error: err }));
             }
+            console.log("Shop Cart Query: ", results);
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(JSON.stringify(results));
+            console.log("cart product")
             return; 
         });
     }
     
-
 
 }
