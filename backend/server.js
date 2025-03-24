@@ -5,11 +5,14 @@ const reportsRoutes = require("./routes/reports"); // Import reports routes
 const authRoutes = require("./routes/auth"); // Import authentication routes
 const authMiddleware = require("./middleware/authMiddleware"); // Import authentication middleware
 const giftshopRoutes = require("./routes/giftshop") //import giftshop routes
+
+const shopCartRoutes = require("./routes/shopcart") //import giftshop routes
 const complaintsRoutes = require("./routes/complaints");
 const exhibitionReportRoutes = require("./routes/exhibitionReport"); 
 
 
 const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
+
  
 // Start HTTP Server
 const server = http.createServer((req, res) => { 
@@ -17,7 +20,8 @@ const server = http.createServer((req, res) => {
     // CORS Headers below
     // res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/");
     // if testing locally, change port accordingly
-    res.setHeader("Access-Control-Allow-Origin", "*"); // for testing locally is best to do *
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5178");//had to change for my machine
+
 
     // allows the methods you expect from the frontend access
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -71,8 +75,11 @@ const server = http.createServer((req, res) => {
         return;
 
     }
-
-        else if (parsedUrl.pathname.startsWith("/giftshop")) {
+    else if (parsedUrl.pathname.startsWith("/cart")) {
+        shopCartRoutes(req, res);
+        return;
+    }
+     else if (parsedUrl.pathname.startsWith("/giftshop")) {
             giftshopRoutes(req, res);
             return;
     }
@@ -88,6 +95,7 @@ const server = http.createServer((req, res) => {
         return;
     }
     
+
 
 
     // REFERENCE EMPLOYEE ROUTE TO SEE HOW TO RESTICT USER ACCESS while wrapping with authMiddleware

@@ -168,3 +168,36 @@
   color: black;
   transition: 0.5s;
 }
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4); /* optional dark backdrop */
+  z-index: 9999; /* high value ensures it's on top */
+}
+
+.popup-message {
+  background-color: #4BB543;
+  color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  font-size: 18px;
+  position: relative;
+}
+
+.popup-message button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+}
