@@ -45,7 +45,7 @@ const Giftshop = () =>{
             {/*Hero Section */}          
             <div className = "giftshop-hero" >
             <h1 className = "giftshophero-header">Welcome to the Museum Giftshop</h1>
-            <p className = "giftshophero-text">Discover a curated selection of art prints, handcrafted jewelry, unique souvenirs, and more. Take home a piece of history today!</p>
+            <p className = "giftshophero-text">Discover a curated selection of art prints, handcrafted jewelry, unique souvenirs, and more!</p>
             </div>
 
             {/* Categories Section */}
@@ -55,7 +55,6 @@ const Giftshop = () =>{
                     <CategoryItem key={category.Category_ID} category={category} />
                 ))}
             </div>
-            <Footer />
         </div>
     )
  

@@ -1,9 +1,9 @@
 import { useState, memo, useEffect } from "react";
-import { Calendar, Plus, Minus } from "lucide-react";
+import { Calendar, Plus, Minus, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import "../styles/shopcart.css";
 
-const CartItem = memo(({ cartItem }) => (
+const CartItem = memo(({ cartItem, OnRemove, Increment, Decrement}) => (
   <div className="cart-product">
         <img src= {cartItem.Image_URL} alt={cartItem.Name} />
         <div className="product-info">
@@ -13,12 +13,12 @@ const CartItem = memo(({ cartItem }) => (
             {cartItem.Description}
           </p>
           <div className="product-counter">
-            <button className="remove">Remove</button>
+            <button className="remove" onClick = {() => OnRemove(cartItem.Cart_Item_ID)}>Remove</button>
             <div
               className="icon-button"
               role="button"
               tabIndex="0"
-              onClick={() => decrement(totalProduct)}
+              onClick={() => Decrement(cartItem.Cart_Item_ID)}
               onKeyPress={(e) => {
                 if (e.key === "Enter") handleDecrement(cartItem.Quantity);
               }}
@@ -31,7 +31,7 @@ const CartItem = memo(({ cartItem }) => (
               className="icon-button"
               role="button"
               tabIndex="0"
-              onClick={() => increment(totalProduct)}
+              onClick={() => Increment(cartItem.Cart_Item_ID)}
               onKeyPress={(e) => {
                 if (e.key === "Enter") handleDecrement(totalProduct);
               }}
@@ -47,6 +47,34 @@ const CartItem = memo(({ cartItem }) => (
 
 const ShopCart = () => {
   const [cartProducts, setCartProducts] = useState([]);
+  const [subTotal, setSubTotal] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState("Credit Card"); 
+
+  const increment = (cartItemId) =>{
+    setCartProducts(prev =>
+      prev.map(item =>
+        item.Cart_Item_ID === cartItemId
+          ? { ...item, Quantity: item.Quantity + 1 }
+          : item
+      )
+    );
+    };
+  const decrement = (cartItemId) =>{
+    setCartProducts(prev =>
+      prev.map(item =>
+        item.Cart_Item_ID === cartItemId && item.Quantity > 1 
+          ? { ...item, Quantity: item.Quantity - 1 }
+          : item
+      )
+    );
+    }
+    //calculates the subtotal/runs everytime a product quantity is + or - 
+    useEffect(() => {
+      const total = cartProducts.reduce((sum, item) => {
+        return sum + item.Price * item.Quantity;
+      }, 0);
+      setSubTotal(total);
+    }, [cartProducts]);//+ or - affects the cartProduct object so it detects it and will run the useEffect when that change is detected
 
   const fetchShopCart = async () =>{
     try{
@@ -63,7 +91,31 @@ const ShopCart = () => {
 useEffect(() => {
   fetchShopCart();
 }, [])
-    
+
+const RemoveFromCart = async (cartItemID) =>{
+  try{
+      const response = await fetch(`http://localhost:5000/cart`,  {
+          method: "DELETE",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({Cart_Item_ID: cartItemID}),
+      });
+       
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const result = await response.json();
+      console.log("Server Response: ", result); 
+      //remove 
+      setCartProducts(prev =>
+        prev.filter(item => item.Cart_Item_ID !== cartItemID)
+      );
+  }
+  catch(error){
+      console.error("Error removing from cart:", error);
+  }
+}
 
   return (
     <div className="cart-wrapper">
@@ -73,9 +125,49 @@ useEffect(() => {
       <Link className = "giftshop-link" to ="/giftshop" ><p>Your cart is empty...</p></Link>
       </div>
     ) : (
-      cartProducts.map((cartItem) => (
-        <CartItem key = {cartItem.Cart_Item_ID} cartItem = {cartItem}/>
-      ))
+      <>
+      {cartProducts.map((cartItem) => (
+        //have to pass the RemovefromCart function to the CartItem
+        <CartItem key = {cartItem.Cart_Item_ID} cartItem = {cartItem} OnRemove = {RemoveFromCart} Increment = {increment} Decrement = {decrement} />
+      ))}
+
+      <hr className = "divider" />
+      {/* Subtotal Section */}
+      <strong className ="summary">Order Summary</strong>
+        <div className="subtotal">
+          
+          <strong>Subtotal:</strong>
+          <span className="subtotal-amount">${subTotal.toFixed(2)}</span>
+        </div>
+
+        {/* Payment Method Selection */}
+        <div className="payment-box">
+          <CreditCard className="payment-icon" />
+          <select
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            className="payment-select"
+          >
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+            <option value="Cash">Cash</option>
+          </select>
+        </div>
+        
+        <div
+          className="purchase-button"
+          role="button"
+          tabIndex="0"
+          onClick={() => Increment(cartItem.Cart_Item_ID)}//change this later to query into the database
+          onKeyPress={(e) => {
+            if (e.key === "Enter") handleDecrement(totalProduct);
+          }}
+        >
+          Purchase
+        </div>
+        
+        
+      </>
     )}
     </div>
   );

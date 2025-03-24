@@ -88,6 +88,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  margin-top: 25px;
 }
 .product-container{
   display: grid;
@@ -161,15 +162,38 @@
   border-radius: 10px;
   margin-top: 10px;
   font-size: 15px;
+  transform: scale(1);
 }
 
 .cart-button:hover{
   background-color: white;
   color: black;
-  transition: 0.5s;
+  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;;
+  transform: scale(1.02);
 }
 
-.popup-overlay {
+.cart-button.added {
+  background-color: #28a745; /* green */
+  transform: scale(1.05);
+}
+
+.button-text {
+  display: inline-block;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-in {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.fade-out {
+  opacity: 0.8;
+  transform: scale(1);
+}
+
+
+/* .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -178,11 +202,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.4); /* optional dark backdrop */
-  z-index: 9999; /* high value ensures it's on top */
-}
+  background: rgba(0, 0, 0, 0.4); /* optional dark backdrop 
+  z-index: 9999; /* high value ensures it's on top 
+} */
 
-.popup-message {
+/* .popup-message {
   background-color: #4BB543;
   color: white;
   padding: 20px 30px;
@@ -200,4 +224,4 @@
   font-size: 16px;
   color: white;
   cursor: pointer;
-}
+} */
