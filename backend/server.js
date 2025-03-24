@@ -13,6 +13,10 @@ const exhibitionReportRoutes = require("./routes/exhibitionReport");
 
 const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
 
+const allowedOrigins = [
+    "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
+    "http://localhost:5180", // Local frontend
+];
  
 // Start HTTP Server
 const server = http.createServer((req, res) => { 
@@ -20,8 +24,10 @@ const server = http.createServer((req, res) => {
     // CORS Headers below
     // res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/");
     // if testing locally, change port accordingly
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5180");//had to change for my machine
-
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader("Access-Control-Allow-Origin", origin);
+    }
 
     // allows the methods you expect from the frontend access
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
