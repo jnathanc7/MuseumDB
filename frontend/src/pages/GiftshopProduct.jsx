@@ -19,7 +19,7 @@ const GiftshopProduct = () =>{
 
     const fetchProduct = async () =>{
             try{
-                const response = await fetch(`http://localhost:5000/giftshop/${encodeURIComponent(categoryName)}/${encodeURIComponent(productID)}`)
+                const response = await fetch(`https://museumdb.onrender.com/giftshop/${encodeURIComponent(categoryName)}/${encodeURIComponent(productID)}`)
                 const data = await response.json();
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -44,7 +44,7 @@ const GiftshopProduct = () =>{
 
         const AddToCart = async () =>{
             try{
-                const response = await fetch(`http://localhost:5000/giftshop/${encodeURIComponent(categoryName)}/${encodeURIComponent(productID)}`,  {
+                const response = await fetch(`https://museumdb.onrender.com/giftshop/${encodeURIComponent(categoryName)}/${encodeURIComponent(productID)}`,  {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

@@ -25,7 +25,7 @@ const Giftshop = () =>{
 
     const fetchCategories = async () =>{
         try{
-            const response = await fetch("http://localhost:5000/giftshop");
+            const response = await fetch("https://museumdb.onrender.com/giftshop");
             const data = await response.json();
             console.log("Fetched Category Data", data);
             setCategories(data);
