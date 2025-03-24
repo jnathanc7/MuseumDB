@@ -14,12 +14,14 @@ import ManaageEmployees from "../pages/staff/ManaageEmployees";
 import Profile from "../pages/staff/Profile";
 import TotalReport from "../pages/staff/TotalReport";
 import Memberships from "../pages/Memberships.jsx";
+import ViewComplaints from "../pages/staff/ViewComplaints"; 
 import { useEffect } from "react"; // Import useEffect
 import Ceramic from "../pages/ceramic";
 import Prints from "../pages/prints";
 import Painting from "../pages/painting";
 import Sculptures from "../pages/sculptures";
 import Photographs from "../pages/photographs";
+import ExhibitionReport from "../pages/staff/ExhibitionsReport";
 const PageTransition = ({ children }) => {
   return (
     <motion.div
@@ -61,6 +63,9 @@ function AnimatedRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/total-report" element={<TotalReport />} />
         <Route path="/memberships" element={<Memberships />} />
+        <Route path="/admin/view-complaints" element={<PageTransition><ViewComplaints /></PageTransition>} />
+        <Route path="/admin/exhibition-report" element={<PageTransition><ExhibitionReport /></PageTransition>} />
+
         <Route path="/ceramic" element={<PageTransition><Ceramic/></PageTransition>}/>
         <Route path="/prints" element={<PageTransition><Prints/></PageTransition>}/>
         <Route path="/paintings" element={<PageTransition><Painting/></PageTransition>}/>
