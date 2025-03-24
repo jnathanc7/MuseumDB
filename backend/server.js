@@ -83,9 +83,6 @@ const server = http.createServer((req, res) => {
             giftshopRoutes(req, res);
             return;
     }
-
-}
-
     else if (parsedUrl.pathname.startsWith("/tickets")) {
         ticketsRoutes(req, res);
         return;
