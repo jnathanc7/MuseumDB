@@ -8,6 +8,8 @@ const giftshopRoutes = require("./routes/giftshop") //import giftshop routes
 const complaintsRoutes = require("./routes/complaints");
 const exhibitionReportRoutes = require("./routes/exhibitionReport"); 
 
+
+const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
  
 // Start HTTP Server
 const server = http.createServer((req, res) => { 
@@ -67,12 +69,27 @@ const server = http.createServer((req, res) => {
     else if (req.url.startsWith("/complaints")) {
         complaintsRoutes(req, res);
         return;
+
     }
 
         else if (parsedUrl.pathname.startsWith("/giftshop")) {
             giftshopRoutes(req, res);
             return;
     }
+
+}
+
+    else if (parsedUrl.pathname.startsWith("/tickets")) {
+        ticketsRoutes(req, res);
+        return;
+    }
+    else if (parsedUrl.pathname.startsWith("/purchase")) {
+        ticketsRoutes(req, res); // Direct purchase requests to tickets.js
+        return;
+    }
+    
+
+
     // REFERENCE EMPLOYEE ROUTE TO SEE HOW TO RESTICT USER ACCESS while wrapping with authMiddleware
 
     // can add more protected routes like for (e.g., tickets, gift shop, admin dashboard):
