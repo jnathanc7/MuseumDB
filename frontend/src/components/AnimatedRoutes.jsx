@@ -21,6 +21,7 @@ import Prints from "../pages/prints";
 import Painting from "../pages/painting";
 import Sculptures from "../pages/sculptures";
 import Photographs from "../pages/photographs";
+import ExhibitionReport from "../pages/staff/ExhibitionsReport";
 const PageTransition = ({ children }) => {
   return (
     <motion.div
@@ -63,6 +64,7 @@ function AnimatedRoutes() {
         <Route path="/admin/total-report" element={<TotalReport />} />
         <Route path="/memberships" element={<Memberships />} />
         <Route path="/admin/view-complaints" element={<PageTransition><ViewComplaints /></PageTransition>} />
+        <Route path="/admin/exhibition-report" element={<PageTransition><ExhibitionReport /></PageTransition>} />
 
         <Route path="/ceramic" element={<PageTransition><Ceramic/></PageTransition>}/>
         <Route path="/prints" element={<PageTransition><Prints/></PageTransition>}/>

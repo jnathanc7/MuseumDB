@@ -6,6 +6,9 @@ const authRoutes = require("./routes/auth"); // Import authentication routes
 const authMiddleware = require("./middleware/authMiddleware"); // Import authentication middleware
 const giftshopRoutes = require("./routes/giftshop") //import giftshop routes
 const complaintsRoutes = require("./routes/complaints");
+const exhibitionReportRoutes = require("./routes/exhibitionReport"); 
+
+
 const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
  
 // Start HTTP Server
@@ -57,15 +60,23 @@ const server = http.createServer((req, res) => {
         // });
         return;
     }
-        // Complaints route
-else if (req.url.startsWith("/complaints")) {
-    complaintsRoutes(req, res);
-    return;
-}
-
-    else if (parsedUrl.pathname.startsWith("/giftshop")) {
-        giftshopRoutes(req, res);
+    else if (parsedUrl.pathname.startsWith("/exhibition-report")) {  // New exhibition report route
+        exhibitionReportRoutes(req, res);
         return;
+    }
+
+        // Complaints route
+    else if (req.url.startsWith("/complaints")) {
+        complaintsRoutes(req, res);
+        return;
+
+    }
+
+        else if (parsedUrl.pathname.startsWith("/giftshop")) {
+            giftshopRoutes(req, res);
+            return;
+    }
+
 }
 
     else if (parsedUrl.pathname.startsWith("/tickets")) {
@@ -77,6 +88,7 @@ else if (req.url.startsWith("/complaints")) {
         return;
     }
     
+
 
     // REFERENCE EMPLOYEE ROUTE TO SEE HOW TO RESTICT USER ACCESS while wrapping with authMiddleware
 
