@@ -47,7 +47,6 @@ const GiftshopCategoryPage = () =>{
             <p>No products available.</p> //implemented a conditional statement to check whether or not there are products or not
         )}
         </div>
-        <Footer />
     </div>
     )
 }

@@ -58,3 +58,77 @@
 .remove:hover {
     background-color: darkred; /* Darker red on hover */
 }
+
+/* Divider */
+.divider {
+    height: 1px;
+    width : 50%;
+    background-color: #ccc;
+    margin: 20px 0;
+  }
+
+  /* "Next" Button */
+.subtotal {
+    font-size: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #333;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-right: 5px;
+  }
+
+  .subtotal-amount{
+    margin-left: 400px;
+  }
+
+  .summary{
+    font-size: 30px;
+  }
+
+  .purchase-button{
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width:50%;
+    background-color: black;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    margin-top: 25px;
+    padding: 15px;
+  }
+
+  .purchase-button:hover {
+    background-color: #8B0000;
+    transform: scale(1.05);
+  }
+
+  .payment-box {
+    display: flex;
+    align-items: center;
+    background-color: #f8f8f8;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 20px;
+
+    width:50%;
+  }
+  
+  .payment-icon {
+    margin-right: 10px;
+    color: #555;
+  }
+  
+  .payment-select {
+    border: none;
+    background: none;
+    font-size: 16px;
+    width: 100%;
+    outline: none;
+  }

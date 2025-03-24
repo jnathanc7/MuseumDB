@@ -55,7 +55,6 @@ const Giftshop = () =>{
                     <CategoryItem key={category.Category_ID} category={category} />
                 ))}
             </div>
-            <Footer />
         </div>
     )
  

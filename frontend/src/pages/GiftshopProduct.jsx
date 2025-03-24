@@ -8,14 +8,14 @@ const GiftshopProduct = () =>{
     const{categoryName, productID} = useParams();
     const [totalProduct, setTotalProduct] = useState(0); 
     const [product, setProduct] = useState({})
-    const [showPopup, setShowPopup] = useState(false);
+    const [addedToCart, setAddedToCart] = useState(false);
 
     const increment = () =>{
         setTotalProduct(totalProduct + 1);
     };
     const decrement = () =>{
         setTotalProduct(totalProduct > 0 ? totalProduct - 1 : 0)
-    }
+    };
 
     const fetchProduct = async () =>{
             try{
@@ -56,24 +56,26 @@ const GiftshopProduct = () =>{
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const result = await response.json();
+                setAddedToCart(true);
+                setTimeout(() => setAddedToCart(false), 1500);
                 console.log("Server Response: ", result);        
             }
             catch(error){
                 console.error("Error adding to cart:", error);
             }
-            setShowPopup(true);
+            // setShowPopup(true);
         }
 
         return(  
             <>
-            {showPopup && (
+            {/* {showPopup && (
                 <div className="popup-overlay">
                   <div className="popup-message">
                   <button onClick={() => setShowPopup(false)}>x</button>
                     Added to cart!
                   </div>
                 </div>
-              )}      
+              )}       */}
             <div className = "product-wrapper">
                 <div className = "product-left" style = 
                 {{backgroundImage: `url(${product?.Image_URL})`,//need to change to BLOB right now its just statically retreiving the url and matching with our files
@@ -112,7 +114,11 @@ const GiftshopProduct = () =>{
                     </div>
                 </div>
                     {product ? (
-                    <button className = "cart-button" onClick = {AddToCart}>Add To Cart</button>
+                    <button className = {`cart-button ${addedToCart ? "added" : ""}`} onClick = {AddToCart}>
+                        <span className={`button-text ${addedToCart ? "fade-in" : "fade-out"}`}>
+                        {addedToCart ? "✓ Added" : "Add To Cart"}
+                        </span>
+                    </button>
                     ):(
                         <p>Loading product...</p>
                     )}
