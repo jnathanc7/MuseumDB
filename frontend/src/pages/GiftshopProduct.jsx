@@ -7,14 +7,15 @@ import Footer from "../components/Footer";
 const GiftshopProduct = () =>{
     const{categoryName, productID} = useParams();
     const [totalProduct, setTotalProduct] = useState(0); 
-    const [product, setProduct] = useState(null)
+    const [product, setProduct] = useState({})
+    const [addedToCart, setAddedToCart] = useState(false);
 
     const increment = () =>{
         setTotalProduct(totalProduct + 1);
     };
     const decrement = () =>{
         setTotalProduct(totalProduct > 0 ? totalProduct - 1 : 0)
-    }
+    };
 
     const fetchProduct = async () =>{
             try{
@@ -36,13 +37,45 @@ const GiftshopProduct = () =>{
             fetchProduct();
         }, [categoryName,productID])
 
-        const addToCart = () =>{
-        const data = {id: product.Product_ID, name: product.Name, img: product.Image_URL, amount: totalProduct}
-        localStorage.setItem("data", JSON.stringify(data));
-        window.location.href = "/cart";
+        const productInfo = {
+            Product_ID: product?.Product_ID,
+            Quantity: totalProduct,
+        };
+
+        const AddToCart = async () =>{
+            try{
+                const response = await fetch(`http://localhost:5000/giftshop/${encodeURIComponent(categoryName)}/${encodeURIComponent(productID)}`,  {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(productInfo),
+                });
+                 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const result = await response.json();
+                setAddedToCart(true);
+                setTimeout(() => setAddedToCart(false), 1500);
+                console.log("Server Response: ", result);        
+            }
+            catch(error){
+                console.error("Error adding to cart:", error);
+            }
+            // setShowPopup(true);
         }
 
-        return(
+        return(  
+            <>
+            {/* {showPopup && (
+                <div className="popup-overlay">
+                  <div className="popup-message">
+                  <button onClick={() => setShowPopup(false)}>x</button>
+                    Added to cart!
+                  </div>
+                </div>
+              )}       */}
             <div className = "product-wrapper">
                 <div className = "product-left" style = 
                 {{backgroundImage: `url(${product?.Image_URL})`,//need to change to BLOB right now its just statically retreiving the url and matching with our files
@@ -80,9 +113,18 @@ const GiftshopProduct = () =>{
                         <Plus className="icon" />
                     </div>
                 </div>
-                    <button className = "cart-button">Add To Cart</button>
+                    {product ? (
+                    <button className = {`cart-button ${addedToCart ? "added" : ""}`} onClick = {AddToCart}>
+                        <span className={`button-text ${addedToCart ? "fade-in" : "fade-out"}`}>
+                        {addedToCart ? "✓ Added" : "Add To Cart"}
+                        </span>
+                    </button>
+                    ):(
+                        <p>Loading product...</p>
+                    )}
                 </div>
-            </div>            
+            </div>   
+            </>         
         )
 }
 
