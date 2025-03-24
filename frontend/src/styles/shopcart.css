@@ -4,7 +4,7 @@
     justify-content: flex-start; /* Centers horizontally */
     align-items: center; /* Centers vertically */
     height: 100vh;
-    padding: 20px;
+    padding: 55px;
     margin-top: 70px;
 }
 
@@ -80,7 +80,7 @@
   }
 
   .subtotal-amount{
-    margin-left: 400px;
+    margin-left: 370px;
   }
 
   .summary{
