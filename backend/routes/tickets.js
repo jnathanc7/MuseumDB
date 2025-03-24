@@ -12,20 +12,25 @@ module.exports = (req, res) => {
 
   // Fetch all tickets (Tickets are unlimited, so no availability check)
   if (method === "GET" && parsedUrl.pathname === "/tickets") {
+    console.log("Received request for /tickets");
+  
     const query = "SELECT * FROM tickets";
-        db.query(query, (err, results) => {
-            if (err) {
-                res.statusCode = 500;
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error("Database Error:", err); // ✅ Log database errors
+        res.statusCode = 500;
         res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({ error: "Error fetching tickets" }));
-                return;
-            }
-
-            res.statusCode = 200;
+        res.end(JSON.stringify({ error: "Error fetching tickets", details: err.message }));
+        return;
+      }
+  
+      console.log("Fetched Tickets:", results); // ✅ Log successful results
+      res.statusCode = 200;
       res.setHeader("Content-Type", "application/json");
       res.end(JSON.stringify(results));
-        });
-    }
+    });
+  }
+  
 
   // Fetch all purchases
   if (method === "GET" && parsedUrl.pathname === "/purchase") {
