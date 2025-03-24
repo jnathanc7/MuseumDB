@@ -10,27 +10,28 @@ const TotalReport = () => {
 
     const fetchReportData = async () => {
         try {
-            let url = `http://localhost:3000/total-report?dateRange=${dateRange}`; // Default with date filter
+            let url = `https://museumdb.onrender.com/total-report?dateRange=${dateRange}`;
             if (reportType === "total-ticket-sales") {
-                url = `http://localhost:3000/total-report?type=tickets&dateRange=${dateRange}`;
+                url = `https://museumdb.onrender.com/total-report?type=tickets&dateRange=${dateRange}`;
             } else if (reportType === "total-giftshop-sales") {
-                url = `http://localhost:3000/total-report?type=giftshop&dateRange=${dateRange}`;
+                url = `https://museumdb.onrender.com/total-report?type=giftshop&dateRange=${dateRange}`;
             } else if (reportType === "total-donations") {
-                url = `http://localhost:3000/total-report?type=donations&dateRange=${dateRange}`;
+                url = `https://museumdb.onrender.com/total-report?type=donations&dateRange=${dateRange}`;
             }
     
-            console.log("Fetching from:", url);  //  Debugging line
+            console.log("Fetching from:", url);
     
             const response = await fetch(url);
             const data = await response.json();
     
-            console.log("Received Data:", data);  //  Debugging line
+            console.log("Received Data:", data);
     
             setTicketSales(data);
         } catch (error) {
             console.error("Error fetching sales report:", error);
         }
     };
+    
     
     
 

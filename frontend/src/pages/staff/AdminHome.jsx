@@ -39,7 +39,8 @@ const AdminHome = () => {
             <select name="reports" className="admin-button admin-dropdown" onChange={handleNavigation}>
                 <option value="">View Reports...</option>
                 <option value="/admin/total-report">View Total Sale Reports</option>
-                <option value="/admin/exhibit-report">View Exhibit Reports</option>
+                <option value="/admin/exhibition-report">View Exhibit Reports</option>
+
                 <option value="/admin/view-complaints">View Complaints</option>
             </select>
     
