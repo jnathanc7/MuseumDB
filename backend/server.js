@@ -46,27 +46,27 @@ const server = http.createServer((req, res) => {
         return;
     }
     else if (parsedUrl.pathname.startsWith("/employees")) {
-        authMiddleware(["staff", "admin"])(req, res, () => {
+        // authMiddleware(["staff", "admin"])(req, res, () => {
             employeesRoutes(req, res, parsedUrl);
-        });
+        // });
         return;
     }
     else if (parsedUrl.pathname.startsWith("/total-report")) {
-        authMiddleware("admin")(req, res, () => {
+        // authMiddleware("admin")(req, res, () => {
             reportsRoutes(req, res);
-        });
+        // });
         return;
     }
     else if (parsedUrl.pathname.startsWith("/exhibition-report")) {
-        authMiddleware(["staff", "admin"])(req, res, () => {
+        // authMiddleware(["staff", "admin"])(req, res, () => {
             exhibitionReportRoutes(req, res);
-        });
+        // });
         return;
     }
     else if (req.url.startsWith("/complaints")) {
-        authMiddleware(["staff", "admin"])(req, res, () => {
+        // authMiddleware(["staff", "admin"])(req, res, () => {
             complaintsRoutes(req, res);
-        });
+        // });
         return;
     }
     else if (parsedUrl.pathname.startsWith("/cart")) {

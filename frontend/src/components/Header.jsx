@@ -23,7 +23,7 @@ const Header = () => {
   useEffect(() => {
     const checkLogin = async () => {
       console.log("🔍 Header checking login...");
-      try {
+      try { // https://museumdb.onrender.com/auth/profile
         const res = await fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
           method: "GET",
           credentials: "include",
