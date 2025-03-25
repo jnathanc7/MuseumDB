@@ -20,7 +20,7 @@ const server = http.createServer((req, res) => {
     // CORS Headers below
     // res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/");
     // if testing locally, change port accordingly
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5180");//had to change for my machine
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5181");//had to change for my machine
 
 
     // allows the methods you expect from the frontend access
@@ -84,7 +84,7 @@ const server = http.createServer((req, res) => {
             return;
     }
 
-}
+
 
     else if (parsedUrl.pathname.startsWith("/tickets")) {
         ticketsRoutes(req, res);
