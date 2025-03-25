@@ -9,8 +9,11 @@ module.exports = (allowedRoles = []) => {
     return (req, res, next) => {
         try {
             const token = extractToken(req);
+            console.log("🔑 JWT token:", token); // Add this
+
             if (!token) { 
                 return respondWithError(res, 401, "Access denied. No token provided.");
+                console.log("🚫 No token found!");
             }
     
             // verify JWT
@@ -38,6 +41,7 @@ module.exports = (allowedRoles = []) => {
 
 // helper to extract JWT from cookies
 function extractToken(req) {
+    console.log("🍪 Raw cookies:", req.headers.cookie); // Add this line
     if (!req.headers.cookie) return null;
     const cookies = cookie.parse(req.headers.cookie);
     return cookies.jwt || null; // Extract 'jwt' cookie if available

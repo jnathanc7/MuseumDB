@@ -20,7 +20,7 @@ const server = http.createServer((req, res) => {
     // CORS Headers below
     // res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app/");
     // if testing locally, change port accordingly
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5178");//had to change for my machine
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");//had to change for my machine
 
 
     // allows the methods you expect from the frontend access
@@ -52,9 +52,9 @@ const server = http.createServer((req, res) => {
     }
     // check if employeesRoutes should handle the request
     else if (parsedUrl.pathname.startsWith("/employees")) {
-        // authMiddleware(["staff", "admin"])(req, res, () => {
+        authMiddleware(["staff", "admin"])(req, res, () => {
             employeesRoutes(req, res, parsedUrl); // Pass parsed URL to employee routes
-        // });
+        });
         return;
     }
     // or reportsRoutes should handle it (will implement auth-access)

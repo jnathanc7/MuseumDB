@@ -35,6 +35,90 @@ module.exports = (req, res) => {
     else if (pathname === "/auth/reset-password" && method === "POST"){
         handleResetPassword(req,res);
     }
+    else if (pathname === "/auth/profile" && method === "GET") {
+        // Apply authentication middleware — this ensures req.user is populated
+        authMiddleware([])(req, res, () => {
+        console.log("✅ /auth/profile hit");
+        console.log("🧠 req.user =", req.user); // Add this
+        
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ success: true, user: req.user }));
+        
+        // const userId = req.user.id;
+        // const role = req.user.role;
+      
+        //   // If user is a customer, fetch customer profile data
+        // if (role === "customer") {
+        //     db.query(
+        //       `SELECT 
+        //           u.email, 
+        //           u.role, 
+        //           c.first_name, 
+        //           c.last_name, 
+        //           c.phone_number AS phone, 
+        //           c.membership_level, 
+        //           c.address
+        //        FROM users u
+        //        JOIN customers c ON u.user_ID = c.user_id
+        //        WHERE u.user_ID = ?`,
+        //       [userId],
+        //       (err, results) => {
+        //         if (err) {
+        //           // Internal server error
+        //           console.error("❌ MySQL Error in /auth/profile:", err); // Add this!
+        //           res.writeHead(500, { "Content-Type": "application/json" });
+        //           return res.end(JSON.stringify({ message: "Database error", error: err }));
+        //         }
+        //         if (results.length === 0) {
+        //           // No customer found for the user
+        //           res.writeHead(404, { "Content-Type": "application/json" });
+        //           return res.end(JSON.stringify({ message: "Customer not found" }));
+        //         }
+      
+        //         // Return customer profile data
+        //         res.writeHead(200, { "Content-Type": "application/json" });
+        //         res.end(JSON.stringify(results[0]));
+        //       }
+        //     );
+        // }
+        // else {
+        //     // User is not a customer — treat as staff
+        //     db.query(
+        //       `SELECT 
+        //           u.email, 
+        //           u.role, 
+        //           s.first_name, 
+        //           s.last_name, 
+        //           s.phone_number AS phone, 
+        //           s.job_title, 
+        //           s.hire_date, 
+        //           s.salary, 
+        //           s.address
+        //        FROM users u
+        //        JOIN staff s ON u.user_ID = s.user_id
+        //        WHERE u.user_ID = ?`,
+        //       [userId],
+        //       (err, results) => {
+        //         if (err) {
+        //           // Internal server error
+        //           res.writeHead(500, { "Content-Type": "application/json" });
+        //           return res.end(JSON.stringify({ message: "Database error", error: err }));
+        //         }
+        //         if (results.length === 0) {
+        //           // No staff profile found
+        //           res.writeHead(404, { "Content-Type": "application/json" });
+        //           return res.end(JSON.stringify({ message: "Staff not found" }));
+        //         }
+      
+        //         // Return staff profile data
+        //         res.writeHead(200, { "Content-Type": "application/json" });
+        //         res.end(JSON.stringify(results[0]));
+        //       }
+        //     );
+        // }
+        });
+      }
+      
     else {
         sendResponse(res, 404, { message: "Route not found" });
     }
@@ -44,6 +128,8 @@ module.exports = (req, res) => {
  * handles user registration
  */
 function handleRegister(req, res) {
+    console.log("📩 Received /auth/register request");
+
     let body = "";
 
     req.on("data", (chunk) => (body += chunk));
@@ -51,44 +137,126 @@ function handleRegister(req, res) {
     req.on("end", () => {
         try {
             const { email, password, role } = JSON.parse(body);
+            console.log("🔍 Parsed request body:", { email, role });
 
             if (!email || !password || !role) {
+                console.warn("⚠️ Missing required fields");
                 return sendResponse(res, 400, { message: "Email, password, and role are required." });
             }
 
-            // check if the user already exists
+            // Step 1: Check if user already exists
             db.query("SELECT user_ID FROM users WHERE email = ?", [email], (err, results) => {
-                if (err) return sendResponse(res, 500, { message: "Database error.", error: err });
+                if (err) {
+                    console.error("❌ Database error while checking user:", err);
+                    return sendResponse(res, 500, { message: "Database error.", error: err });
+                }
 
                 if (results.length > 0) {
+                    console.warn("⚠️ Email already registered:", email);
                     return sendResponse(res, 409, { message: "Email already in use." });
                 }
 
-                // hash the password before saving
+                // Step 2: Hash password
                 bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
-                    if (hashErr) return sendResponse(res, 500, { message: "Error hashing password.", error: hashErr });
+                    if (hashErr) {
+                        console.error("❌ Password hashing error:", hashErr);
+                        return sendResponse(res, 500, { message: "Error hashing password.", error: hashErr });
+                    }
 
-                    console.log("DEBUG: Plain Password:", password);
-                    console.log("DEBUG: Hashed Password:", hashedPassword);
+                    console.log("🔐 Password hashed successfully");
 
-                    db.query("INSERT INTO users (email, password, role) VALUES (?, ?, ?)", 
-                        [email, hashedPassword, role], 
-                        (insertErr, result) => {
-                            if (insertErr) {
-                                return sendResponse(res, 500, { message: "Error creating user.", error: insertErr });
-                            }
-
-                            sendResponse(res, 201, { message: "User registered successfully!", user_ID: result.insertId });
-
+                    // Step 3: Insert into users table
+                    const userInsertQuery = "INSERT INTO users (email, password, role, created_at) VALUES (?, ?, ?, NOW())";
+                    db.query(userInsertQuery, [email, hashedPassword, role], (insertErr, result) => {
+                        if (insertErr) {
+                            console.error("❌ Error inserting into users table:", insertErr);
+                            return sendResponse(res, 500, { message: "Error creating user.", error: insertErr });
                         }
-                    );
+
+                        const userId = result.insertId;
+                        console.log("✅ User inserted into users table with ID:", userId);
+
+                        // Step 4: Insert into domain table
+                        if (role === "customer") {
+                            const customerInsert = `
+                                INSERT INTO customers (user_id, Customer_Type, First_Name, Last_Name, Email, Phone_Number, Birthdate)
+                                VALUES (?, ?, ?, ?, ?, ?, ?)
+                            `;
+                            const customerValues = [
+                                userId,
+                                "Regular",
+                                "First",
+                                "Last",
+                                email,
+                                "000-000-0000",
+                                "2000-01-01"
+                            ];
+
+                            console.log("📤 Inserting customer record:", customerValues);
+
+                            db.query(customerInsert, customerValues, (custErr) => {
+                                if (custErr) {
+                                    console.error("❌ Error inserting customer record:", custErr);
+                                    return sendResponse(res, 500, { message: "Error creating customer record.", error: custErr });
+                                }
+
+                                console.log("✅ Customer inserted successfully");
+                                return sendResponse(res, 201, {
+                                    message: "Customer registered successfully!",
+                                    user_ID: userId
+                                });
+                            });
+                        } else {
+                            const staffInsert = `
+                                INSERT INTO staff (
+                                    Staff_ID, First_Name, Last_Name, Job_title, Supervisor_ID,
+                                    Department, Hire_Date, Email, Phone_Number,
+                                    End_Date, Salary, Employee_ID, Active_Status
+                                )
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            `;
+                            const staffValues = [
+                                userId,
+                                "First",
+                                "Last",
+                                role === "admin" ? "Administrator" : "New Hire",
+                                null,
+                                "Unassigned",
+                                new Date(),
+                                email,
+                                "000-000-0000",
+                                null,
+                                0.00,
+                                null,
+                                1
+                            ];
+
+                            console.log("📤 Inserting staff record:", staffValues);
+
+                            db.query(staffInsert, staffValues, (staffErr) => {
+                                if (staffErr) {
+                                    console.error("❌ Error inserting staff record:", staffErr);
+                                    return sendResponse(res, 500, { message: "Error creating staff record.", error: staffErr });
+                                }
+
+                                console.log("✅ Staff inserted successfully");
+                                return sendResponse(res, 201, {
+                                    message: "Staff registered successfully!",
+                                    user_ID: userId
+                                });
+                            });
+                        }
+                    });
                 });
             });
         } catch (error) {
+            console.error("❌ JSON parse error:", error);
             sendResponse(res, 400, { message: "Invalid JSON format.", error });
         }
     });
 }
+
+
 
 /**
  * handles user login
@@ -426,6 +594,32 @@ function sendPasswordResetEmail(userEmail, resetToken) {
     });
 
 }
+
+/**
+ *  retrieves the currently logged-in user's info from the DB for display
+ */
+function handleProfile(req, res) {
+    const userId = req.user.id; // from JWT
+    // Example: just fetch the user’s row from 'users'
+    db.query("SELECT user_ID, email, role FROM users WHERE user_ID = ?", [userId], (err, results) => {
+        if (err) {
+            return sendResponse(res, 500, { message: "Database error.", error: err });
+        }
+        if (results.length === 0) {
+            return sendResponse(res, 404, { message: "User not found in database." });
+        }
+
+        // For more detail, you might also query staff/customers table. This is just a basic example.
+        const userData = results[0];
+        // Return fields we want front-end to display
+        sendResponse(res, 200, { 
+            user_ID: userData.user_ID, 
+            email: userData.email, 
+            role: userData.role 
+        });
+    });
+}
+
 /**
  * sends a structured JSON response.
  */
