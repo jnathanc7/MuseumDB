@@ -150,7 +150,6 @@ const RemoveFromCart = async (cartItemID) =>{
           >
             <option value="Credit Card">Credit Card</option>
             <option value="Debit Card">Debit Card</option>
-            <option value="Cash">Cash</option>
           </select>
         </div>
         
