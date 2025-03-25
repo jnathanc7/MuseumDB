@@ -21,7 +21,7 @@ const AdminHome = () => {
     };
 
     // Verify the user's role before loading the page
-    useEffect(() => {
+    useEffect(() => { // https://museumdb.onrender.com/auth/profile
         fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
           method: "GET",
           credentials: "include"

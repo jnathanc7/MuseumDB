@@ -31,7 +31,7 @@ const Auth = () => {
     setErrorMessage('');
     setSuccessMessage('');
 
-    try {
+    try { // https://museumdb.onrender.com/auth/register
       const response = await fetch('https://museumdb.onrender.com/auth/register', { // http://localhost:5000/auth/register
         method: 'POST',
         credentials: 'include',
@@ -50,7 +50,7 @@ const Auth = () => {
 
       if (!response.ok) {
         setErrorMessage(data.message || 'An error occurred while registering.');
-      } else {
+      } else { // https://museumdb.onrender.com/auth/login
         const loginResponse = await fetch('https://museumdb.onrender.com/auth/login', { // http://localhost:5000/auth/login
           method: 'POST',
           credentials: 'include',
@@ -85,7 +85,7 @@ const Auth = () => {
     setErrorMessage('');
     setSuccessMessage('');
 
-    try {
+    try { // https://museumdb.onrender.com/auth/login
       const response = await fetch('https://museumdb.onrender.com/auth/login', { // http://localhost:5000/auth/login
         method: 'POST',
         credentials: 'include',
@@ -110,7 +110,7 @@ const Auth = () => {
   };
 
   const handleForgotPasswordSubmit = async () => {
-    try {
+    try { // https://museumdb.onrender.com/auth/forgot-password
       const response = await fetch('https://museumdb.onrender.com/auth/forgot-password', { // http://localhost:5000/auth/forgot-password
         method: 'POST',
         credentials: 'include',

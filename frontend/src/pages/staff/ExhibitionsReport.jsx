@@ -20,7 +20,7 @@ const ExhibitionReport = () => {
   }, []);
 
   const fetchExhibitions = async () => {
-    try {
+    try { // https://museumdb.onrender.com/exhibition-report
       const response = await fetch("https://museumdb.onrender.com/exhibition-report");
         //  const response = await fetch("http://localhost:5000/exhibition-report");
       if (!response.ok) {
@@ -57,7 +57,7 @@ const ExhibitionReport = () => {
       return;
     }
 
-    try {
+    try { // https://museumdb.onrender.com/exhibition-report
       const response = await fetch("https://museumdb.onrender.com/exhibition-report", {
       //  const response = awaitfetch("http://localhost:5000/exhibition-report", {
         method: "POST",
