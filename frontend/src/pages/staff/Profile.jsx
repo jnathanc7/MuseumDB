@@ -1,6 +1,7 @@
 // Profile.jsx
 import "../../styles/profile.css";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -9,12 +10,12 @@ const Profile = () => {
   const [newUser, setNewUser] = useState(null);
   const [saveStatus, setSaveStatus] = useState(null);
 
-  // For password change fields
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Auto-hide any success/error message after 5s
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (saveStatus) {
       const timer = setTimeout(() => {
@@ -24,7 +25,6 @@ const Profile = () => {
     }
   }, [saveStatus]);
 
-  // Fetch user profile on mount
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -47,7 +47,6 @@ const Profile = () => {
           birthdateFormatted = `${y}-${day}-${mon}`;
         }
 
-        // Combine fields
         const unifiedProfile = {
           role: data.role,
           first_name: data.first_name || "",
@@ -73,27 +72,31 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
-  // Toggle edit mode
+  // Redirect to /auth if profile failed to load (likely logged out)
+  useEffect(() => {
+    if (user === null && saveStatus === "Failed to load profile data.") {
+      console.warn("🚪 Redirecting to /auth because profile could not load (likely logged out)");
+      navigate("/auth");
+    }
+  }, [user, saveStatus]); 
+
   const handleEdit = () => {
     setIsEditing(true);
     setIsChangingPassword(false);
     setSaveStatus(null);
   };
 
-  // Cancel edit mode
   const handleCancelEdit = () => {
     setIsEditing(false);
     setSaveStatus(null);
   };
 
-  // Toggle change password mode
   const handleChangePasswordClick = () => {
     setIsChangingPassword(true);
     setIsEditing(false);
     setSaveStatus(null);
   };
 
-  // Cancel password change
   const handleCancelPassword = () => {
     setIsChangingPassword(false);
     setCurrentPassword("");
@@ -102,7 +105,6 @@ const Profile = () => {
     setSaveStatus(null);
   };
 
-  // Save changes to user profile
   const handleSave = async () => {
     try {
       const response = await fetch("http://localhost:5000/auth/update-profile", {
@@ -128,12 +130,10 @@ const Profile = () => {
     }
   };
 
-  // Track input changes for editing
   const handleChange = (e) => {
     setNewUser({ ...newUser, [e.target.name]: e.target.value });
   };
 
-  // Submit password change
   const handlePasswordSubmit = async () => {
     if (newPassword !== confirmPassword) {
       setSaveStatus("❌ New password and confirmation do not match.");
@@ -154,7 +154,6 @@ const Profile = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
 
-      // Clear fields, exit password mode
       setIsChangingPassword(false);
       setCurrentPassword("");
       setNewPassword("");
@@ -163,6 +162,24 @@ const Profile = () => {
     } catch (err) {
       console.error("❌ Error changing password:", err);
       setSaveStatus("Failed to change password.");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      console.log("[Profile] Attempting logout request...");
+      const res = await fetch("http://localhost:5000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      console.log("[Profile] Logout response:", res.status, data);
+
+      if (!res.ok) throw new Error("Logout failed");
+      navigate("/auth");
+    } catch (err) {
+      console.error("❌ Logout failed:", err);
+      setSaveStatus("Logout failed.");
     }
   };
 
@@ -178,7 +195,6 @@ const Profile = () => {
 
   const isCustomer = user.role === "customer";
 
-  // Classes for fade-in animation
   const editFormClass = isEditing ? "profile-edit fade-in-strong" : "profile-edit";
   const passwordFormClass = isChangingPassword ? "profile-edit fade-in-strong" : "profile-edit";
 
@@ -188,7 +204,6 @@ const Profile = () => {
         <h1 className="profile-title">Profile</h1>
         {saveStatus && <p className="save-status">{saveStatus}</p>}
 
-        {/* Change Password View */}
         {isChangingPassword ? (
           <div className={passwordFormClass}>
             <label>Current Password:</label>
@@ -222,7 +237,6 @@ const Profile = () => {
             </div>
           </div>
         ) : isEditing ? (
-          // Edit Profile View
           <div className={editFormClass}>
             <label>First Name:</label>
             <input
@@ -281,7 +295,6 @@ const Profile = () => {
             </div>
           </div>
         ) : (
-          // Default Profile View
           <div className="profile-info fade-in-strong">
             {isCustomer ? (
               <>
@@ -303,16 +316,19 @@ const Profile = () => {
               </>
             )}
 
-            <div style={{ marginTop: "1rem" }}>
+            <div style={{ marginTop: "1rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
               <button className="edit-button" onClick={handleEdit}>
                 Edit Profile
               </button>
+              <button className="edit-button" onClick={handleChangePasswordClick}>
+                Change Password
+              </button>
               <button
                 className="edit-button"
-                style={{ marginLeft: "1rem" }}
-                onClick={handleChangePasswordClick}
+                style={{ backgroundColor: "#c0392b" }}
+                onClick={handleLogout}
               >
-                Change Password
+                Logout
               </button>
             </div>
           </div>

@@ -9,7 +9,7 @@ const Auth = () => {
   // Sign Up fields
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
-  const [signupRole] = useState('customer'); // role is fixed to 'customer'
+  const [signupRole] = useState('customer');
   const [signupFirstName, setSignupFirstName] = useState('');
   const [signupLastName, setSignupLastName] = useState('');
   const [signupPhone, setSignupPhone] = useState('');
@@ -17,6 +17,10 @@ const Auth = () => {
   // Sign In fields
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+
+  // Forgot password state
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -47,7 +51,23 @@ const Auth = () => {
       if (!response.ok) {
         setErrorMessage(data.message || 'An error occurred while registering.');
       } else {
-        setSuccessMessage('Registration successful! You can now sign in.');
+        const loginResponse = await fetch('http://localhost:5000/auth/login', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: signupEmail, password: signupPassword }),
+        });
+
+        const loginData = await loginResponse.json();
+
+        if (!loginResponse.ok) {
+          setSuccessMessage('Account created, but login failed. Please sign in manually.');
+          setRightPanelActive(false);
+        } else {
+          setSuccessMessage('Registration complete! Redirecting...');
+          navigate('/profile');
+        }
+
         setSignupEmail('');
         setSignupPassword('');
         setSignupFirstName('');
@@ -89,6 +109,30 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPasswordSubmit = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/auth/forgot-password', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.message || 'Failed to send reset link.');
+      } else {
+        setSuccessMessage('Password reset email sent!');
+        setResetEmail('');
+        setShowForgotPassword(false);
+      }
+    } catch (error) {
+      console.error('Forgot Password Error:', error);
+      setErrorMessage('Network error occurred.');
+    }
+  };
+
   return (
     <div className="auth-page">
       <div className={`auth-container ${rightPanelActive ? 'auth-right-panel-active' : ''}`} id="auth-container">
@@ -106,12 +150,78 @@ const Auth = () => {
         </div>
 
         <div className="auth-form-container auth-sign-in-container">
-          <form onSubmit={handleSignInSubmit}>
-            <h1>Sign in</h1>
-            <input type="email" placeholder="Email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
-            <input type="password" placeholder="Password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required />
-            <button type="submit">Sign In</button>
-          </form>
+          {!showForgotPassword ? (
+            <form onSubmit={handleSignInSubmit}>
+              <h1>Sign in</h1>
+              <input type="email" placeholder="Email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
+              <input type="password" placeholder="Password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required />
+              <div style={{ margin: '4px 0 12px' }}>
+                <span
+                  style={{ color: '#007bff', textDecoration: 'underline', cursor: 'pointer', fontSize: '12px' }}
+                  onClick={() => {
+                    setShowForgotPassword(true);
+                    setErrorMessage('');
+                    setSuccessMessage('');
+                  }}
+                >
+                  Forgot Password?
+                </span>
+              </div>
+              <button type="submit">Sign In</button>
+              {errorMessage && (
+                <div style={{ color: "#b00020", fontSize: "13px", marginTop: "10px" }}>
+                  {errorMessage}
+                </div>
+              )}
+              {successMessage && (
+                <div style={{ color: "green", fontSize: "13px", marginTop: "10px" }}>
+                  {successMessage}
+                </div>
+              )}
+            </form>
+          ) : (
+            <form>
+              <h1>Reset Password</h1>
+              <span>Enter your email to receive a reset link</span>
+              <input
+                type="email"
+                placeholder="Email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                required
+              />
+              <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForgotPassword(false);
+                    setErrorMessage('');
+                    setResetEmail('');
+                  }}
+                  style={{ fontSize: "11px", padding: "10px 25px", backgroundColor: "#dc3545", border: "none", borderRadius: "20px" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleForgotPasswordSubmit}
+                  style={{ fontSize: "11px", padding: "10px 25px" }}
+                >
+                  Done
+                </button>
+              </div>
+              {errorMessage && (
+                <div style={{ color: "#b00020", fontSize: "13px", marginTop: "10px" }}>
+                  {errorMessage}
+                </div>
+              )}
+              {successMessage && (
+                <div style={{ color: "green", fontSize: "13px", marginTop: "10px" }}>
+                  {successMessage}
+                </div>
+              )}
+            </form>
+          )}
         </div>
 
         <div className="auth-overlay-container">
@@ -129,9 +239,6 @@ const Auth = () => {
           </div>
         </div>
       </div>
-
-      {errorMessage && <div className="auth-error-message">{errorMessage}</div>}
-      {successMessage && <div className="auth-success-message">{successMessage}</div>}
     </div>
   );
 };
