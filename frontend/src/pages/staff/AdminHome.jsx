@@ -1,5 +1,7 @@
 import "../../styles/admin.css";
 import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react"; 
+
 
 const AdminHome = () => {
     const navigate = useNavigate(); 
@@ -17,6 +19,34 @@ const AdminHome = () => {
         navigate(selectedValue);
         event.target.value = "";  // Reset dropdown to allow reselection
     };
+
+    // Verify the user's role before loading the page
+    useEffect(() => {
+        fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
+          method: "GET",
+          credentials: "include"
+        })
+          .then((res) => {
+            if (!res.ok) {
+              console.log("🔍 Response status:", res.status);
+              throw new Error(`HTTP error ${res.status}`);
+            }
+            return res.json();
+          })
+          .then((data) => {
+            console.log("✅ User data:", data); // Use this instead of res.status
+            if (data.role === "customer") {
+              navigate("/profile");
+            } else if (data.role !== "staff" && data.role !== "admin") {
+              alert("Access denied. Only staff and admins can access this page.");
+              navigate("/");
+            }
+          })
+          .catch((err) => {
+            console.log("Error verifying role:", err);
+            navigate("/");
+          });
+      }, []);
 
     return (
         <main className="admin-container">

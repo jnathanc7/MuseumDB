@@ -8,6 +8,8 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation(); // Get the current location (path)
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 30);
@@ -17,14 +19,50 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Check if the current page is "Tickets"
+  // 🔁 Check login on every route change
+  useEffect(() => {
+    const checkLogin = async () => {
+      console.log("🔍 Header checking login...");
+      try {
+        const res = await fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
+          method: "GET",
+          credentials: "include",
+        });
+
+        const data = await res.json();
+        console.log("📡 /auth/profile response:", res.status, data);
+
+        if (res.ok) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("❌ Error checking login status:", error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkLogin();
+  }, [location.pathname]);
+
+  // 🔍 Log on every render
+  console.log("🧠 Header render: isLoggedIn =", isLoggedIn);
+
   const isTicketsPage = location.pathname === "/tickets";
   const isMembershipPage = location.pathname === "/memberships";
-  // checks if the current page is a subpage of giftshop
-  const isGiftshopPage = location.pathname.startsWith("/Giftshop") && location.pathname != "/Giftshop";
+  const isGiftshopPage = location.pathname.startsWith("/Giftshop") && location.pathname !== "/Giftshop";
   const isShoppingCart = location.pathname === "/cart";
+
+  const loginLinkStyle = isLoggedIn ? { display: "none" } : {};
+  const profileLinkStyle = isLoggedIn ? {} : { display: "none" };
+
   return (
-    <header className={`header ${scrolled ? "scrolled" : ""} ${isTicketsPage || isMembershipPage || isGiftshopPage || isShoppingCart ? "tickets-page" : ""}`}>
+    <header
+      className={`header ${scrolled ? "scrolled" : ""} ${
+        isTicketsPage || isMembershipPage || isGiftshopPage || isShoppingCart ? "tickets-page" : ""
+      }`}
+    >
       <h1 className="logo">
         <AnimatedLink to="/">Museum</AnimatedLink>
       </h1>
@@ -33,21 +71,29 @@ const Header = () => {
         <AnimatedLink to="/tickets">Tickets</AnimatedLink>
         <AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink>
         <AnimatedLink to="/memberships">Memberships</AnimatedLink>
-        <AnimatedLink to="/Auth" className="login">Login</AnimatedLink>
+
+        {/* Login tab - visible only if not logged in */}
+        {!isLoggedIn && (
+          <AnimatedLink to="/Auth" className="login">
+            Login
+          </AnimatedLink>
+        )}
+
+        {/* Profile tab - visible only if logged in */}
+        {isLoggedIn && (
+          <AnimatedLink to="/profile" className="login">
+            Profile
+          </AnimatedLink>
+        )}
+
         {/* Temporary Admin Link */}
         <AnimatedLink to="/adminhome">Admin</AnimatedLink>
-        <AnimatedLink to ="/cart"><FaShoppingCart/></AnimatedLink>
+        <AnimatedLink to="/cart">
+          <FaShoppingCart />
+        </AnimatedLink>
       </nav>
     </header>
   );
 };
 
 export default Header;
-
-
-
-
-
-
-
-

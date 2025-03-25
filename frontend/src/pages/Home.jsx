@@ -12,12 +12,39 @@ const images = [image1, image2, image3, image4];
 
 const Home = () => {
   const [currentImage, setCurrentImage] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
     }, 3000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      console.log("🔍 Home checking login...");
+      try {
+        const res = await fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
+          method: "GET",
+          credentials: "include",
+        });
+
+        const data = await res.json();
+        console.log("📡 /auth/profile response:", res.status, data);
+
+        if (res.ok) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("❌ Error checking login status in Home:", error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkLogin();
   }, []);
 
   return (
@@ -27,7 +54,8 @@ const Home = () => {
         <h1 className="museum-name">Houston Museum of Fine Arts</h1>
         <nav className="nav-links">
           <ul>
-            <li><AnimatedLink to="/auth">Login</AnimatedLink></li>
+            {!isLoggedIn && <li><AnimatedLink to="/auth">Login</AnimatedLink></li>}
+            {isLoggedIn && <li><AnimatedLink to="/profile">Profile</AnimatedLink></li>}
             <li><AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink></li>
             <li><AnimatedLink to="/tickets">Tickets</AnimatedLink></li>
             <li><AnimatedLink to="/memberships">Memberships</AnimatedLink></li>
@@ -64,4 +92,3 @@ const Home = () => {
 };
 
 export default Home;
-

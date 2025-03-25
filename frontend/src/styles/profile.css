@@ -15,7 +15,7 @@
 /* Profile Card */
 .profile-card {
     background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
+    padding: 30px; /* increased padding for more space from border */
     border-radius: 10px;
     width: 400px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
@@ -30,7 +30,7 @@
 
 /* Profile Info */
 .profile-info p {
-    font-size: 1.2rem;
+    font-size: 1rem; /* revert to smaller font for old look */
     margin-bottom: 10px;
 }
 
@@ -43,18 +43,52 @@
     border-radius: 5px;
 }
 
+/* Save Status Messages */
+.save-status {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
 /* Buttons */
 .edit-button, .save-button {
-    background-color: #007bff;
+    background-color: #007bff; /* Blue color */
     color: white;
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px; /* smaller font for old style */
     margin-top: 10px;
 }
 
 .save-button {
-    background-color: #28a745;
+    background-color: #28a745; /* green confirm */
+}
+
+.cancel-button {
+    background-color: #dc3545; /* red cancel */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+/* Fade Animations */
+.fade-in-strong {
+    animation: fade-in-strong 0.8s ease-in-out;
+}
+
+@keyframes fade-in-strong {
+    from {
+        opacity: 0;
+        transform: translateY(40px); /* bigger distance for more obvious effect */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
