@@ -3,7 +3,7 @@
     display: flex; /* Enables flexbox */
     justify-content: flex-start; /* Centers horizontally */
     align-items: center; /* Centers vertically */
-    height: 100vh;
+    height: 100%;
     padding: 55px;
     margin-top: 70px;
 }

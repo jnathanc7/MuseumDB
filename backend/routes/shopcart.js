@@ -53,6 +53,50 @@ module.exports = (req, res) => {
         });
         });
     }
+
+    else if (parsedUrl.pathname === "/cart" && method === "POST") {
+        let body = "";
+    
+        req.on("data", chunk => {
+            body += chunk;
+        });
+        req.on("end", () => {
+            const {payment_Method, total_amount, products} = JSON.parse(body);
+    
+        const transactionQuery = "INSERT INTO gift_shop_transactions (customer_ID, Total_Amount, Payment_Method) VALUES (1, ?, ?);";
+        //change this query to link the product table
+        db.query(transactionQuery,[total_amount, payment_Method], (err, results) => {
+            if (err) {
+                console.error("Transaction insert error:", err);
+                res.writeHead(500, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({ message: "Error purchasing", error: err }));
+            }
+
+            const transactionID = results.insertId;
+
+            const itemInserts = products.map(p =>[
+                transactionID,
+                p.Product_ID,
+                p.Quantity,
+                p.Price,
+            ])
+
+            console.log("Prepared item inserts:", itemInserts);
+
+            const itemQuery = "INSERT INTO gift_shop_items (Transaction_ID, Product_ID, Quantity, Price_Per_Unit) VALUES ?"
+            db.query(itemQuery,[itemInserts], (err2) => {
+                if (err2) {
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    return res.end(JSON.stringify({ message: "Error inserting items", error: err2 }));
+                }
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ message: "Thank You For Your Purchase!" }));
+                console.log("gift_shop_items table updated")
+                return; 
+            });
+        });
+        });
+    }
     
     
 

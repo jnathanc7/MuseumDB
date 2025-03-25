@@ -49,6 +49,7 @@ const ShopCart = () => {
   const [cartProducts, setCartProducts] = useState([]);
   const [subTotal, setSubTotal] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("Credit Card"); 
+  const [confirmation, setConfirmation] = useState("")
 
   const increment = (cartItemId) =>{
     setCartProducts(prev =>
@@ -117,6 +118,42 @@ const RemoveFromCart = async (cartItemID) =>{
   }
 }
 
+const Purchase = async () =>{
+  //filter useState to only get data that is required for the query (we dont need url,description, cartid)
+  const products = cartProducts.map(item => ({
+    Product_ID: item.Product_ID,
+    Quantity: item.Quantity,
+    Price: item.Price
+  }));
+
+  //package the data into one to send to the backend
+  const purchaseData = {
+    payment_Method: paymentMethod,
+    total_amount: subTotal,
+    products: products,
+  }
+
+  try{
+      const response = await fetch(`https://museumdb.onrender.com/cart`,  {//need to change to render
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(purchaseData),
+      });
+       
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const result = await response.json();
+      console.log("Server Response: ", result); 
+      setConfirmation(result.message);
+  }
+  catch(error){
+      console.error("Error processing transaction:", error);
+  }
+}
+
   return (
     <div className="cart-wrapper">
       <h1>Shopping Cart</h1>
@@ -157,14 +194,15 @@ const RemoveFromCart = async (cartItemID) =>{
           className="purchase-button"
           role="button"
           tabIndex="0"
-          onClick={() => Increment(cartItem.Cart_Item_ID)}//change this later to query into the database
+          onClick={Purchase}//change this later to query into the database
           onKeyPress={(e) => {
             if (e.key === "Enter") handleDecrement(totalProduct);
           }}
         >
           Purchase
         </div>
-        
+        {/* Show purchase confirmation message */}
+        {confirmation && <p className="purchase-message">{confirmation}</p>}
         
       </>
     )}
