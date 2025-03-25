@@ -16,6 +16,7 @@ const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
 const allowedOrigins = [
     "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
     "http://localhost:5180", // Local frontend
+    "http://localhost:5173", // gabe local frontend
 ];
  
 // Start HTTP Server
