@@ -32,7 +32,7 @@ const Auth = () => {
     setSuccessMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/auth/register', {
+      const response = await fetch('https://museumdb.onrender.com/auth/register', { // http://localhost:5000/auth/register
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -51,7 +51,7 @@ const Auth = () => {
       if (!response.ok) {
         setErrorMessage(data.message || 'An error occurred while registering.');
       } else {
-        const loginResponse = await fetch('http://localhost:5000/auth/login', {
+        const loginResponse = await fetch('https://museumdb.onrender.com/auth/login', { // http://localhost:5000/auth/login
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -86,7 +86,7 @@ const Auth = () => {
     setSuccessMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/auth/login', {
+      const response = await fetch('https://museumdb.onrender.com/auth/login', { // http://localhost:5000/auth/login
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -111,7 +111,7 @@ const Auth = () => {
 
   const handleForgotPasswordSubmit = async () => {
     try {
-      const response = await fetch('http://localhost:5000/auth/forgot-password', {
+      const response = await fetch('https://museumdb.onrender.com/auth/forgot-password', { // http://localhost:5000/auth/forgot-password
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -28,7 +28,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:5000/auth/profile", {
+        const res = await fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
           method: "GET",
           credentials: "include",
         });
@@ -107,7 +107,7 @@ const Profile = () => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch("http://localhost:5000/auth/update-profile", {
+      const response = await fetch("https://museumdb.onrender.com/auth/update-profile", { // http://localhost:5000/auth/update-profile
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -141,7 +141,7 @@ const Profile = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/auth/change-password", {
+      const response = await fetch("https://museumdb.onrender.com/auth/change-password", { // http://localhost:5000/auth/change-password
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -168,7 +168,7 @@ const Profile = () => {
   const handleLogout = async () => {
     try {
       console.log("[Profile] Attempting logout request...");
-      const res = await fetch("http://localhost:5000/auth/logout", {
+      const res = await fetch("https://museumdb.onrender.com/auth/logout", { // http://localhost:5000/auth/logout
         method: "POST",
         credentials: "include",
       });

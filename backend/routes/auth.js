@@ -495,9 +495,9 @@ function sendPasswordResetEmail(userEmail, resetToken) {
             pass: process.env.EMAIL_PASS, // app-specific password for authentication
         },
     });
-
+    
     // generates the password reset link with the token as a parameter.
-    const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+    const resetLink = `https://museum-db-kappa.vercel.app/reset-password?token=${resetToken}`; // `http://localhost:5173/reset-password?token=${resetToken}`
     // const resetLink = `https://museum-db-kappa.vercel.app/reset-password?token=${resetToken}`; // Uncomment for production
 
     // email content

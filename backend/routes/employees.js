@@ -6,8 +6,17 @@ module.exports = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const method = req.method;
 
+    const allowedOrigins = [
+        "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
+        "http://localhost:5180", // Local frontend
+        "http://localhost:5173", // gabe local frontend
+    ];
+
     // Handle CORS (Allow frontend to communicate with backend)
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173"); // Adjust to your frontend URL
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader("Access-Control-Allow-Origin", origin);
+    }    
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
