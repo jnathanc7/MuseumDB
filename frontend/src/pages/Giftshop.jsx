@@ -25,7 +25,7 @@ const Giftshop = () =>{
 
     const fetchCategories = async () =>{
         try{
-            const response = await fetch("http://localhost:5000/giftshop");
+            const response = await fetch("https://museumdb.onrender.com/giftshop");
             const data = await response.json();
             console.log("Fetched Category Data", data);
             setCategories(data);
@@ -45,7 +45,7 @@ const Giftshop = () =>{
             {/*Hero Section */}          
             <div className = "giftshop-hero" >
             <h1 className = "giftshophero-header">Welcome to the Museum Giftshop</h1>
-            <p className = "giftshophero-text">Discover a curated selection of art prints, handcrafted jewelry, unique souvenirs, and more. Take home a piece of history today!</p>
+            <p className = "giftshophero-text">Discover a curated selection of art prints, handcrafted jewelry, unique souvenirs, and more!</p>
             </div>
 
             {/* Categories Section */}
@@ -55,7 +55,6 @@ const Giftshop = () =>{
                     <CategoryItem key={category.Category_ID} category={category} />
                 ))}
             </div>
-            <Footer />
         </div>
     )
  
