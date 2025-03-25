@@ -21,7 +21,7 @@ const GiftshopCategoryPage = () =>{
     const{categoryName} = useParams();
     const fetchProducts = async () =>{
         try{
-            const response = await fetch(`http://localhost:5000/giftshop/${encodeURIComponent(categoryName)}`)
+            const response = await fetch(`https://museumdb.onrender.com/giftshop/${encodeURIComponent(categoryName)}`)
             const data = await response.json();
             console.log("Fetched Product Data", data);
             setProducts(data);

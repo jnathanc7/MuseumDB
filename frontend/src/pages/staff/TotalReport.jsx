@@ -31,6 +31,31 @@ const TotalReport = () => {
             console.error("Error fetching sales report:", error);
         }
     };
+
+    // const fetchReportData = async () => {
+    //     try {
+    //         let url = `http://localhost:5000/total-report?dateRange=${dateRange}`;
+    //         if (reportType === "total-ticket-sales") {
+    //             url = `http://localhost:5000/total-report?type=tickets&dateRange=${dateRange}`;
+    //         } else if (reportType === "total-giftshop-sales") {
+    //             url = `http://localhost:5000/total-report?type=giftshop&dateRange=${dateRange}`;
+    //         } else if (reportType === "total-donations") {
+    //             url = `http://localhost:5000/total-report?type=donations&dateRange=${dateRange}`;
+    //         }
+    
+    //         console.log("Fetching from:", url);
+    
+    //         const response = await fetch(url);
+    //         const data = await response.json();
+    
+    //         console.log("Received Data:", data);
+    
+    //         setTicketSales(data);
+    //     } catch (error) {
+    //         console.error("Error fetching sales report:", error);
+    //     }
+    // };
+    
     
     
     

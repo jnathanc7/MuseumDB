@@ -15,7 +15,7 @@ const Tickets = () => {
 
   // 🔹 Fetch ticket prices dynamically from backend
   useEffect(() => {
-    fetch("http://localhost:5000/tickets")
+    fetch("https://museumdb.onrender.com/tickets")
       .then((response) => response.json())
       .then((data) => {
         setTicketTypes(data);
@@ -83,7 +83,7 @@ const Tickets = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/purchase", {
+      const response = await fetch("https://museumdb.onrender.com/purchase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(purchaseData),
@@ -191,7 +191,6 @@ const Tickets = () => {
           >
             <option value="Credit Card">Credit Card</option>
             <option value="Debit Card">Debit Card</option>
-            <option value="Cash">Cash</option>
           </select>
         </div>
 

@@ -79,7 +79,7 @@ const ShopCart = () => {
 
   const fetchShopCart = async () =>{
     try{
-      const response = await fetch("http://localhost:5000/cart");
+      const response = await fetch("https://museumdb.onrender.com/cart");
       const data = await response.json();
       console.log("Fetched Cart Data", data);
       setCartProducts(data);
@@ -95,7 +95,7 @@ useEffect(() => {
 
 const RemoveFromCart = async (cartItemID) =>{
   try{
-      const response = await fetch(`http://localhost:5000/cart`,  {
+      const response = await fetch(`https://museumdb.onrender.com/cart`,  {
           method: "DELETE",
           headers: {
               "Content-Type": "application/json",
@@ -187,7 +187,6 @@ const Purchase = async () =>{
           >
             <option value="Credit Card">Credit Card</option>
             <option value="Debit Card">Debit Card</option>
-            <option value="Cash">Cash</option>
           </select>
         </div>
         
