@@ -134,7 +134,7 @@ const Purchase = async () =>{
   }
 
   try{
-      const response = await fetch(`http://localhost:5000/cart`,  {
+      const response = await fetch(`https://museumdb.onrender.com/cart`,  {//need to change to render
           method: "POST",
           headers: {
               "Content-Type": "application/json",
