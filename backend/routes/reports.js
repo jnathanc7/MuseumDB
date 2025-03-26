@@ -1,11 +1,11 @@
 const url = require("url");
 const db = require("../db"); // Import Database Connection
 
-module.exports = (req, res) => { 
+module.exports = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const method = req.method;
 
-    // Handle CORS (Allow frontend to communicate with backend)
+    // Handle CORS
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -15,93 +15,87 @@ module.exports = (req, res) => {
         return res.end();
     }
 
-    //  GET /reports/total-tickets - Retrieve all ticket sales
+    // GET /total-report
     if (parsedUrl.pathname === "/total-report" && method === "GET") {
         const saleType = parsedUrl.query.type || "all";
         const dateRange = parsedUrl.query.dateRange || "all-dates";
 
-        let query = `
-            SELECT Ticket_ID AS Sale_ID, Customer_ID, 'Ticket' AS Sale_Type, Price AS Amount, Visit_Date AS Sale_Date, NULL AS Payment_Method 
-            FROM tickets
-            UNION ALL
-            SELECT Transaction_ID AS Sale_ID, Customer_ID, 'Gift Shop' AS Sale_Type, Total_Amount AS Amount, Date AS Sale_Date, Payment_Method 
-            FROM gift_shop_transactions
-            UNION ALL
-            SELECT Donation_ID AS Sale_ID, user_ID AS Customer_ID, 'Donation' AS Sale_Type, Amount, Date AS Sale_Date, Payment_Method 
-            FROM donations
-            ORDER BY Sale_Date DESC;
+        // Base queries
+        const ticketQuery = `
+            SELECT 
+                pt.Purchase_Ticket_ID AS Sale_ID,
+                p.Customer_ID,
+                'Ticket' AS Sale_Type,
+                pt.Quantity * pt.Price AS Amount,
+                p.Date_Purchased AS Sale_Date,
+                p.Payment_Method
+            FROM purchase_tickets pt
+            JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
         `;
 
-        // Apply filtering for specific sale type
-        if (saleType === "tickets") {
-            query = `
-                SELECT Ticket_ID AS Sale_ID, Customer_ID, 'Ticket' AS Sale_Type, Price AS Amount, Visit_Date AS Sale_Date, NULL AS Payment_Method 
-                FROM tickets
-                ORDER BY Sale_Date DESC;
-            `;
-        } else if (saleType === "giftshop") {
-            query = `
-                SELECT Transaction_ID AS Sale_ID, Customer_ID, 'Gift Shop' AS Sale_Type, Total_Amount AS Amount, Date AS Sale_Date, Payment_Method 
-                FROM gift_shop_transactions
-                ORDER BY Sale_Date DESC;
-            `;
-        } else if (saleType === "donations") {
-            query = `
-                SELECT Donation_ID AS Sale_ID, user_ID AS Customer_ID, 'Donation' AS Sale_Type, Amount, Date AS Sale_Date, Payment_Method 
-                FROM donations
-                ORDER BY Sale_Date DESC;
-            `;
-        }
+        const giftShopQuery = `
+            SELECT 
+                Transaction_ID AS Sale_ID,
+                Customer_ID,
+                'Gift Shop' AS Sale_Type,
+                Total_Amount AS Amount,
+                Date AS Sale_Date,
+                Payment_Method
+            FROM gift_shop_transactions
+        `;
 
-        // Apply date filtering
+        const donationQuery = `
+            SELECT 
+                Donation_ID AS Sale_ID,
+                user_ID AS Customer_ID,
+                'Donation' AS Sale_Type,
+                Amount,
+                Date AS Sale_Date,
+                Payment_Method
+            FROM donations
+        `;
+
+        // Date filtering logic
+        let dateFilter = "";
         if (dateRange === "last-week") {
-            query = `
-                SELECT Ticket_ID AS Sale_ID, Customer_ID, 'Ticket' AS Sale_Type, Price AS Amount, Visit_Date AS Sale_Date, NULL AS Payment_Method 
-                FROM tickets 
-                WHERE Visit_Date >= CURDATE() - INTERVAL 7 DAY
-                UNION ALL
-                SELECT Transaction_ID AS Sale_ID, Customer_ID, 'Gift Shop' AS Sale_Type, Total_Amount AS Amount, Date AS Sale_Date, Payment_Method 
-                FROM gift_shop_transactions 
-                WHERE Date >= CURDATE() - INTERVAL 7 DAY
-                UNION ALL
-                SELECT Donation_ID AS Sale_ID, user_ID AS Customer_ID, 'Donation' AS Sale_Type, Amount, Date AS Sale_Date, Payment_Method 
-                FROM donations 
-                WHERE Date >= CURDATE() - INTERVAL 7 DAY
-                ORDER BY Sale_Date DESC;
-            `;
+            dateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 7 DAY";
         } else if (dateRange === "last-month") {
-            query = `
-                SELECT Ticket_ID AS Sale_ID, Customer_ID, 'Ticket' AS Sale_Type, Price AS Amount, Visit_Date AS Sale_Date, NULL AS Payment_Method 
-                FROM tickets 
-                WHERE Visit_Date >= CURDATE() - INTERVAL 1 MONTH
-                UNION ALL
-                SELECT Transaction_ID AS Sale_ID, Customer_ID, 'Gift Shop' AS Sale_Type, Total_Amount AS Amount, Date AS Sale_Date, Payment_Method 
-                FROM gift_shop_transactions 
-                WHERE Date >= CURDATE() - INTERVAL 1 MONTH
-                UNION ALL
-                SELECT Donation_ID AS Sale_ID, user_ID AS Customer_ID, 'Donation' AS Sale_Type, Amount, Date AS Sale_Date, Payment_Method 
-                FROM donations 
-                WHERE Date >= CURDATE() - INTERVAL 1 MONTH
-                ORDER BY Sale_Date DESC;
-            `;
+            dateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 1 MONTH";
         } else if (dateRange === "last-year") {
+            dateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 1 YEAR";
+        }
+
+        let query = "";
+
+        if (saleType === "tickets") {
+            query = `${ticketQuery} ${dateFilter} ORDER BY Sale_Date DESC`;
+        } else if (saleType === "giftshop") {
+            const filter = dateFilter.replace(/p\.Date_Purchased/g, "Date");
+            query = `${giftShopQuery} ${filter} ORDER BY Sale_Date DESC`;
+        } else if (saleType === "donations") {
+            const filter = dateFilter.replace(/p\.Date_Purchased/g, "Date");
+            query = `${donationQuery} ${filter} ORDER BY Sale_Date DESC`;
+        } else {
+            // Combine all three for full report
+            const ticket = `${ticketQuery} ${dateFilter}`;
+            const giftshop = `${giftShopQuery} ${
+                dateFilter ? "WHERE Date >= CURDATE() - INTERVAL " + dateRange.split("-")[1].toUpperCase() : ""
+            }`;
+            const donations = `${donationQuery} ${
+                dateFilter ? "WHERE Date >= CURDATE() - INTERVAL " + dateRange.split("-")[1].toUpperCase() : ""
+            }`;
+
             query = `
-                SELECT Ticket_ID AS Sale_ID, Customer_ID, 'Ticket' AS Sale_Type, Price AS Amount, Visit_Date AS Sale_Date, NULL AS Payment_Method 
-                FROM tickets 
-                WHERE Visit_Date >= CURDATE() - INTERVAL 1 YEAR
+                ${ticket}
                 UNION ALL
-                SELECT Transaction_ID AS Sale_ID, Customer_ID, 'Gift Shop' AS Sale_Type, Total_Amount AS Amount, Date AS Sale_Date, Payment_Method 
-                FROM gift_shop_transactions 
-                WHERE Date >= CURDATE() - INTERVAL 1 YEAR
+                ${giftshop}
                 UNION ALL
-                SELECT Donation_ID AS Sale_ID, user_ID AS Customer_ID, 'Donation' AS Sale_Type, Amount, Date AS Sale_Date, Payment_Method 
-                FROM donations 
-                WHERE Date >= CURDATE() - INTERVAL 1 YEAR
+                ${donations}
                 ORDER BY Sale_Date DESC;
             `;
         }
 
-        // Execute the query
+        // Execute query
         db.query(query, (err, results) => {
             if (err) {
                 console.error("Error retrieving total report:", err);
@@ -116,7 +110,8 @@ module.exports = (req, res) => {
         return;
     }
 
-    // Handle Unknown Routes
+    // Unknown route
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "Route not found" }));
 };
+
