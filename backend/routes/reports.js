@@ -1,11 +1,11 @@
 const url = require("url");
-const db = require("../db"); // Import Database Connection
+const db = require("../db");
 
 module.exports = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const method = req.method;
 
-    // Handle CORS
+    // CORS
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -20,6 +20,25 @@ module.exports = (req, res) => {
         const saleType = parsedUrl.query.type || "all";
         const dateRange = parsedUrl.query.dateRange || "all-dates";
 
+        // Map dateRange to SQL conditions
+        let ticketDateFilter = "";
+        let giftshopDateFilter = "";
+        let donationDateFilter = "";
+
+        if (dateRange === "last-week") {
+            ticketDateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 7 DAY";
+            giftshopDateFilter = "WHERE Date >= CURDATE() - INTERVAL 7 DAY";
+            donationDateFilter = "WHERE Date >= CURDATE() - INTERVAL 7 DAY";
+        } else if (dateRange === "last-month") {
+            ticketDateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 1 MONTH";
+            giftshopDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 MONTH";
+            donationDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 MONTH";
+        } else if (dateRange === "last-year") {
+            ticketDateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 1 YEAR";
+            giftshopDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 YEAR";
+            donationDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 YEAR";
+        }
+
         // Base queries
         const ticketQuery = `
             SELECT 
@@ -31,6 +50,7 @@ module.exports = (req, res) => {
                 p.Payment_Method
             FROM purchase_tickets pt
             JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
+            ${ticketDateFilter}
         `;
 
         const giftShopQuery = `
@@ -42,6 +62,7 @@ module.exports = (req, res) => {
                 Date AS Sale_Date,
                 Payment_Method
             FROM gift_shop_transactions
+            ${giftshopDateFilter}
         `;
 
         const donationQuery = `
@@ -53,45 +74,26 @@ module.exports = (req, res) => {
                 Date AS Sale_Date,
                 Payment_Method
             FROM donations
+            ${donationDateFilter}
         `;
-
-        // Date filtering logic
-        let dateFilter = "";
-        if (dateRange === "last-week") {
-            dateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 7 DAY";
-        } else if (dateRange === "last-month") {
-            dateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 1 MONTH";
-        } else if (dateRange === "last-year") {
-            dateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 1 YEAR";
-        }
 
         let query = "";
 
         if (saleType === "tickets") {
-            query = `${ticketQuery} ${dateFilter} ORDER BY Sale_Date DESC`;
+            query = `${ticketQuery} ORDER BY Sale_Date DESC`;
         } else if (saleType === "giftshop") {
-            const filter = dateFilter.replace(/p\.Date_Purchased/g, "Date");
-            query = `${giftShopQuery} ${filter} ORDER BY Sale_Date DESC`;
+            query = `${giftShopQuery} ORDER BY Sale_Date DESC`;
         } else if (saleType === "donations") {
-            const filter = dateFilter.replace(/p\.Date_Purchased/g, "Date");
-            query = `${donationQuery} ${filter} ORDER BY Sale_Date DESC`;
+            query = `${donationQuery} ORDER BY Sale_Date DESC`;
         } else {
-            // Combine all three for full report
-            const ticket = `${ticketQuery} ${dateFilter}`;
-            const giftshop = `${giftShopQuery} ${
-                dateFilter ? "WHERE Date >= CURDATE() - INTERVAL " + dateRange.split("-")[1].toUpperCase() : ""
-            }`;
-            const donations = `${donationQuery} ${
-                dateFilter ? "WHERE Date >= CURDATE() - INTERVAL " + dateRange.split("-")[1].toUpperCase() : ""
-            }`;
-
+            // Combine all types
             query = `
-                ${ticket}
+                ${ticketQuery}
                 UNION ALL
-                ${giftshop}
+                ${giftShopQuery}
                 UNION ALL
-                ${donations}
-                ORDER BY Sale_Date DESC;
+                ${donationQuery}
+                ORDER BY Sale_Date DESC
             `;
         }
 
@@ -110,8 +112,7 @@ module.exports = (req, res) => {
         return;
     }
 
-    // Unknown route
+    // Fallback route
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "Route not found" }));
 };
-
