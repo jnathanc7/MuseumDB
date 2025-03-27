@@ -7,8 +7,7 @@ module.exports = (req, res) => {
   const method = req.method;
 
   // Handle CORS
-  rres.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app"); // ✅ Your frontend origin
-  res.setHeader("Access-Control-Allow-Credentials", "true"); // ✅ Required to send cookies  
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
