@@ -1,1 +1,1 @@
-TRUNCATE TABLE tickets
+SELECT * FROM purchases
