@@ -53,6 +53,7 @@ const Header = () => {
   const isMembershipPage = location.pathname === "/memberships";
   const isGiftshopPage = location.pathname.startsWith("/Giftshop") && location.pathname !== "/Giftshop";
   const isShoppingCart = location.pathname === "/cart";
+  const isContactPage = location.pathname === "/contact";
 
   const loginLinkStyle = isLoggedIn ? { display: "none" } : {};
   const profileLinkStyle = isLoggedIn ? {} : { display: "none" };
@@ -60,7 +61,7 @@ const Header = () => {
   return (
     <header
       className={`header ${scrolled ? "scrolled" : ""} ${
-        isTicketsPage || isMembershipPage || isGiftshopPage || isShoppingCart ? "tickets-page" : ""
+        isTicketsPage || isContactPage || isMembershipPage || isGiftshopPage || isShoppingCart ? "tickets-page" : ""
       }`}
     >
       <h1 className="logo">

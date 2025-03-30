@@ -15,6 +15,7 @@ import Profile from "../pages/staff/Profile";
 import TotalReport from "../pages/staff/TotalReport";
 import Memberships from "../pages/Memberships.jsx";
 import ViewComplaints from "../pages/staff/ViewComplaints"; 
+import ContactPage from "../pages/Contact.jsx";
 import { useEffect } from "react"; // Import useEffect
 import Ceramic from "../pages/ceramic";
 import Prints from "../pages/prints";
@@ -65,6 +66,7 @@ function AnimatedRoutes() {
         <Route path="/memberships" element={<Memberships />} />
         <Route path="/admin/view-complaints" element={<PageTransition><ViewComplaints /></PageTransition>} />
         <Route path="/admin/exhibition-report" element={<PageTransition><ExhibitionReport /></PageTransition>} />
+        <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
 
         <Route path="/ceramic" element={<PageTransition><Ceramic/></PageTransition>}/>
         <Route path="/prints" element={<PageTransition><Prints/></PageTransition>}/>
