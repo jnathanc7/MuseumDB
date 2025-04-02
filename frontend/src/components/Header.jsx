@@ -68,7 +68,7 @@ const Header = () => {
         <AnimatedLink to="/">Museum</AnimatedLink>
       </h1>
       <nav className="nav-links">
-        <AnimatedLink to="/giftshop">Gift Shop</AnimatedLink>
+        <AnimatedLink to="/giftshop">Shop</AnimatedLink>
         <AnimatedLink to="/tickets">Tickets</AnimatedLink>
         <AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink>
         <AnimatedLink to="/memberships">Memberships</AnimatedLink>

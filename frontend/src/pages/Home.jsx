@@ -75,7 +75,6 @@ const Home = () => {
           <p className="subtitle">
             Explore the evolution of artistic expression through contemporary exhibitions and timeless masterpieces.
           </p>
-          <AnimatedLink to="/exhibitions" className="cta-button">Discover More</AnimatedLink>
         </motion.div>
         <motion.div
           className="image-frame"

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Minus } from 'lucide-react';
 import '../styles/exhibition.css';
 import image1 from '/src/assets/image1.jpg';
 import image2 from '/src/assets/image2.jpg';
 import image3 from '/src/assets/image3.jpg';
 import image4 from '/src/assets/image4.jpg';
-import { Plus, Minus } from 'lucide-react';
 
 const images = [image1, image2, image3, image4];
 
@@ -41,10 +41,17 @@ const exhibitionsData = [
 ];
 
 const Exhibitions = () => {
-  const [expandedId, setExpandedId] = useState(null);
+  // Use an array to allow multiple open bars at once
+  const [expandedIds, setExpandedIds] = useState([]);
 
   const handleToggle = (id) => {
-    setExpandedId(expandedId === id ? null : id);
+    setExpandedIds((prev) => {
+      // If id is already expanded, remove it; otherwise, add it.
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      }
+      return [...prev, id];
+    });
   };
 
   return (
@@ -58,41 +65,77 @@ const Exhibitions = () => {
 
         {/* Special Exhibitions List */}
         <div className="exhibitions-list">
-          {exhibitionsData.map((exhibition) => (
-            <div key={exhibition.id} className="exhibition-item">
-              {/* Horizontal Red Bar with Icon */}
-              <motion.div
-                className="exhibition-bar"
-                onClick={() => handleToggle(exhibition.id)}
-                whileHover={{ scale: 1.01 }}
-              >
-                <h2>{exhibition.title}</h2>
-                {expandedId === exhibition.id ? (
-                  <Minus size={20} color="#fff" />
-                ) : (
-                  <Plus size={20} color="#fff" />
-                )}
-              </motion.div>
+          {exhibitionsData.map((exhibition) => {
+            const isExpanded = expandedIds.includes(exhibition.id);
+            return (
+              <div key={exhibition.id} className="exhibition-item">
+                {/* Horizontal Bar with Icon and Conditional Text Color */}
+                <motion.div
+                  className={`exhibition-bar ${isExpanded ? 'active' : ''}`}
+                  onClick={() => handleToggle(exhibition.id)}
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <h2 className={isExpanded ? 'active' : ''}>
+                    {exhibition.title}
+                  </h2>
+                  <AnimatePresence mode="wait">
+                    {isExpanded ? (
+                      <motion.span
+                        key="minus"
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Minus size={20} color="#fff" />
+                      </motion.span>
+                    ) : (
+                      <motion.span
+                        key="plus"
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Plus size={20} color="#fff" />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
 
-              {/* Expanded Content Section */}
-              <AnimatePresence>
-                {expandedId === exhibition.id && (
-                  <motion.div
-                    className="exhibition-content"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.4 }}
-                  >
-                    <div className="content-inner">
-                      <p>{exhibition.description}</p>
-                      <img src={exhibition.image} alt={exhibition.title} loading="lazy" />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
+                {/* Expanded Content Section */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      layout
+                      className="exhibition-content"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="content-inner">
+                        <p>{exhibition.description}</p>
+                        {/* Improved image rendering attributes */}
+                        <img
+                          src={exhibition.image}
+                          alt={exhibition.title}
+                          loading="lazy"
+                          width="600"
+                          height="400"
+                          srcSet={`
+                            ${exhibition.image} 600w,
+                            ${exhibition.image} 300w
+                          `}
+                          sizes="(max-width: 600px) 300px, 600px"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
