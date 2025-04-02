@@ -12,7 +12,9 @@ const images = [image1, image2, image3, image4];
 
 const Home = () => {
   const [currentImage, setCurrentImage] = useState(0);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // tracks login status
+  const [userRole, setUserRole] = useState(null); // tracks user role
+  const [jobTitle, setJobTitle] = useState(null); // tracks job_title
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,17 +37,35 @@ const Home = () => {
 
         if (res.ok) {
           setIsLoggedIn(true);
+          setUserRole(data.role); // saves role if true
+          setJobTitle(data.job_title || null); // save job_title if available
         } else {
           setIsLoggedIn(false);
+          setUserRole(null); // clears role on failed login
+          setJobTitle(null); // also clears job_title on failed login
         }
       } catch (error) {
-        console.error("❌ Error checking login status in Home:", error);
+        console.error("Error checking login status in Home:", error);
         setIsLoggedIn(false);
+        setUserRole(null);
+        setJobTitle(null);
       }
     };
 
     checkLogin();
   }, []);
+
+  let adminRoute = "/adminhome";
+  let adminLabel = "Admin";
+
+  if (jobTitle === "Manager") {
+    adminRoute = "/managerhome";
+    adminLabel = "Manager";
+  } 
+  else if (jobTitle === "Curator") {
+    adminRoute = "/curatorhome";
+    adminLabel = "Curator";
+  }
 
   return (
     <div className="home-background"> {/* Apply background only to Home.jsx */}
@@ -61,6 +81,11 @@ const Home = () => {
             <li><AnimatedLink to="/memberships">Memberships</AnimatedLink></li>
             <li><AnimatedLink to="/giftshop">Gift Shop</AnimatedLink></li>
             <li><AnimatedLink to="/contact">Contact</AnimatedLink></li>
+
+            {/* Admin/Manager/Curator Link */}
+            {isLoggedIn && (userRole === "admin" || userRole === "staff") && (
+              <li><AnimatedLink to={adminRoute}>{adminLabel}</AnimatedLink></li>
+            )}
           </ul>
         </nav>
       </div>

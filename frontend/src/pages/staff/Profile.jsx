@@ -35,7 +35,7 @@ const Profile = () => {
         if (!res.ok) throw new Error("Profile fetch failed");
 
         const data = await res.json();
-        console.log("📦 Retrieved profile data:", data);
+        console.log("Retrieved profile data:", data);
 
         const isCustomer = data.role === "customer";
         let birthdateFormatted = "";
@@ -64,7 +64,7 @@ const Profile = () => {
         setUser(unifiedProfile);
         setNewUser(unifiedProfile);
       } catch (error) {
-        console.error("❌ Error fetching profile:", error);
+        console.error("Error fetching profile:", error);
         setSaveStatus("Failed to load profile data.");
       }
     };
@@ -75,7 +75,7 @@ const Profile = () => {
   // Redirect to /auth if profile failed to load (likely logged out)
   useEffect(() => {
     if (user === null && saveStatus === "Failed to load profile data.") {
-      console.warn("🚪 Redirecting to /auth because profile could not load (likely logged out)");
+      console.warn("Redirecting to /auth because profile could not load (likely logged out)");
       navigate("/auth");
     }
   }, [user, saveStatus]); 
@@ -125,7 +125,7 @@ const Profile = () => {
       setIsEditing(false);
       setSaveStatus("Profile updated successfully!");
     } catch (err) {
-      console.error("❌ Error saving profile:", err);
+      console.error("Error saving profile:", err);
       setSaveStatus("Failed to update profile.");
     }
   };
@@ -136,7 +136,7 @@ const Profile = () => {
 
   const handlePasswordSubmit = async () => {
     if (newPassword !== confirmPassword) {
-      setSaveStatus("❌ New password and confirmation do not match.");
+      setSaveStatus("New password and confirmation do not match.");
       return;
     }
 
@@ -158,9 +158,9 @@ const Profile = () => {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      setSaveStatus("✅ Password changed successfully!");
+      setSaveStatus("Password changed successfully!");
     } catch (err) {
-      console.error("❌ Error changing password:", err);
+      console.error("Error changing password:", err);
       setSaveStatus("Failed to change password.");
     }
   };
@@ -178,7 +178,7 @@ const Profile = () => {
       if (!res.ok) throw new Error("Logout failed");
       navigate("/auth");
     } catch (err) {
-      console.error("❌ Logout failed:", err);
+      console.error("Logout failed:", err);
       setSaveStatus("Logout failed.");
     }
   };
