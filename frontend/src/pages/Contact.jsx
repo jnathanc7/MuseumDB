@@ -17,8 +17,8 @@ const ContactPage = () => {
 
   const topics = [
     "General Experience",
-    "Vincent Van Gogh",
-    "Walk like an Egyptian",
+    "Tickets",
+    "Employee",
     "Art in Technology",
     "Local Artists",
     "Installation",
