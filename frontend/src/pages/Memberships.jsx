@@ -81,7 +81,6 @@ const Memberships = () => {
 
   // Fetch the existing membership on component mount
   useEffect(() => {
-    // Fetch membership record from the backend using GET
     fetch("https://museumdb.onrender.com/membership", {
       method: "GET",
       credentials: "include",
@@ -89,17 +88,19 @@ const Memberships = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        // If data has a membership_id, assume it is the record for the current user.
+        console.log("Fetched membership data:", data);
         if (data && data.membership_id) {
           setExistingMembership(data);
-          // Optionally pre-fill form fields with existing data:
           setSelectedTier(data.membership_type);
           setPaymentType(data.payment_type);
           setReason(data.reason);
+        } else {
+          setExistingMembership(null);
         }
       })
       .catch((error) => console.error("Error fetching membership:", error));
   }, []);
+  
 
   // POST request handler (for new membership)
   const handleDonate = async (e) => {
