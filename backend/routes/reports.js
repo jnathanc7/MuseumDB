@@ -1,9 +1,27 @@
 const url = require("url");
 const db = require("../db");
 
+
+function sendSummary(query, results, res, errorMessage) {
+    db.query(query, (summaryErr, summaryResult) => {
+        if (summaryErr) {
+            console.error(errorMessage, summaryErr);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({ message: errorMessage, error: summaryErr }));
+        }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({
+            sales: results,
+            summary: summaryResult[0] || {}
+        }));
+    });
+}
+
 module.exports = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const method = req.method;
+    
 
     // GET /total-report
     if (parsedUrl.pathname === "/total-report" && method === "GET") {
@@ -117,21 +135,11 @@ module.exports = (req, res) => {
                 JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
                 ${ticketDateFilter}
             `;
+            sendSummary(summaryQuery, results, res, "Error retrieving ticket summary");
+
             
 
-                db.query(summaryQuery, (summaryErr, summaryResult) => {
-                    if (summaryErr) {
-                        console.error("Error retrieving ticket summary:", summaryErr);
-                        res.writeHead(500, { "Content-Type": "application/json" });
-                        return res.end(JSON.stringify({ message: "Error retrieving ticket summary", error: summaryErr }));
-                    }
 
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({
-                        sales: results,
-                        summary: summaryResult[0] || {}
-                    }));
-                });
 
             }  else if (saleType === "all") {
                 const fullSummaryQuery = `
@@ -176,23 +184,49 @@ module.exports = (req, res) => {
                         ) AS most_active_customer
                 `;
 
-                db.query(fullSummaryQuery, (summaryErr, summaryResult) => {
-                    if (summaryErr) {
-                        console.error("Error retrieving full summary:", summaryErr);
-                        res.writeHead(500, { "Content-Type": "application/json" });
-                        return res.end(JSON.stringify({ message: "Error retrieving full summary", error: summaryErr }));
-                    }
+                sendSummary(fullSummaryQuery, results, res, "Error retrieving full summary");
 
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({
-                        sales: results,
-                        summary: summaryResult[0] || {}
-                    }));
-                });
-            } else {
+            }
+            else if (saleType === "giftshop") {
+                const summaryQuery = `
+                    SELECT
+                        COUNT(*) AS total_transactions,
+                        SUM(gsi.Quantity * gsi.Price_Per_Unit) AS total_revenue,
+                        SUM(gsi.Quantity) AS total_items_sold,
+                        (
+                            SELECT p.Name
+                            FROM gift_shop_items gsi2
+                            JOIN products p ON gsi2.Product_ID = p.Product_ID
+                            GROUP BY gsi2.Product_ID
+                            ORDER BY SUM(gsi2.Quantity) DESC
+                            LIMIT 1
+                        ) AS most_sold_product,
+                        (
+                            SELECT p.Name
+                            FROM gift_shop_items gsi3
+                            JOIN products p ON gsi3.Product_ID = p.Product_ID
+                            GROUP BY gsi3.Product_ID
+                            ORDER BY SUM(gsi3.Quantity * gsi3.Price_Per_Unit) DESC
+                            LIMIT 1
+                        ) AS top_revenue_product
+                    FROM gift_shop_items gsi
+                    JOIN gift_shop_transactions gst ON gsi.Transaction_ID = gst.Transaction_ID
+                    ${giftshopDateFilter}
+                `;
+
+                sendSummary(summaryQuery, results, res, "Error retrieving gift shop summary");
+            
+
+            }
+            
+            
+            
+            
+            else {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ sales: results }));
             }
+
         });
 
         return;
