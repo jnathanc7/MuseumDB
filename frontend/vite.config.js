@@ -8,4 +8,9 @@ export default defineConfig({
     optimizeDeps: {
       include: ['swiper/react', 'swiper/modules'],
     },
+    build: {
+      commonjsOptions: {
+        include: [/node_modules/],
+      },
+    },
 })
