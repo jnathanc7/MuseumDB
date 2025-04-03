@@ -144,7 +144,7 @@ const Memberships = () => {
       } else {
         const data = await response.json();
         alert("Membership successfully created! Membership ID: " + data.membership_id);
-        setExistingMembership(data); // Update state so the form now becomes update mode
+        setExistingMembership(data); // Now the record exists, so switch to update mode
       }
     } catch (error) {
       alert("Network error: " + error.message);
@@ -192,7 +192,7 @@ const Memberships = () => {
           alert("Error updating membership: " + (errorData.error || errorData.message));
         }
       } else {
-        
+        const data = await response.json();
         alert("Membership updated successfully!");
         // Optionally update local state with new values
         setExistingMembership({ ...existingMembership, ...membershipData });
@@ -283,7 +283,7 @@ const Memberships = () => {
           </select>
 
           <button type="submit">
-            {existingMembership ? "Update Membership" : "Join Now"}
+            {existingMembership ? "Update My Membership" : "Join Now"}
           </button>
         </form>
       </div>
