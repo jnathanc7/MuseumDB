@@ -21,7 +21,7 @@ module.exports = (req, res) => {
   // 🔹 Fetch all tickets
   if (method === "GET" && parsedUrl.pathname === "/tickets") {
     const query = "SELECT * FROM tickets";
-    db.query(query, (err, results) => {
+    db.query(query, (err, results) => { 
       if (err) {
         console.error("Database Error:", err);
         res.writeHead(500, { "Content-Type": "application/json" });
