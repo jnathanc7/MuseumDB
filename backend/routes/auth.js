@@ -14,7 +14,7 @@ module.exports = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const { pathname } = parsedUrl;
     const { method } = req;
-
+ 
     if (pathname === "/auth/register" && method === "POST") {
         handleRegister(req, res);
     } 

@@ -4,11 +4,12 @@ const employeesRoutes = require("./routes/employees"); // Import employees route
 const reportsRoutes = require("./routes/reports"); // Import reports routes
 const authRoutes = require("./routes/auth"); // Import authentication routes
 const authMiddleware = require("./middleware/authMiddleware"); // Import authentication middleware
-const giftshopRoutes = require("./routes/giftshop") //import giftshop routes
-const shopCartRoutes = require("./routes/shopcart") //import giftshop routes
+const giftshopRoutes = require("./routes/giftshop"); // Import giftshop routes
+const shopCartRoutes = require("./routes/shopcart"); // Import shop cart routes
 const complaintsRoutes = require("./routes/complaints");
-const exhibitionReportRoutes = require("./routes/exhibitionReport"); 
+const exhibitionReportRoutes = require("./routes/exhibitionReport");
 const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
+const membershipRoutes = require("./routes/membership"); // Import membership routes
 
 const allowedOrigins = [
     "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
@@ -18,7 +19,6 @@ const allowedOrigins = [
  
 // Start HTTP Server
 const server = http.createServer((req, res) => { 
-    
     // CORS Headers below
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
@@ -46,27 +46,27 @@ const server = http.createServer((req, res) => {
         return;
     }
     else if (parsedUrl.pathname.startsWith("/employees")) {
-        authMiddleware(["staff", "admin"])(req, res, () => {
+        // authMiddleware(["staff", "admin"])(req, res, () => {
             employeesRoutes(req, res, parsedUrl);
-        });
+        // });
         return;
     }
     else if (parsedUrl.pathname.startsWith("/total-report")) {
-        authMiddleware("admin")(req, res, () => {
+        // authMiddleware("admin")(req, res, () => {
             reportsRoutes(req, res);
-        });
+        // });
         return;
     }
     else if (parsedUrl.pathname.startsWith("/exhibition-report")) {
-        authMiddleware(["staff", "admin"])(req, res, () => {
+        // authMiddleware(["staff", "admin"])(req, res, () => {
             exhibitionReportRoutes(req, res);
-        });
+        // });
         return;
     }
     else if (req.url.startsWith("/complaints")) {
-        authMiddleware(["staff", "admin"])(req, res, () => {
+        // authMiddleware(["staff", "admin"])(req, res, () => {
             complaintsRoutes(req, res);
-        });
+        // });
         return;
     }
     else if (parsedUrl.pathname.startsWith("/cart")) {
@@ -83,6 +83,11 @@ const server = http.createServer((req, res) => {
     }
     else if (parsedUrl.pathname.startsWith("/purchase")) {
         ticketsRoutes(req, res);
+        return;
+    }
+    // NEW: Membership Routes
+    else if (parsedUrl.pathname.startsWith("/membership")) {
+        membershipRoutes(req, res, parsedUrl);
         return;
     }
     else {

@@ -21,20 +21,36 @@ const AdminHome = () => {
     };
 
     // Verify the user's role before loading the page
-    useEffect(() => {
-        fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
-          method: "GET",
+    useEffect(() => { 
+        console.log("[AdminHome] Verifying role via /auth/profile");
+        fetch("https://museumdb.onrender.com/auth/profile", { // https://museumdb.onrender.com/auth/profile
+          method: "GET", // http://localhost:5000/auth/profile
           credentials: "include"
         })
           .then((res) => {
+            console.log("[AdminHome] Response status:", res.status);
             if (!res.ok) {
-              console.log("🔍 Response status:", res.status);
               throw new Error(`HTTP error ${res.status}`);
             }
             return res.json();
           })
           .then((data) => {
-            console.log("✅ User data:", data); // Use this instead of res.status
+            console.log("[AdminHome] User data received:", data);
+
+            // Manager Redirection Functionality
+            if ((data.role === "staff" || data.role === "admin") && data.job_title === "Manager") {
+              console.log("[AdminHome] Detected Manager — Redirecting to /managerhome");
+              navigate("/managerhome");
+              return;
+            }
+
+            // Curator Redirection Functionality
+            if ((data.role === "staff" || data.role === "admin") && data.job_title === "Curator") {
+              console.log("[AdminHome] Detected Curator — Redirecting to /curatorhome");
+              navigate("/curatorhome");
+              return;
+            }
+
             if (data.role === "customer") {
               navigate("/profile");
             } else if (data.role !== "staff" && data.role !== "admin") {
@@ -70,7 +86,6 @@ const AdminHome = () => {
                 <option value="">View Reports...</option>
                 <option value="/admin/total-report">View Total Sale Reports</option>
                 <option value="/admin/exhibition-report">View Exhibit Reports</option>
-
                 <option value="/admin/view-complaints">View Complaints</option>
             </select>
     

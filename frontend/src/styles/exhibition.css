@@ -1,0 +1,123 @@
+/* Design Tokens */
+:root {
+  --primary-color: #b3000c;       /* Red for active/hover */
+  --secondary-color: #ffd700;      /* Gold for active text */
+  --bg-color: #1a1a1a;             /* Dark background */
+  --bar-initial: #2c2c2c;          /* Dark charcoal inactive bar */
+  --bar-hover: var(--primary-color);
+  --bar-active: var(--primary-color);
+  --content-bg: #1a1919;           /* Content background */
+  --transition-duration: 0.3s;
+}
+
+/* Wrapper for Exhibitions page */
+.exhibitions-page {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+}
+
+/* Container */
+.exhibitions-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 100px 20px 20px;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+/* Header Section */
+.exhibitions-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.exhibitions-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.exhibitions-header p {
+  font-size: 1rem;
+  color: #ccc;
+}
+
+/* Special Exhibitions List */
+.exhibitions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Exhibition Item Container */
+.exhibition-item {
+  border: 1px solid #444;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Horizontal Bar with Icon */
+.exhibition-bar {
+  background-color: var(--bar-initial);
+  padding: 25px 20px;
+  min-height: 60px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color var(--transition-duration) ease;
+}
+
+.exhibition-bar:hover {
+  background-color: var(--bar-hover);
+}
+
+/* Active state: when clicked, the bar stays with the primary color */
+.exhibition-bar.active {
+  background-color: var(--bar-active);
+}
+
+/* Title text with transition */
+.exhibition-bar h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #fff;
+  transition: color var(--transition-duration) ease;
+}
+
+/* Alternate text color when active */
+.exhibition-bar h2.active {
+  color: var(--secondary-color);
+}
+
+/* Expanded Content with seamless extension */
+.exhibition-content {
+  background-color: var(--primary-color);
+  color: #fff;
+  overflow: hidden;
+  border-top: 1px solid #990000;
+}
+
+/* Content Inner */
+.content-inner {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.content-inner p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Reduced Image Size with improved rendering */
+.content-inner img {
+  max-width: 80%;
+  height: auto;
+  border: 2px solid var(--primary-color);
+  border-radius: 4px;
+  margin: 0 auto;
+  display: block;
+}

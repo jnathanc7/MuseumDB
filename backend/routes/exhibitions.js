@@ -1,6 +1,6 @@
 const url = require("url");
 const db = require("../db"); // Import database connection
-const authMiddleware = require("../middleware/authMiddleware"); // Import Authentication Middleware
+// const authMiddleware = require("../middleware/authMiddleware"); // Import Authentication Middleware
 
 module.exports = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
@@ -17,7 +17,7 @@ module.exports = (req, res) => {
 
     // Retreive all artwork records from the database
     if (parsedUrl.pathname === "/exhibitions" && method === "GET") {
-        return authMiddleware(["staff", "admin"])(req, res, () => {
+        // return authMiddleware(["staff", "admin"])(req, res, () => {
             db.query("SELECT * FROM artworks", (err, results) => {
                 if (err) {
                     res.writeHead(500, { "Content-Type": "application/json" });
@@ -27,12 +27,12 @@ module.exports = (req, res) => {
                 res.end(JSON.stringify(results));
             });
 
-        });
+        // });
     }
 
     // Retrieve all Exhibition artworks records from the database
     if(parsedUrl.pathname === "/exhibitions" && method === "GET"){
-        return authMiddleware(["staff", "admin"])(req, res, () =>{
+        // return authMiddleware(["staff", "admin"])(req, res, () =>{
             db.query("SELECT * FROM exhibitions_artworks", (err, results) => {
                 if(err){
                     res.writeHead(500, {"Content-Type": "application/json"});
@@ -41,13 +41,13 @@ module.exports = (req, res) => {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify(results));
             });
-        });
+        // });
     }
 
 
     // Retrieve all Exhibition records from the database
     if(parsedUrl.pathname === "/exhibitions" && method === "GET"){
-        return authMiddleware(["staff", "admin"])(req, res, () =>{
+        // return authMiddleware(["staff", "admin"])(req, res, () =>{
             db.query("SELECT * FROM exhibitions", (err, results) => {
                 if(err){
                     res.writeHead(500, {"Content-Type": "application/json"});
@@ -56,12 +56,12 @@ module.exports = (req, res) => {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify(results));
             });
-        });
+        // });
     }
 
     // Retrieve all Special Exhibtion records from the data
     if(parsedUrl.pathname === "/exhibitions" && method === "GET"){
-        return authMiddleware(["staff", "admin"])(req, res, () =>{
+        // return authMiddleware(["staff", "admin"])(req, res, () =>{
             db.query("SELECT * FROM special_exhibitions", (err, results) => {
                 if(err){
                     res.writeHead(500, {"Content-Type": "application/json"});
@@ -70,12 +70,12 @@ module.exports = (req, res) => {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify(results));
             });
-        });
+        // });
     }
 
     // Retrieve all records from exhibition staff
     if(parsedUrl.pathname === "/exhibitions" && method === "GET"){
-        return authMiddleware(["staff", "admin"])(req, res, () =>{
+        // return authMiddleware(["staff", "admin"])(req, res, () =>{
             db.query("SELECT * FROM exhibition_staff", (err, results) => {
                 if(err){
                     res.writeHead(500, {"Content-Type": "application/json"});
@@ -84,12 +84,12 @@ module.exports = (req, res) => {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify(results));
             });
-        });
+        // });
     }
 
     // Retrieve all records from special exhibitions staff
     if(parsedUrl.pathname === "/exhibitions" && method === "GET"){
-        return authMiddleware(["staff", "admin"])(req, res, () =>{
+        // return authMiddleware(["staff", "admin"])(req, res, () =>{
             db.query("SELECT * FROM special_exhibition_staff", (err, results) => {
                 if(err){
                     res.writeHead(500, {"Content-Type": "application/json"});
@@ -98,7 +98,7 @@ module.exports = (req, res) => {
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify(results));
             });
-        });
+        // });
     }
 
     // Handle Unknown Routes

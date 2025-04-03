@@ -9,6 +9,20 @@
     
 }
 
+/* Admin Dashboard Title Container */
+.manager-title-container {
+    text-align: center; /* Centers the text */
+    margin-bottom: -15px; /* Adds spacing below title */
+    width: 100%; /* Ensures it stretches full width */
+}
+
+/* Admin Dashboard Title Container */
+.curator-title-container {
+    text-align: center; /* Centers the text */
+    margin-bottom: -18px; /* Adds spacing below title */
+    width: 100%; /* Ensures it stretches full width */
+}
+
 .admin-button {
     position: relative;
     top: 40px;

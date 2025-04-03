@@ -63,48 +63,45 @@ const Tickets = () => {
       setMessage("Please select a date.");
       return;
     }
-
-    // Create purchase request
+  
     const ticketsToBuy = ticketTypes
       .filter(({ Ticket_Type }) => ticketCounts[Ticket_Type] > 0)
       .map(({ Ticket_ID, Ticket_Type }) => ({
         ticket_ID: Ticket_ID,
         quantity: ticketCounts[Ticket_Type],
       }));
-
+  
     if (ticketsToBuy.length === 0) {
       setMessage("Please select at least one ticket.");
       return;
     }
-
+  
     const purchaseData = {
       payment_Method: paymentMethod,
       tickets: ticketsToBuy,
     };
-
+  
     try {
       const response = await fetch("https://museumdb.onrender.com/purchase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(purchaseData),
+        credentials: "include", // ✅ Sends the JWT cookie
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.error || "Unknown error occurred");
       }
-
+  
       setMessage(data.message || "Purchase successful!");
       setTicketCounts(
-        ticketTypes.reduce(
-          (acc, ticket) => ({
-            ...acc,
-            [ticket.Ticket_Type]: 0,
-          }),
-          {}
-        )
-      ); // Reset ticket selection
+        ticketTypes.reduce((acc, ticket) => {
+          acc[ticket.Ticket_Type] = 0;
+          return acc;
+        }, {})
+      );
     } catch (error) {
       console.error("Error making purchase:", error);
       setMessage(error.message || "Error processing purchase.");

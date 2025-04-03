@@ -1,24 +1,47 @@
-import { useState, useEffect  } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/admin.css"; // Make sure your CSS handles modal styles
 
-
 const ManageEmployees = () => {
+    const navigate = useNavigate();
+
     const [employees, setEmployees] = useState([]);
     const [newEmployee, setNewEmployee] = useState({
         firstName: "", lastName: "", phoneNumber: "", email:"", department:"" , position: "", hireDate: "", salary: "", status: true
     });
     
-
     const [isModalOpen, setIsModalOpen] = useState(false); // State to handle modal visibility
+
+    useEffect(() => { // https://museumdb.onrender.com/auth/profile
+        fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
+          method: "GET",
+          credentials: "include"
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Not authenticated");
+            return res.json();
+          })
+          .then((data) => {
+            if (data.role !== "admin" && data.role !== "staff") {
+              alert("Access denied");
+              navigate("/");
+            }
+          })
+          .catch((err) => {
+            console.error("🚫 Access error:", err);
+            navigate("/");
+          });
+      }, []);
 
     useEffect(() => {
         fetchEmployees();
     }, []);
 
     const fetchEmployees = async () => {
-        try {
-            const response = await fetch(`https://museumdb.onrender.com/employees`);  //azure.net
-            // const response = await fetch("http://localhost:5000/employees"); // Adjust endpoint
+        try { // https://museumdb.onrender.com/employees
+            const response = await fetch(`https://museumdb.onrender.com/employees`, { // http://localhost:5000/employees
+                credentials: "include"
+            });  //azure.net
             const data = await response.json();
             console.log("Fetched Employees Data:", data); 
             setEmployees(data); // Update state with actual database employees
@@ -26,10 +49,6 @@ const ManageEmployees = () => {
             console.error("Error fetching employees:", error);
         }
     };
-
-
-
-    
 
     // Handle input changes
     const handleInputChange = (e) => {
@@ -44,10 +63,10 @@ const ManageEmployees = () => {
         }
         console.log("Sending New Employee Data:", JSON.stringify(newEmployee));
         
-    
-        try {
-            const response = await fetch("https://museumdb.onrender.com/employees", {
-                method: "POST",
+        try { // https://museumdb.onrender.com/employees
+            const response = await fetch(" https://museumdb.onrender.com/employees", {
+                method: "POST", // http://localhost:5000/employees
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -70,12 +89,14 @@ const ManageEmployees = () => {
             console.error("Failed to add employee:", error);
         }
     };
+
     // Toggle employee status
     const toggleStatus = async (staffId) => {
-        try {
+        try { // https://museumdb.onrender.com/employees/toggle?id=${staffId}
             // const response = await fetch(`http://localhost:5000/employees/toggle?id=${staffId}`, {
-                const response = await fetch(`https://museumdb.onrender.com/employees/toggle?id=${staffId}`, {
+            const response = await fetch(`https://museumdb.onrender.com/employees/toggle?id=${staffId}`, {
                 method: "PUT",
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
             });
     
@@ -92,7 +113,6 @@ const ManageEmployees = () => {
                 );
                 console.log("After Update:", employees);
 
-                
             } else {
                 alert("Error toggling status");
             }
@@ -101,7 +121,6 @@ const ManageEmployees = () => {
             console.error("Error toggling status:", error);
         }
     };
-    
 
     return (
         <main className="manage-employees-container">
@@ -126,8 +145,6 @@ const ManageEmployees = () => {
                             <th>Hire Date</th>
                             <th>Salary ($)</th>
                             <th>Status</th>
-                         
-                            
                         </tr>
                     </thead>
                     <tbody>
@@ -147,16 +164,10 @@ const ManageEmployees = () => {
                                     <button
                                         className={emp.Active_Status ? "deactivate-button" : "activate-button"}
                                         onClick={() => toggleStatus(emp.Staff_ID)}
-                                    >   
+                                    >
                                         {emp.Active_Status === 1 || emp.Active_Status === true ? "Deactivate" : "Activate"}
                                     </button>
-
                                 </td>
-
-
-
-
-                                
                             </tr>
                         ))}
                     </tbody>
@@ -168,29 +179,21 @@ const ManageEmployees = () => {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h2>Add New Employee</h2>
-                        <input type="text" name="firstName" placeholder="Employee Name" value={newEmployee.firstName}  onChange={handleInputChange} className="input-field" />
-
+                        <input type="text" name="firstName" placeholder="Employee Name" value={newEmployee.firstName} onChange={handleInputChange} className="input-field" />
                         <input type="text" name="lastName" placeholder="Last Name" value={newEmployee.lastName} onChange={handleInputChange} className="input-field" />
-
                         <input type="text" name="phoneNumber" placeholder="Phone Number" value={newEmployee.phoneNumber} onChange={handleInputChange} className="input-field" />
-
                         <input type="email" name="email" placeholder="Email" value={newEmployee.email} onChange={handleInputChange} className="input-field" />
-
                         <select name="department" value={newEmployee.department} onChange={handleInputChange} className="input-field">
-                            <option value="">Select Department</option>  
+                            <option value="">Select Department</option>
                             <option value="Exhibitions">Exhibitions</option>
                             <option value="Events">Events</option>
                             <option value="Security">Security</option>
                             <option value="Administration">Administration</option>
                             <option value="Special Exhibitions">Special Exhibitions</option>
                         </select>
-
-
-                        <input type="text" name="position" placeholder="Position" value={newEmployee.position} onChange={handleInputChange} className="input-field"  />
-
-                        <input type="date" name="hireDate" value={newEmployee.hireDate} onChange={handleInputChange} className="input-field"  />
-
-                        <input type="number" name="salary" placeholder="Salary" value={newEmployee.salary} onChange={handleInputChange}  className="input-field" />
+                        <input type="text" name="position" placeholder="Position" value={newEmployee.position} onChange={handleInputChange} className="input-field" />
+                        <input type="date" name="hireDate" value={newEmployee.hireDate} onChange={handleInputChange} className="input-field" />
+                        <input type="number" name="salary" placeholder="Salary" value={newEmployee.salary} onChange={handleInputChange} className="input-field" />
                         <div className="modal-buttons">
                             <button className="add-employee-button" onClick={addEmployee}>Add Employee</button>
                             <button className="close-modal-button" onClick={() => setIsModalOpen(false)}>Cancel</button>
@@ -198,13 +201,8 @@ const ManageEmployees = () => {
                     </div>
                 </div>
             )}
-    
-        
         </main>
-    
-
     );
 };
 
 export default ManageEmployees;
-

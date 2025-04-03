@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";  // Import useLocation hook
+import { useLocation } from "react-router-dom";
 import AnimatedLink from "./AnimatedLink";
 import { FaShoppingCart } from "react-icons/fa";
 import "../styles/header.css";
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
-  const location = useLocation(); // Get the current location (path)
-
+  const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null); // 'admin' or 'staff' or 'customer'
+  const [jobTitle, setJobTitle] = useState(null); // like "Manager" or "Curator"
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,55 +20,61 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // 🔁 Check login on every route change
   useEffect(() => {
     const checkLogin = async () => {
-      console.log("🔍 Header checking login...");
+      console.log("[Header] Checking login...");
       try {
         const res = await fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
-          method: "GET",
+          method: "GET", // https://museumdb.onrender.com/auth/profile
           credentials: "include",
         });
 
         const data = await res.json();
-        console.log("📡 /auth/profile response:", res.status, data);
+        console.log("📡 [Header] /auth/profile response:", res.status, data);
 
         if (res.ok) {
           setIsLoggedIn(true);
+          setUserRole(data.role);
+          setJobTitle(data.job_title || null); // might be undefined for customers
         } else {
           setIsLoggedIn(false);
+          setUserRole(null);
+          setJobTitle(null);
         }
       } catch (error) {
-        console.error("❌ Error checking login status:", error);
+        console.error("[Header] Error checking login:", error);
         setIsLoggedIn(false);
+        setUserRole(null);
+        setJobTitle(null);
       }
     };
 
     checkLogin();
   }, [location.pathname]);
 
-  // 🔍 Log on every render
-  console.log("🧠 Header render: isLoggedIn =", isLoggedIn);
-
   const isTicketsPage = location.pathname === "/tickets";
   const isMembershipPage = location.pathname === "/memberships";
   const isGiftshopPage = location.pathname.startsWith("/Giftshop") && location.pathname !== "/Giftshop";
   const isShoppingCart = location.pathname === "/cart";
+  const isContactPage = location.pathname === "/contact";
 
   const loginLinkStyle = isLoggedIn ? { display: "none" } : {};
   const profileLinkStyle = isLoggedIn ? {} : { display: "none" };
 
+  const isManager = jobTitle === "Manager";
+  const isCurator = jobTitle === "Curator";
+
   return (
     <header
       className={`header ${scrolled ? "scrolled" : ""} ${
-        isTicketsPage || isMembershipPage || isGiftshopPage || isShoppingCart ? "tickets-page" : ""
+        isTicketsPage || isContactPage || isMembershipPage || isGiftshopPage || isShoppingCart ? "tickets-page" : ""
       }`}
     >
       <h1 className="logo">
         <AnimatedLink to="/">Museum</AnimatedLink>
       </h1>
       <nav className="nav-links">
-        <AnimatedLink to="/giftshop">Gift Shop</AnimatedLink>
+        <AnimatedLink to="/giftshop">Shop</AnimatedLink>
         <AnimatedLink to="/tickets">Tickets</AnimatedLink>
         <AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink>
         <AnimatedLink to="/memberships">Memberships</AnimatedLink>
@@ -86,8 +93,21 @@ const Header = () => {
           </AnimatedLink>
         )}
 
-        {/* Temporary Admin Link */}
-        <AnimatedLink to="/adminhome">Admin</AnimatedLink>
+        {/* Dynamic Admin/Manager/Curator Link */}
+        {(userRole === "admin" || userRole === "staff") && (
+          <AnimatedLink
+            to={
+              isManager
+                ? "/managerhome"
+                : isCurator
+                ? "/curatorhome"
+                : "/adminhome"
+            }
+          >
+            {isManager ? "Manager" : isCurator ? "Curator" : "Admin"}
+          </AnimatedLink>
+        )}
+
         <AnimatedLink to="/cart">
           <FaShoppingCart />
         </AnimatedLink>
