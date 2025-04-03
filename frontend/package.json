@@ -28,6 +28,7 @@
     "react-icons": "^5.5.0",
     "react-modal-image": "^2.6.0",
     "react-router-dom": "^7.1.5",
+    "swiper": "^11.2.6",
     "three": "^0.174.0"
   },
   "devDependencies": {

@@ -13,8 +13,8 @@ const membershipRoutes = require("./routes/membership"); // Import membership ro
 
 const allowedOrigins = [
     "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
-    "http://localhost:5180", // Local frontend
-    "http://localhost:5173", // Gabe local frontend
+    "http://localhost:5183", // Local frontend
+    "http://localhost:5173", // gabe local frontend
 ];
  
 // Start HTTP Server
@@ -96,7 +96,7 @@ const server = http.createServer((req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

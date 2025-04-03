@@ -13,8 +13,8 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
-    "crypto": "^1.0.1",
     "cookies": "^0.9.1",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
     "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",

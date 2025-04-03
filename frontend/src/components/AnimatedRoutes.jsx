@@ -23,6 +23,7 @@ import Painting from "../pages/painting";
 import Sculptures from "../pages/sculptures";
 import Photographs from "../pages/photographs";
 import ExhibitionReport from "../pages/staff/ExhibitionsReport";
+import Artworks from "../pages/Artworks";
 import ManagerHome from "../pages/staff/ManagerHome";
 import CuratorHome from "../pages/staff/CuratorHome";
 
@@ -73,7 +74,7 @@ function AnimatedRoutes() {
         <Route path="/managerhome" element={<PageTransition><ManagerHome /></PageTransition>} />
         <Route path="/curatorhome" element={<PageTransition><CuratorHome /></PageTransition>} />
 
-        <Route path="/ceramic" element={<PageTransition><Ceramic/></PageTransition>}/>
+        <Route path="/artworks" element={<PageTransition><Artworks/></PageTransition>}/>
         <Route path="/prints" element={<PageTransition><Prints/></PageTransition>}/>
         <Route path="/paintings" element={<PageTransition><Painting/></PageTransition>}/>
         <Route path="/sculptures" element={<PageTransition><Sculptures/></PageTransition>}/>
