@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from "react-router-dom";
 import { Plus, Minus } from 'lucide-react';
 import '../styles/exhibition.css';
 import image1 from '/src/assets/image1.jpg';
@@ -68,6 +69,7 @@ const Exhibitions = () => {
           {exhibitionsData.map((exhibition) => {
             const isExpanded = expandedIds.includes(exhibition.id);
             return (
+              
               <div key={exhibition.id} className="exhibition-item">
                 {/* Horizontal Bar with Icon and Conditional Text Color */}
                 <motion.div
@@ -75,9 +77,11 @@ const Exhibitions = () => {
                   onClick={() => handleToggle(exhibition.id)}
                   whileHover={{ scale: 1.01 }}
                 >
+                  <Link className = "category-link" to ={ `/artworks`}>
                   <h2 className={isExpanded ? 'active' : ''}>
                     {exhibition.title}
                   </h2>
+                  </Link>
                   <AnimatePresence mode="wait">
                     {isExpanded ? (
                       <motion.span
