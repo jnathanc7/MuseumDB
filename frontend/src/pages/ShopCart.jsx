@@ -77,17 +77,26 @@ const ShopCart = () => {
       setSubTotal(total);
     }, [cartProducts]);//+ or - affects the cartProduct object so it detects it and will run the useEffect when that change is detected
 
-  const fetchShopCart = async () =>{
-    try{
-      const response = await fetch("https://museumdb.onrender.com/cart");
-      const data = await response.json();
-      console.log("Fetched Cart Data", data);
-      setCartProducts(data);
-  }
-  catch(error){
-      console.error("Error fetching from cart:", error);
-  }
-}
+    const fetchShopCart = async () => {
+      try {
+        const response = await fetch("https://museumdb.onrender.com/cart", {
+          credentials: "include",
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          // User is not logged in
+          setCartProducts([]); // Or show a message
+          return;
+        }
+    
+        const data = await response.json();
+        console.log("Fetched Cart Data", data);
+        setCartProducts(data);
+      } catch (error) {
+        console.error("Error fetching from cart:", error);
+      }
+    };
+    
 
 useEffect(() => {
   fetchShopCart();
@@ -100,6 +109,7 @@ const RemoveFromCart = async (cartItemID) =>{
           headers: {
               "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({Cart_Item_ID: cartItemID}),
       });
        
@@ -139,6 +149,7 @@ const Purchase = async () =>{
           headers: {
               "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify(purchaseData),
       });
        

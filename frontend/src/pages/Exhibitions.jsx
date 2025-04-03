@@ -14,13 +14,13 @@ export default function Exhibits() {
 
       <div className="Exhibitions-Categories">
         <div><Link
-          to="/ceramic"
+          to="/artworks"
           className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
         >
           View Ceramic Gallery
         </Link></div>
         <div><Link
-          to="/paintings"
+          to="/artworks"
           className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition"
         >
           View Painting Gallery

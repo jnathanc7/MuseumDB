@@ -1,5 +1,10 @@
 const url = require("url");
 const db = require("../db"); // Import Database Connection
+const authMiddleware = require("../middleware/authMiddleware");
+
+//need to add authmiddleware to allow us to know what user is adding to the cart from there we extract from the shopcart based on the customer id
+//right now shopcart is universal so every user has access to everyones shopcart
+//need to alter shopcart table to include customer_id
 
 module.exports = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
@@ -9,7 +14,8 @@ module.exports = (req, res) => {
     console.log("Path segments:", pathSegments);
     
     // Handle CORS (Allow frontend to communicate with backend)
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5183");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
@@ -38,14 +44,17 @@ module.exports = (req, res) => {
     }
     
     //  POST /giftshop/(categoryname)/(productid) - Send product to shop cart 
+    //only need to add authmiddleware to this request to add a customerid to shopcart table from there fetch and delete make the query based on the customerid
     else if (pathSegments[0] === 'giftshop' && pathSegments.length === 3 && method === "POST") {
+        authMiddleware([])(req, res, () => {
         let body = "";
         req.on("data", (chunk) => { body += chunk; });
         req.on("end", () =>{
             const product = JSON.parse(body);
-            const checkQuery = "SELECT Cart_Item_ID, Quantity FROM shopping_cart WHERE Product_ID = ?";
+            const customer_ID = req.user.id;
+            const checkQuery = "SELECT Cart_Item_ID, Quantity FROM shopping_cart WHERE Product_ID = ? AND customer_ID = ?";
             
-            db.query(checkQuery, [product.Product_ID], (err, rows) => {
+            db.query(checkQuery, [product.Product_ID, customer_ID], (err, rows) => {
                 if (err) {
                     console.log("Database Query failed", err);
                     res.writeHead(500, { "Content-Type": "application/json" });
@@ -57,8 +66,8 @@ module.exports = (req, res) => {
                 }
                 else if(rows.length > 0){
                     // we first select all the rows where product_id = ? if we get more than 0 then the cart already contains that product hence we update rather than insert
-                    const updateQuery = "UPDATE shopping_cart SET Quantity = Quantity + ? WHERE Product_ID = ?";
-                    db.query(updateQuery, [product.Quantity, product.Product_ID], (updateErr, updateResults) => {
+                    const updateQuery = "UPDATE shopping_cart SET Quantity = Quantity + ? WHERE Product_ID = ? AND customer_ID = ?";
+                    db.query(updateQuery, [product.Quantity, product.Product_ID, customer_ID], (updateErr, updateResults) => {
                         if (updateErr) {
                             console.log("Error updating cart:", updateErr);
                             res.writeHead(500, { "Content-Type": "application/json" });
@@ -72,8 +81,8 @@ module.exports = (req, res) => {
                 //maintain autoincrement consistency; increment only when a new product is added rather than a dupe
                 else {
                     // Step 3: If product does NOT exist, insert it (Cart_Item_ID will auto-increment)
-                    const insertQuery = "INSERT INTO shopping_cart (Product_ID, Quantity) VALUES (?, ?)";
-                    db.query(insertQuery, [product.Product_ID, product.Quantity], (insertErr, insertResults) => {
+                    const insertQuery = "INSERT INTO shopping_cart (Product_ID, Quantity, customer_ID) VALUES (?, ?, ?)";
+                    db.query(insertQuery, [product.Product_ID, product.Quantity, customer_ID], (insertErr, insertResults) => {
                         if (insertErr) {
                             console.log("Error inserting into cart:", insertErr);
                             res.writeHead(500, { "Content-Type": "application/json" });
@@ -86,7 +95,8 @@ module.exports = (req, res) => {
                 }
         });
     });
-    }
+  });
+ }
 
     //  GET /giftshop/(categoryname) - Retrieve all products of given category from database
     else if (pathSegments[0] === 'giftshop' && pathSegments.length === 2 && method === "GET") {

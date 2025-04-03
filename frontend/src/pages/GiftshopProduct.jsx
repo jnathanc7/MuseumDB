@@ -49,8 +49,14 @@ const GiftshopProduct = () =>{
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    credentials: "include",
                     body: JSON.stringify(productInfo),
                 });
+                
+                if (response.status === 401 || response.status === 403) {
+                    alert("Please log in or create an account before purchasing.");
+                    return;
+                  }
                  
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
