@@ -89,7 +89,14 @@ const Memberships = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("Fetched membership data:", data);
-        if (data && data.membership_id) {
+        if (Array.isArray(data) && data.length > 0) {
+          const membershipRecord = data[0];
+          setExistingMembership(membershipRecord);
+          setSelectedTier(membershipRecord.membership_type);
+          setPaymentType(membershipRecord.payment_type);
+          setReason(membershipRecord.reason);
+        } else if (data && data.membership_id) {
+          // In case it returns an object directly
           setExistingMembership(data);
           setSelectedTier(data.membership_type);
           setPaymentType(data.payment_type);
@@ -100,6 +107,7 @@ const Memberships = () => {
       })
       .catch((error) => console.error("Error fetching membership:", error));
   }, []);
+  
   
 
   // POST request handler (for new membership)
