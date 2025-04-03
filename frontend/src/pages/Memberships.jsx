@@ -1,5 +1,5 @@
 import "../styles/memberships.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, Repeat } from "lucide-react";
 import CustomSelect from "../components/CustomSelect";
 
@@ -8,6 +8,8 @@ const Memberships = () => {
   const [paymentType, setPaymentType] = useState("monthly");
   const [selectedTier, setSelectedTier] = useState("");
   const [reason, setReason] = useState("");
+  // State to store the fetched membership (if it exists)
+  const [existingMembership, setExistingMembership] = useState(null);
 
   // Membership tiers with different pricing options
   const membershipTiers = [
@@ -77,6 +79,29 @@ const Memberships = () => {
     "General Support",
   ];
 
+  // Fetch the existing membership on component mount
+  useEffect(() => {
+    // Fetch membership record from the backend using GET
+    fetch("https://museumdb.onrender.com/membership", {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // If data has a membership_id, assume it is the record for the current user.
+        if (data && data.membership_id) {
+          setExistingMembership(data);
+          // Optionally pre-fill form fields with existing data:
+          setSelectedTier(data.membership_type);
+          setPaymentType(data.payment_type);
+          setReason(data.reason);
+        }
+      })
+      .catch((error) => console.error("Error fetching membership:", error));
+  }, []);
+
+  // POST request handler (for new membership)
   const handleDonate = async (e) => {
     e.preventDefault();
 
@@ -85,7 +110,6 @@ const Memberships = () => {
       return;
     }
 
-    // Find the selected membership details and determine the payment amount
     const membership = membershipTiers.find((tier) => tier.name === selectedTier);
     if (!membership) {
       alert("Invalid membership tier selected.");
@@ -93,7 +117,6 @@ const Memberships = () => {
     }
     const membershipAmount = paymentType === "monthly" ? membership.monthly : membership.annual;
 
-    // Build payload to send to the backend (customer_id is taken from JWT on the server)
     const membershipData = {
       membership_type: selectedTier,
       payment_type: paymentType,
@@ -121,17 +144,63 @@ const Memberships = () => {
       } else {
         const data = await response.json();
         alert("Membership successfully created! Membership ID: " + data.membership_id);
-        // Clear form fields upon success
-        setSelectedTier("");
-        setReason("");
+        setExistingMembership(data); // Update state so the form now becomes update mode
       }
     } catch (error) {
       alert("Network error: " + error.message);
     }
   };
 
-  const selectedMembership =
-    membershipTiers.find((tier) => tier.name === selectedTier);
+  // PUT request handler (to update existing membership)
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    if (!selectedTier || !reason) {
+      alert("Please select a membership tier and a reason for joining.");
+      return;
+    }
+
+    const membership = membershipTiers.find((tier) => tier.name === selectedTier);
+    if (!membership) {
+      alert("Invalid membership tier selected.");
+      return;
+    }
+    const membershipAmount = paymentType === "monthly" ? membership.monthly : membership.annual;
+
+    const membershipData = {
+      membership_type: selectedTier,
+      payment_type: paymentType,
+      payment_amount: membershipAmount,
+      reason,
+    };
+
+    try {
+      const response = await fetch("https://museumdb.onrender.com/membership", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(membershipData),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          alert("Please log in to update your membership.");
+        } else {
+          const errorData = await response.json();
+          alert("Error updating membership: " + (errorData.error || errorData.message));
+        }
+      } else {
+        
+        alert("Membership updated successfully!");
+        // Optionally update local state with new values
+        setExistingMembership({ ...existingMembership, ...membershipData });
+      }
+    } catch (error) {
+      alert("Network error: " + error.message);
+    }
+  };
 
   const paymentOptions = [
     {
@@ -171,8 +240,8 @@ const Memberships = () => {
 
       {/* RIGHT SIDE: Membership Form */}
       <div className="donation-form">
-        <h2>Join Us</h2>
-        <form onSubmit={handleDonate}>
+        <h2>{existingMembership ? "Update Your Membership" : "Join Us"}</h2>
+        <form onSubmit={existingMembership ? handleUpdate : handleDonate}>
           <label>Choose Payment Type:</label>
           <CustomSelect
             value={paymentType}
@@ -213,19 +282,9 @@ const Memberships = () => {
             ))}
           </select>
 
-          {selectedMembership && (
-            <div className="membership-details">
-              <h3>{selectedMembership.name} Membership</h3>
-              <p>{selectedMembership.description}</p>
-              <ul>
-                {selectedMembership.perks.map((perk, i) => (
-                  <li key={i}>{perk}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <button type="submit">Join Now</button>
+          <button type="submit">
+            {existingMembership ? "Update Membership" : "Join Now"}
+          </button>
         </form>
       </div>
     </div>
