@@ -4,21 +4,21 @@ const employeesRoutes = require("./routes/employees"); // Import employees route
 const reportsRoutes = require("./routes/reports"); // Import reports routes
 const authRoutes = require("./routes/auth"); // Import authentication routes
 const authMiddleware = require("./middleware/authMiddleware"); // Import authentication middleware
-const giftshopRoutes = require("./routes/giftshop") //import giftshop routes
-const shopCartRoutes = require("./routes/shopcart") //import giftshop routes
+const giftshopRoutes = require("./routes/giftshop"); // Import giftshop routes
+const shopCartRoutes = require("./routes/shopcart"); // Import shop cart routes
 const complaintsRoutes = require("./routes/complaints");
-const exhibitionReportRoutes = require("./routes/exhibitionReport"); 
+const exhibitionReportRoutes = require("./routes/exhibitionReport");
 const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
+const membershipRoutes = require("./routes/membership"); // Import membership routes
 
 const allowedOrigins = [
     "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
     "http://localhost:5180", // Local frontend
-    "http://localhost:5173", // gabe local frontend
+    "http://localhost:5173", // Gabe local frontend
 ];
  
 // Start HTTP Server
 const server = http.createServer((req, res) => { 
-    
     // CORS Headers below
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
@@ -83,6 +83,11 @@ const server = http.createServer((req, res) => {
     }
     else if (parsedUrl.pathname.startsWith("/purchase")) {
         ticketsRoutes(req, res);
+        return;
+    }
+    // NEW: Membership Routes
+    else if (parsedUrl.pathname.startsWith("/membership")) {
+        membershipRoutes(req, res, parsedUrl);
         return;
     }
     else {
