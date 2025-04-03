@@ -5,23 +5,12 @@ module.exports = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const method = req.method;
 
-    // Always set CORS headers immediately
-    res.setHeader("Access-Control-Allow-Origin", "https://museum-db-kappa.vercel.app");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-    if (method === "OPTIONS") {
-        res.writeHead(204);
-        return res.end();
-    }
-
     // GET /total-report
     if (parsedUrl.pathname === "/total-report" && method === "GET") {
         const saleType = parsedUrl.query.type || "all";
         const dateRange = parsedUrl.query.dateRange || "all-dates";
 
-        // Prepare date filters for each table
+        // Prepare date filters
         let ticketDateFilter = "";
         let giftshopDateFilter = "";
         let donationDateFilter = "";
@@ -40,19 +29,22 @@ module.exports = (req, res) => {
             donationDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 YEAR";
         }
 
-        // Ticket sales from purchase_tickets + purchases
+        // Queries
         const ticketQuery = `
-            SELECT 
-                CONCAT(pt.Purchase_ID, '-', pt.Ticket_ID) AS Sale_ID,
-                p.Customer_ID,
-                'Ticket' AS Sale_Type,
-                pt.Quantity * pt.Price AS Amount,
-                p.Date_Purchased AS Sale_Date,
-                p.Payment_Method
-            FROM purchase_tickets pt
-            JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
-            ${ticketDateFilter}
-        `;
+        SELECT 
+            CONCAT(pt.Purchase_ID, '-', pt.Ticket_ID) AS Sale_ID,
+            CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name,
+            'Ticket' AS Sale_Type,
+            pt.Quantity * pt.Price AS Amount,
+            p.Date_Purchased AS Sale_Date,
+            p.Payment_Method
+        FROM purchase_tickets pt
+        JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
+        JOIN customers c ON p.Customer_ID = c.Customer_ID
+        ${ticketDateFilter}
+    `;
+    
+    
 
         const giftShopQuery = `
             SELECT 
@@ -87,7 +79,6 @@ module.exports = (req, res) => {
         } else if (saleType === "donations") {
             query = `${donationQuery} ORDER BY Sale_Date DESC`;
         } else {
-            // Full report
             query = `
                 ${ticketQuery}
                 UNION ALL
@@ -98,7 +89,7 @@ module.exports = (req, res) => {
             `;
         }
 
-        // Execute the query
+        // Main query
         db.query(query, (err, results) => {
             if (err) {
                 console.error("Error retrieving total report:", err);
@@ -106,14 +97,107 @@ module.exports = (req, res) => {
                 return res.end(JSON.stringify({ message: "Error retrieving total report", error: err }));
             }
 
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(results));
+            if (saleType === "tickets") {
+                // Add summary query for tickets
+                const summaryQuery = `
+                SELECT
+                    COUNT(*) AS total_transactions,
+                    SUM(pt.Quantity) AS total_tickets_sold,
+                    SUM(pt.Quantity * pt.Price) AS total_revenue,
+                    (
+                        SELECT CONCAT(c.First_Name, ' ', c.Last_Name)
+                        FROM purchase_tickets pt2
+                        JOIN purchases p ON pt2.Purchase_ID = p.Purchase_ID
+                        JOIN customers c ON p.Customer_ID = c.Customer_ID
+                        GROUP BY p.Customer_ID
+                        ORDER BY SUM(pt2.Quantity) DESC
+                        LIMIT 1
+                    ) AS most_active_customer
+                FROM purchase_tickets pt
+                JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
+                ${ticketDateFilter}
+            `;
+            
+
+                db.query(summaryQuery, (summaryErr, summaryResult) => {
+                    if (summaryErr) {
+                        console.error("Error retrieving ticket summary:", summaryErr);
+                        res.writeHead(500, { "Content-Type": "application/json" });
+                        return res.end(JSON.stringify({ message: "Error retrieving ticket summary", error: summaryErr }));
+                    }
+
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({
+                        sales: results,
+                        summary: summaryResult[0] || {}
+                    }));
+                });
+
+            }  else if (saleType === "all") {
+                const fullSummaryQuery = `
+                    SELECT
+                        (
+                            (SELECT COUNT(*) FROM purchase_tickets pt JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID ${ticketDateFilter}) +
+                            (SELECT COUNT(*) FROM gift_shop_transactions ${giftshopDateFilter}) +
+                            (SELECT COUNT(*) FROM donations ${donationDateFilter})
+                        ) AS total_transactions,
+
+                        (
+                            (SELECT IFNULL(SUM(pt.Quantity * pt.Price), 0) FROM purchase_tickets pt JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID ${ticketDateFilter}) +
+                            (SELECT IFNULL(SUM(Total_Amount), 0) FROM gift_shop_transactions ${giftshopDateFilter}) +
+                            (SELECT IFNULL(SUM(Amount), 0) FROM donations ${donationDateFilter})
+                        ) AS total_revenue,
+
+                        (
+                            SELECT Customer_Name FROM (
+                                SELECT CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name, COUNT(*) AS activity
+                                FROM purchases p
+                                JOIN customers c ON p.Customer_ID = c.Customer_ID
+                                ${ticketDateFilter}
+                                GROUP BY c.Customer_ID
+
+                                UNION ALL
+
+                                SELECT Customer_ID AS Customer_Name, COUNT(*) AS activity
+                                FROM gift_shop_transactions
+                                ${giftshopDateFilter}
+                                GROUP BY Customer_ID
+
+                                UNION ALL
+
+                                SELECT user_ID AS Customer_Name, COUNT(*) AS activity
+                                FROM donations
+                                ${donationDateFilter}
+                                GROUP BY user_ID
+                            ) AS combined
+                            GROUP BY Customer_Name
+                            ORDER BY SUM(activity) DESC
+                            LIMIT 1
+                        ) AS most_active_customer
+                `;
+
+                db.query(fullSummaryQuery, (summaryErr, summaryResult) => {
+                    if (summaryErr) {
+                        console.error("Error retrieving full summary:", summaryErr);
+                        res.writeHead(500, { "Content-Type": "application/json" });
+                        return res.end(JSON.stringify({ message: "Error retrieving full summary", error: summaryErr }));
+                    }
+
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({
+                        sales: results,
+                        summary: summaryResult[0] || {}
+                    }));
+                });
+            } else {
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ sales: results }));
+            }
         });
 
         return;
     }
 
-    // Handle unknown route
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "Route not found" }));
 };
