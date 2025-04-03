@@ -110,6 +110,62 @@ module.exports = (req, res) => {
     return;
   }
 
+  // PUT: Update an existing membership (protected)
+  // PUT: Update existing membership for the logged-in customer
+if (method === "PUT" && parsedUrl.pathname === "/membership") {
+    authMiddleware([])(req, res, () => {
+      let body = "";
+      req.on("data", (chunk) => { body += chunk.toString(); });
+      req.on("end", () => {
+        try {
+          // Expected JSON: { membership_type, payment_type, payment_amount, reason }
+          const { membership_type, payment_type, payment_amount, reason } = JSON.parse(body);
+          if (!membership_type || !payment_type || !payment_amount) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({ error: "Missing required fields" }));
+          }
+          
+          const customer_id = req.user.id;
+          const startDate = new Date();
+          let endDate = new Date(startDate);
+          if (payment_type === "monthly") {
+            endDate.setMonth(endDate.getMonth() + 1);
+          } else if (payment_type === "annual") {
+            endDate.setFullYear(endDate.getFullYear() + 1);
+          } else {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({ error: "Invalid payment_type" }));
+          }
+          const formattedStart = startDate.toISOString().slice(0, 10);
+          const formattedEnd = endDate.toISOString().slice(0, 10);
+          const query = `
+            UPDATE memberships 
+            SET membership_type = ?, payment_type = ?, payment_amount = ?, reason = ?, start_date = ?, end_date = ?
+            WHERE customer_id = ?
+          `;
+          const values = [membership_type, payment_type, payment_amount, reason, formattedStart, formattedEnd, customer_id];
+          db.query(query, values, (err, result) => {
+            if (err) {
+              res.writeHead(500, { "Content-Type": "application/json" });
+              return res.end(JSON.stringify({ error: "Database error", details: err.message }));
+            }
+            if (result.affectedRows === 0) {
+              res.writeHead(404, { "Content-Type": "application/json" });
+              return res.end(JSON.stringify({ error: "Membership not found" }));
+            }
+            res.writeHead(200, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({ message: "Membership updated" }));
+          });
+        } catch (error) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ error: "Invalid JSON format" }));
+        }
+      });
+    });
+    return;
+  }
+  
+
   // Fallback for unsupported routes/methods
   res.writeHead(404, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ message: "Route not found" }));
