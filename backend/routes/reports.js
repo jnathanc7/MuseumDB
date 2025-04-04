@@ -28,10 +28,17 @@ module.exports = (req, res) => {
         const saleType = parsedUrl.query.type || "all";
         const dateRange = parsedUrl.query.dateRange || "all-dates";
 
-        // Prepare date filters
+    
+
+        // range check for startDate and endDate to ensure they are in YYYY-MM-DD format if provided
         let ticketDateFilter = "";
         let giftshopDateFilter = "";
         let donationDateFilter = "";
+        
+        const { startDate, endDate } = parsedUrl.query;
+        
+
+        
 
         if (dateRange === "last-week") {
             ticketDateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 7 DAY";
@@ -47,6 +54,14 @@ module.exports = (req, res) => {
             donationDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 YEAR";
         }
 
+        
+// If specific start and end dates are provided, override predefined dateRange filters
+        if (startDate && endDate) {
+            ticketDateFilter = `WHERE p.Date_Purchased BETWEEN '${startDate}' AND '${endDate}'`;
+            giftshopDateFilter = `WHERE Date BETWEEN '${startDate}' AND '${endDate}'`;
+            donationDateFilter = `WHERE Date BETWEEN '${startDate}' AND '${endDate}'`;
+        }
+
         // Queries
         const ticketQuery = `
         SELECT 
@@ -55,37 +70,49 @@ module.exports = (req, res) => {
             'Ticket' AS Sale_Type,
             pt.Quantity * pt.Price AS Amount,
             p.Date_Purchased AS Sale_Date,
-            p.Payment_Method
+            p.Payment_Method,
+            NULL AS Product_Names
         FROM purchase_tickets pt
         JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
         JOIN customers c ON p.Customer_ID = c.Customer_ID
         ${ticketDateFilter}
+
     `;
     
     
 
         const giftShopQuery = `
-            SELECT 
-                Transaction_ID AS Sale_ID,
-                Customer_ID,
-                'Gift Shop' AS Sale_Type,
-                Total_Amount AS Amount,
-                Date AS Sale_Date,
-                Payment_Method
-            FROM gift_shop_transactions
-            ${giftshopDateFilter}
+        SELECT 
+            gst.Transaction_ID AS Sale_ID,
+            CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name,
+            'Gift Shop' AS Sale_Type,
+            gst.Total_Amount AS Amount,
+            gst.Date AS Sale_Date,
+            gst.Payment_Method,
+            GROUP_CONCAT(DISTINCT p.Name SEPARATOR ', ') AS Product_Names
+        FROM gift_shop_transactions gst
+        LEFT JOIN customers c ON gst.Customer_ID = c.Customer_ID
+        LEFT JOIN gift_shop_items gsi ON gst.Transaction_ID = gsi.Transaction_ID
+        LEFT JOIN products p ON gsi.Product_ID = p.Product_ID
+        ${giftshopDateFilter}
+        GROUP BY gst.Transaction_ID
+
         `;
 
         const donationQuery = `
             SELECT 
-                Donation_ID AS Sale_ID,
-                user_ID AS Customer_ID,
+                d.Donation_ID AS Sale_ID,
+                CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name,
                 'Donation' AS Sale_Type,
-                Amount,
-                Date AS Sale_Date,
-                Payment_Method
-            FROM donations
+                d.Amount,
+                d.Date AS Sale_Date,
+                d.Payment_Method,
+                NULL AS Product_Names
+            FROM donations d
+            LEFT JOIN customers c ON d.user_ID = c.Customer_ID
             ${donationDateFilter}
+
+
         `;
 
         let query = "";
@@ -218,6 +245,28 @@ module.exports = (req, res) => {
             
 
             }
+            else if (saleType === "donations") {
+                const summaryQuery = `
+                SELECT
+                    COUNT(*) AS total_transactions,
+                    SUM(Amount) AS total_revenue,
+                    (
+                        SELECT CONCAT(c.First_Name, ' ', c.Last_Name)
+                        FROM donations d
+                        JOIN customers c ON d.user_ID = c.Customer_ID
+                        GROUP BY d.user_ID
+                        ORDER BY SUM(d.Amount) DESC
+                        LIMIT 1
+                    ) AS top_donor
+                FROM donations d
+                JOIN customers c ON d.user_ID = c.Customer_ID
+                ${donationDateFilter}
+            `;
+            
+            
+                sendSummary(summaryQuery, results, res, "Error retrieving donation summary");
+            }
+            
             
             
             

@@ -9,6 +9,10 @@ const TotalReport = () => {
     const [dateRange, setDateRange] = useState("all-dates"); // Default: Show all dates
     const [reportSummary, setReportSummary] = useState(null);
 
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
+
 
     // const fetchReportData = async () => {
     //     try {
@@ -36,13 +40,22 @@ const TotalReport = () => {
 
     const fetchReportData = async () => {
         try {
-            let url = `http://localhost:5000/total-report?dateRange=${dateRange}`;
-            if (reportType === "total-ticket-sales") {
-                url = `http://localhost:5000/total-report?type=tickets&dateRange=${dateRange}`;
-            } else if (reportType === "total-giftshop-sales") {
-                url = `http://localhost:5000/total-report?type=giftshop&dateRange=${dateRange}`;
-            } else if (reportType === "total-donations") {
-                url = `http://localhost:5000/total-report?type=donations&dateRange=${dateRange}`;
+            const typeMap = {
+                "total-ticket-sales": "tickets",
+                "total-giftshop-sales": "giftshop",
+                "total-donations": "donations"
+            };
+    
+            let url = "http://localhost:5000/total-report?";
+            
+            if (reportType !== "total-sales") {
+                url += `type=${typeMap[reportType]}&`;
+            }
+    
+            if (startDate && endDate) {
+                url += `startDate=${startDate}&endDate=${endDate}`;
+            } else {
+                url += `dateRange=${dateRange}`;
             }
     
             console.log("Fetching from:", url);
@@ -50,9 +63,6 @@ const TotalReport = () => {
             const response = await fetch(url);
             const data = await response.json();
     
-            console.log("Received Data:", data);
-    
-            // Check if data is in { sales: [...], summary: {...} } format
             if (data.sales) {
                 setTicketSales(data.sales);
                 setReportSummary(data.summary || null);
@@ -60,7 +70,6 @@ const TotalReport = () => {
                 setTicketSales(data);
                 setReportSummary(null);
             } else {
-                // If error object or something unexpected
                 setTicketSales([]);
                 setReportSummary(null);
                 console.error("Unexpected data format:", data);
@@ -73,9 +82,11 @@ const TotalReport = () => {
     };
     
     
+    
     useEffect(() => {
         fetchReportData();
-    }, [reportType, dateRange]);
+    }, [reportType, dateRange, startDate, endDate]);
+    
     
         
 
@@ -97,10 +108,20 @@ const TotalReport = () => {
             </select>
     
             <input
-              type="text"
-              className="report-search"
-              placeholder="Search by Customer Name"
+                type="date"
+                className="report-date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                placeholder="Start Date"
             />
+            <input
+                type="date"
+                className="report-date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                placeholder="End Date"
+            />
+
     
             <select
               className="report-dropdown"
@@ -113,6 +134,18 @@ const TotalReport = () => {
               <option value="last-year">Last Year</option>
             </select>
           </div>
+          <button
+            className="reset-button"
+            onClick={() => {
+                setStartDate("");
+                setEndDate("");
+                setDateRange("all-dates");
+            }}
+            >
+            Reset Dates
+         </button>
+
+
     
           {/* Summary & Table Container */}
 
@@ -121,45 +154,56 @@ const TotalReport = () => {
 
                 <div className="summary-wrapper">
                     {reportSummary && (
-                <div className="report-summary-grid">
-                    <div className="summary-card">
-                        <h3>Total Revenue</h3>
-                        <p>${Number(reportSummary.total_revenue).toFixed(2)}</p>
-                    </div>
-                    <div className="summary-card">
-                        <h3>Total Transactions</h3>
-                        <p>{reportSummary.total_transactions}</p>
-                    </div>
-                    {/* Tickets */}
-                    {reportType === "total-ticket-sales" && (
-                    <>
+                    <div className="report-summary-grid">
                         <div className="summary-card">
-                            <h3>Total Tickets Sold</h3>
-                            <p>{reportSummary.total_tickets_sold}</p>
+                            <h3>Total Revenue</h3>
+                            <p>${Number(reportSummary.total_revenue).toFixed(2)}</p>
                         </div>
                         <div className="summary-card">
-                            <h3>Most Active Customer</h3>
-                            <p>{reportSummary.most_active_customer}</p>
+                            <h3>Total Transactions</h3>
+                            <p>{reportSummary.total_transactions}</p>
                         </div>
-                    </>
-                )}
-                    {/* Gifshop-sales */}
-                    {reportType === "total-giftshop-sales" && (
-                    <>
-                        <div className="summary-card">
-                            <h3>Total Items Sold</h3>
-                            <p>{reportSummary.total_items_sold}</p>
-                        </div>
-                        <div className="summary-card">
-                            <h3>Most Sold Product</h3>
-                            <p>{reportSummary.most_sold_product}</p>
-                        </div>
-                        <div className="summary-card">
-                            <h3>Top Revenue Product</h3>
-                            <p>{reportSummary.top_revenue_product}</p>
-                        </div>
-                    </>
+                        {/* Tickets */}
+                        {reportType === "total-ticket-sales" && (
+                        <>
+                            <div className="summary-card">
+                                <h3>Total Tickets Sold</h3>
+                                <p>{reportSummary.total_tickets_sold}</p>
+                            </div>
+                            <div className="summary-card">
+                                <h3>Most Active Customer</h3>
+                                <p>{reportSummary.most_active_customer}</p>
+                            </div>
+                        </>
                     )}
+                        {/* Gifshop-sales */}
+                        {reportType === "total-giftshop-sales" && (
+                        <>
+                            <div className="summary-card">
+                                <h3>Total Items Sold</h3>
+                                <p>{reportSummary.total_items_sold}</p>
+                            </div>
+                            <div className="summary-card">
+                                <h3>Most Sold Product</h3>
+                                <p>{reportSummary.most_sold_product}</p>
+                            </div>
+                            <div className="summary-card">
+                                <h3>Top Revenue Product</h3>
+                                <p>{reportSummary.top_revenue_product}</p>
+                            </div>
+                        </>
+                        )}
+                            
+                            {/* Donations */}
+                            {reportType === "total-donations" && (
+                            <>
+                                <div className="summary-card">
+                                <h3>Top Donor (User ID)</h3>
+                                <p>{reportSummary.top_donor || "N/A"}</p>
+                                </div>
+                            </>
+                            )}
+
                 </div>
                 )}
             </div>
@@ -167,32 +211,38 @@ const TotalReport = () => {
     
             {/* Report Table */}
             <table className="report-table">
-              <thead>
-                <tr>
-                  <th>Sale ID</th>
-                  <th>Customer Name</th>
-                  {reportType === "total-sales" && <th>Type</th>}
-                  <th>Amount</th>
-                  <th>Payment Method</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
+            <thead>
+            <tr>
+                <th>Sale ID</th>
+                <th>Customer Name</th>
+                {reportType === "total-sales" && <th>Type</th>}
+                {reportType === "total-giftshop-sales" && <th>Products</th>}
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+
+            <tbody>
                 {ticketSales.map((sale) => (
-                  <tr key={sale.Sale_ID || sale.Ticket_ID}>
+                    <tr key={sale.Sale_ID || sale.Ticket_ID}>
                     <td>{sale.Sale_ID || sale.Ticket_ID}</td>
                     <td>{sale.Customer_Name || "N/A"}</td>
                     {reportType === "total-sales" && <td>{sale.Sale_Type}</td>}
+                    {reportType === "total-giftshop-sales" && (
+                        <td>{sale.Product_Names || "N/A"}</td>
+                    )}
                     <td>${Number(sale.Amount || sale.Price).toFixed(2)}</td>
                     <td>{sale.Payment_Method || "N/A"}</td>
                     <td>
-                      {new Date(
+                        {new Date(
                         sale.Sale_Date || sale.Date_Purchased
-                      ).toLocaleDateString()}
+                        ).toLocaleDateString()}
                     </td>
-                  </tr>
+                    </tr>
                 ))}
-              </tbody>
+            </tbody>
+
             </table>
           </div>
         </main>

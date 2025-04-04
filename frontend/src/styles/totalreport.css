@@ -38,8 +38,24 @@
     border: 1px solid #ccc;
     border-radius: 5px;
 
-
 }
+.reset-button {
+    padding: 10px 15px;
+    background-color: #366ff4;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    height: 40px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .reset-button:hover {
+    background-color: #1a1357;
+  }
+  
 
 /* Report Table */
 .report-table {
