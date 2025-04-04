@@ -7,40 +7,75 @@ const TotalReport = () => {
     const [ticketSales, setTicketSales] = useState([]);
 
     const [dateRange, setDateRange] = useState("all-dates"); // Default: Show all dates
+    const [reportSummary, setReportSummary] = useState(null);
 
-    const fetchReportData = async () => {
-        try {
-            let url = `https://museumdb.onrender.com/total-report?dateRange=${dateRange}`;
-            if (reportType === "total-ticket-sales") {
-                url = `https://museumdb.onrender.com/total-report?type=tickets&dateRange=${dateRange}`;
-            } else if (reportType === "total-giftshop-sales") {
-                url = `https://museumdb.onrender.com/total-report?type=giftshop&dateRange=${dateRange}`;
-            } else if (reportType === "total-donations") {
-                url = `https://museumdb.onrender.com/total-report?type=donations&dateRange=${dateRange}`;
-            }
-    
-            console.log("Fetching from:", url);
-    
-            const response = await fetch(url);
-            const data = await response.json();
-    
-            console.log("Received Data:", data);
-    
-            setTicketSales(data);
-        } catch (error) {
-            console.error("Error fetching sales report:", error);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
+
+
+ const fetchReportData = async () => {
+    try {
+        const typeMap = {
+            "total-ticket-sales": "tickets",
+            "total-giftshop-sales": "giftshop",
+            "total-donations": "donations"
+        };
+
+        let url = "https://museumdb.onrender.com/total-report?";
+
+        if (reportType !== "total-sales") {
+            url += `type=${typeMap[reportType]}&`;
         }
-    };
+
+        if (startDate && endDate) {
+            url += `startDate=${startDate}&endDate=${endDate}`;
+        } else {
+            url += `dateRange=${dateRange}`;
+        }
+
+        console.log("Fetching from:", url);
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.sales) {
+            setTicketSales(data.sales);
+            setReportSummary(data.summary || null);
+        } else if (Array.isArray(data)) {
+            setTicketSales(data);
+            setReportSummary(null);
+        } else {
+            setTicketSales([]);
+            setReportSummary(null);
+            console.error("Unexpected data format:", data);
+        }
+
+    } catch (error) {
+        console.error("Error fetching sales report:", error);
+        setTicketSales([]);
+    }
+};
+
 
     // const fetchReportData = async () => {
     //     try {
-    //         let url = `http://localhost:5000/total-report?dateRange=${dateRange}`;
-    //         if (reportType === "total-ticket-sales") {
-    //             url = `http://localhost:5000/total-report?type=tickets&dateRange=${dateRange}`;
-    //         } else if (reportType === "total-giftshop-sales") {
-    //             url = `http://localhost:5000/total-report?type=giftshop&dateRange=${dateRange}`;
-    //         } else if (reportType === "total-donations") {
-    //             url = `http://localhost:5000/total-report?type=donations&dateRange=${dateRange}`;
+    //         const typeMap = {
+    //             "total-ticket-sales": "tickets",
+    //             "total-giftshop-sales": "giftshop",
+    //             "total-donations": "donations"
+    //         };
+    
+    //         let url = "http://localhost:5000/total-report?";
+            
+    //         if (reportType !== "total-sales") {
+    //             url += `type=${typeMap[reportType]}&`;
+    //         }
+    
+    //         if (startDate && endDate) {
+    //             url += `startDate=${startDate}&endDate=${endDate}`;
+    //         } else {
+    //             url += `dateRange=${dateRange}`;
     //         }
     
     //         console.log("Fetching from:", url);
@@ -48,78 +83,194 @@ const TotalReport = () => {
     //         const response = await fetch(url);
     //         const data = await response.json();
     
-    //         console.log("Received Data:", data);
+    //         if (data.sales) {
+    //             setTicketSales(data.sales);
+    //             setReportSummary(data.summary || null);
+    //         } else if (Array.isArray(data)) {
+    //             setTicketSales(data);
+    //             setReportSummary(null);
+    //         } else {
+    //             setTicketSales([]);
+    //             setReportSummary(null);
+    //             console.error("Unexpected data format:", data);
+    //         }
     
-    //         setTicketSales(data);
     //     } catch (error) {
     //         console.error("Error fetching sales report:", error);
+    //         setTicketSales([]);
     //     }
     // };
     
     
     
-    
-
     useEffect(() => {
         fetchReportData();
-    }, [reportType, dateRange]);
+    }, [reportType, dateRange, startDate, endDate]);
+    
     
         
 
-
     return (
         <main className="total-report-container">
-            <h1 className="report-title">Sales Report</h1>
-
-            {/* Filters (Dropdowns & Search Bars) */}
-            <div className="filters">
-            <select className="report-dropdown" value={reportType} onChange={(e) => setReportType(e.target.value)}>
-                <option value="total-sales">All Sales</option>
-                <option value="total-ticket-sales">Ticket Sales Only</option>
-                <option value="total-giftshop-sales">Gift Shop Sales Only</option>
-                <option value="total-donations">Donations Only</option>
+          <h1 className="report-title">Sales Report</h1>
+    
+          {/* Filters */}
+          <div className="filters">
+            <select
+              className="report-dropdown"
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value)}
+            >
+              <option value="total-sales">All Sales</option>
+              <option value="total-ticket-sales">Ticket Sales Only</option>
+              <option value="total-giftshop-sales">Gift Shop Sales Only</option>
+              <option value="total-donations">Donations Only</option>
             </select>
+    
+            <input
+                type="date"
+                className="report-date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                placeholder="Start Date"
+            />
+            <input
+                type="date"
+                className="report-date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                placeholder="End Date"
+            />
+
+    
+            <select
+              className="report-dropdown"
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+            >
+              <option value="all-dates">All Dates</option>
+              <option value="last-week">Last Week</option>
+              <option value="last-month">Last Month</option>
+              <option value="last-year">Last Year</option>
+            </select>
+          </div>
+          <button
+            className="reset-button"
+            onClick={() => {
+                setStartDate("");
+                setEndDate("");
+                setDateRange("all-dates");
+            }}
+            >
+            Reset Dates
+         </button>
 
 
-                <input type="text" className="report-search" placeholder="Search by Customer Name" />
-                <select className="report-dropdown" value={dateRange} onChange={(e) => setDateRange(e.target.value)}>
-    <option value="all-dates">All Dates</option>
-    <option value="last-week">Last Week</option>
-    <option value="last-month">Last Month</option>
-    <option value="last-year">Last Year</option>
-</select>
+    
+          {/* Summary & Table Container */}
 
+
+            <div className="report-content-wrapper">
+
+                <div className="summary-wrapper">
+                    {reportSummary && (
+                    <div className="report-summary-grid">
+                        <div className="summary-card">
+                            <h3>Total Revenue</h3>
+                            <p>${Number(reportSummary.total_revenue).toFixed(2)}</p>
+                        </div>
+                        <div className="summary-card">
+                            <h3>Total Transactions</h3>
+                            <p>{reportSummary.total_transactions}</p>
+                        </div>
+                        {/* Tickets */}
+                        {reportType === "total-ticket-sales" && (
+                        <>
+                            <div className="summary-card">
+                                <h3>Total Tickets Sold</h3>
+                                <p>{reportSummary.total_tickets_sold}</p>
+                            </div>
+                            <div className="summary-card">
+                                <h3>Most Active Customer</h3>
+                                <p>{reportSummary.most_active_customer}</p>
+                            </div>
+                        </>
+                    )}
+                        {/* Gifshop-sales */}
+                        {reportType === "total-giftshop-sales" && (
+                        <>
+                            <div className="summary-card">
+                                <h3>Total Items Sold</h3>
+                                <p>{reportSummary.total_items_sold}</p>
+                            </div>
+                            <div className="summary-card">
+                                <h3>Most Sold Product</h3>
+                                <p>{reportSummary.most_sold_product}</p>
+                            </div>
+                            <div className="summary-card">
+                                <h3>Top Revenue Product</h3>
+                                <p>{reportSummary.top_revenue_product}</p>
+                            </div>
+                        </>
+                        )}
+                            
+                            {/* Donations */}
+                            {reportType === "total-donations" && (
+                            <>
+                                <div className="summary-card">
+                                <h3>Top Donor (User ID)</h3>
+                                <p>{reportSummary.top_donor || "N/A"}</p>
+                                </div>
+                            </>
+                            )}
+
+                </div>
+                )}
             </div>
-
+         {/* End of Summary Wrapper */}
+    
             {/* Report Table */}
             <table className="report-table">
-    <thead>
-        <tr>
-            <th>Sale ID</th>
-            <th>Customer ID</th>
-            {reportType === "total-sales" && <th>Type</th>} {/* Only show Sale Type for Total Sales Report */}
-            <th>Amount</th>
-            <th>Payment Method</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody>
-    {ticketSales.map((sale) => (
-        <tr key={sale.Sale_ID || sale.Ticket_ID}>
-            <td>{sale.Sale_ID || sale.Ticket_ID}</td>
-            <td>{sale.Customer_ID || "N/A"}</td>
-            {reportType === "total-sales" && <td>{sale.Sale_Type}</td>}
-            <td>${Number(sale.Amount || sale.Price).toFixed(2)}</td>
-            <td>{sale.Payment_Method || "N/A"}</td>
-            <td>{new Date(sale.Sale_Date || sale.Date_Purchased).toLocaleDateString()}</td>
-        </tr>
-    ))}
-</tbody>
+            <thead>
+            <tr>
+                <th>Sale ID</th>
+                <th>Customer Name</th>
+                {reportType === "total-sales" && <th>Type</th>}
+                {reportType === "total-giftshop-sales" && <th>Products</th>}
+                {reportType !== "total-donations" && <th>Quantity</th>}
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+            </thead>
 
-</table>
 
+            <tbody>
+            {ticketSales.map((sale) => (
+                <tr key={sale.Sale_ID || sale.Ticket_ID}>
+                <td>{sale.Sale_ID || sale.Ticket_ID}</td>
+                <td>{sale.Customer_Name || "N/A"}</td>
+                {reportType === "total-sales" && <td>{sale.Sale_Type}</td>}
+                {reportType === "total-giftshop-sales" && (
+                    <td>{sale.Product_Names || "N/A"}</td>
+                )}
+                {reportType !== "total-donations" && (
+                    <td>{sale.Quantity || "N/A"}</td>
+                )}
+                <td>${Number(sale.Amount || sale.Price).toFixed(2)}</td>
+                <td>
+                    {new Date(
+                    sale.Sale_Date || sale.Date_Purchased
+                    ).toLocaleDateString()}
+                </td>
+                </tr>
+            ))}
+            </tbody>
+
+
+            </table>
+          </div>
         </main>
-    );
-};
-
-export default TotalReport;
+      );
+    };
+    
+    export default TotalReport;
