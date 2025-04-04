@@ -14,92 +14,92 @@ const TotalReport = () => {
 
 
 
- const fetchReportData = async () => {
-    try {
-        const typeMap = {
-            "total-ticket-sales": "tickets",
-            "total-giftshop-sales": "giftshop",
-            "total-donations": "donations"
-        };
+//  const fetchReportData = async () => {
+//     try {
+//         const typeMap = {
+//             "total-ticket-sales": "tickets",
+//             "total-giftshop-sales": "giftshop",
+//             "total-memberships": "memberships"
+//         };
 
-        let url = "https://museumdb.onrender.com/total-report?";
+//         let url = "https://museumdb.onrender.com/total-report?";
 
-        if (reportType !== "total-sales") {
-            url += `type=${typeMap[reportType]}&`;
-        }
+//         if (reportType !== "total-sales") {
+//             url += `type=${typeMap[reportType]}&`;
+//         }
 
-        if (startDate && endDate) {
-            url += `startDate=${startDate}&endDate=${endDate}`;
-        } else {
-            url += `dateRange=${dateRange}`;
-        }
+//         if (startDate && endDate) {
+//             url += `startDate=${startDate}&endDate=${endDate}`;
+//         } else {
+//             url += `dateRange=${dateRange}`;
+//         }
 
-        console.log("Fetching from:", url);
+//         console.log("Fetching from:", url);
 
-        const response = await fetch(url);
-        const data = await response.json();
+//         const response = await fetch(url);
+//         const data = await response.json();
 
-        if (data.sales) {
-            setTicketSales(data.sales);
-            setReportSummary(data.summary || null);
-        } else if (Array.isArray(data)) {
-            setTicketSales(data);
-            setReportSummary(null);
-        } else {
-            setTicketSales([]);
-            setReportSummary(null);
-            console.error("Unexpected data format:", data);
-        }
+//         if (data.sales) {
+//             setTicketSales(data.sales);
+//             setReportSummary(data.summary || null);
+//         } else if (Array.isArray(data)) {
+//             setTicketSales(data);
+//             setReportSummary(null);
+//         } else {
+//             setTicketSales([]);
+//             setReportSummary(null);
+//             console.error("Unexpected data format:", data);
+//         }
 
-    } catch (error) {
-        console.error("Error fetching sales report:", error);
-        setTicketSales([]);
-    }
-};
+//     } catch (error) {
+//         console.error("Error fetching sales report:", error);
+//         setTicketSales([]);
+//     }
+// };
 
 
-    // const fetchReportData = async () => {
-    //     try {
-    //         const typeMap = {
-    //             "total-ticket-sales": "tickets",
-    //             "total-giftshop-sales": "giftshop",
-    //             "total-donations": "donations"
-    //         };
+    const fetchReportData = async () => {
+        try {
+            const typeMap = {
+                "total-ticket-sales": "tickets",
+                "total-giftshop-sales": "giftshop",
+                "total-memberships": "memberships"
+            };
     
-    //         let url = "http://localhost:5000/total-report?";
+            let url = "http://localhost:5000/total-report?";
             
-    //         if (reportType !== "total-sales") {
-    //             url += `type=${typeMap[reportType]}&`;
-    //         }
+            if (reportType !== "total-sales") {
+                url += `type=${typeMap[reportType]}&`;
+            }
     
-    //         if (startDate && endDate) {
-    //             url += `startDate=${startDate}&endDate=${endDate}`;
-    //         } else {
-    //             url += `dateRange=${dateRange}`;
-    //         }
+            if (startDate && endDate) {
+                url += `startDate=${startDate}&endDate=${endDate}`;
+            } else {
+                url += `dateRange=${dateRange}`;
+            }
     
-    //         console.log("Fetching from:", url);
+            console.log("Fetching from:", url);
     
-    //         const response = await fetch(url);
-    //         const data = await response.json();
+            const response = await fetch(url);
+            const data = await response.json();
     
-    //         if (data.sales) {
-    //             setTicketSales(data.sales);
-    //             setReportSummary(data.summary || null);
-    //         } else if (Array.isArray(data)) {
-    //             setTicketSales(data);
-    //             setReportSummary(null);
-    //         } else {
-    //             setTicketSales([]);
-    //             setReportSummary(null);
-    //             console.error("Unexpected data format:", data);
-    //         }
+            if (data.sales) {
+                setTicketSales(data.sales);
+                setReportSummary(data.summary || null);
+            } else if (Array.isArray(data)) {
+                setTicketSales(data);
+                setReportSummary(null);
+            } else {
+                setTicketSales([]);
+                setReportSummary(null);
+                console.error("Unexpected data format:", data);
+            }
     
-    //     } catch (error) {
-    //         console.error("Error fetching sales report:", error);
-    //         setTicketSales([]);
-    //     }
-    // };
+        } catch (error) {
+            console.error("Error fetching sales report:", error);
+            setTicketSales([]);
+        }
+    };
     
     
     
@@ -124,7 +124,8 @@ const TotalReport = () => {
               <option value="total-sales">All Sales</option>
               <option value="total-ticket-sales">Ticket Sales Only</option>
               <option value="total-giftshop-sales">Gift Shop Sales Only</option>
-              <option value="total-donations">Donations Only</option>
+              <option value="total-memberships">Memberships Only</option> {/* ← updated */}
+
             </select>
     
             <input
@@ -215,14 +216,15 @@ const TotalReport = () => {
                         )}
                             
                             {/* Donations */}
-                            {reportType === "total-donations" && (
-                            <>
-                                <div className="summary-card">
-                                <h3>Top Donor (User ID)</h3>
-                                <p>{reportSummary.top_donor || "N/A"}</p>
-                                </div>
-                            </>
+                            {reportType === "total-memberships" && (
+                                <>
+                                    <div className="summary-card">
+                                        <h3>Top Member</h3>
+                                        <p>{reportSummary.top_member || "N/A"}</p>
+                                    </div>
+                                </>
                             )}
+
 
                 </div>
                 )}
@@ -237,7 +239,7 @@ const TotalReport = () => {
                 <th>Customer Name</th>
                 {reportType === "total-sales" && <th>Type</th>}
                 {reportType === "total-giftshop-sales" && <th>Products</th>}
-                {reportType !== "total-donations" && <th>Quantity</th>}
+                {reportType !== "total-memberships" && <th>Quantity</th>}
                 <th>Amount</th>
                 <th>Date</th>
             </tr>
@@ -253,7 +255,7 @@ const TotalReport = () => {
                 {reportType === "total-giftshop-sales" && (
                     <td>{sale.Product_Names || "N/A"}</td>
                 )}
-                {reportType !== "total-donations" && (
+                {reportType !== "total-memberships" && (
                     <td>{sale.Quantity || "N/A"}</td>
                 )}
                 <td>${Number(sale.Amount || sale.Price).toFixed(2)}</td>
