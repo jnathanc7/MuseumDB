@@ -201,7 +201,6 @@ const Memberships = () => {
           alert("Error updating membership: " + (errorData.error || errorData.message));
         }
       } else {
-        const data = await response.json();
         alert("Membership updated successfully!");
         // Optionally update local state with new values
         setExistingMembership({ ...existingMembership, ...membershipData });
