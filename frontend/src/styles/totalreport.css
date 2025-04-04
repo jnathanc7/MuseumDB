@@ -38,8 +38,24 @@
     border: 1px solid #ccc;
     border-radius: 5px;
 
-
 }
+.reset-button {
+    padding: 10px 15px;
+    background-color: #366ff4;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    height: 40px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .reset-button:hover {
+    background-color: #1a1357;
+  }
+  
 
 /* Report Table */
 .report-table {
@@ -63,3 +79,51 @@
     background-color: #313639;
     color: white;
 }
+.summary-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .report-summary-grid {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: nowrap;
+    margin: 2rem auto;
+    max-width: 1900px;  /* reasonable size */
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .summary-card {
+    flex: 1;
+    min-width: 200px;
+    max-width: 750px;
+    height: 120px; /* if you want to try changing height */
+    padding: 1rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    font-family: 'Courier New', monospace;
+  }
+  
+  
+  
+  
+  .summary-card h3 {
+    margin-bottom: 0.4rem;
+    font-size: 1.2rem; /* Smaller heading */
+    color: #333;
+  }
+  
+  .summary-card p {
+    font-size: 1.2rem; /* Smaller number text */
+    font-weight: bold;
+    color: #0077cc;
+  }
+
+  
+  
+  
