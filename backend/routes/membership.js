@@ -18,38 +18,29 @@ module.exports = (req, res) => {
   }
 
   // GET request: Retrieve memberships.
-  if (method === "GET" && parsedUrl.pathname === "/membership") {
-    const queryObject = parsedUrl.query;
-    if (queryObject.id) {
-      // Fetch specific membership by id
-      const query = "SELECT * FROM memberships WHERE membership_id = ?";
-      db.query(query, [queryObject.id], (err, results) => {
-        if (err) {
-          res.writeHead(500, { "Content-Type": "application/json" });
-          return res.end(JSON.stringify({ error: "Error fetching membership", details: err.message }));
-        }
-        if (results.length === 0) {
-          res.writeHead(404, { "Content-Type": "application/json" });
-          return res.end(JSON.stringify({ error: "Membership not found" }));
-        }
-        res.writeHead(200, { "Content-Type": "application/json" });
+  // GET request: Retrieve memberships for the logged-in customer.
+if (method === "GET" && parsedUrl.pathname === "/membership") {
+  // Protect the GET route as well so we know which customer is making the request.
+  authMiddleware([])(req, res, () => {
+    const customerId = req.user.id;
+    const query = "SELECT * FROM memberships WHERE customer_id = ?";
+    db.query(query, [customerId], (err, results) => {
+      if (err) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ error: "Error fetching membership", details: err.message }));
+      }
+      // If results is an array, return the first record if it exists.
+      if (Array.isArray(results) && results.length > 0) {
         return res.end(JSON.stringify(results[0]));
-      });
-      return;
-    } else {
-      // Fetch all memberships
-      const query = "SELECT * FROM memberships";
-      db.query(query, (err, results) => {
-        if (err) {
-          res.writeHead(500, { "Content-Type": "application/json" });
-          return res.end(JSON.stringify({ error: "Error fetching memberships", details: err.message }));
-        }
-        res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify(results));
-      });
-      return;
-    }
-  }
+      }
+      // Otherwise, no membership exists for this customer.
+      res.writeHead(404, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ error: "Membership not found" }));
+    });
+  });
+  return;
+}
+
 
   // POST request: Create a new membership (protected route)
   if (method === "POST" && parsedUrl.pathname === "/membership") {
