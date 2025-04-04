@@ -68,20 +68,27 @@
   }
 
   /* "Next" Button */
-.subtotal {
+  .subtotal {
     font-size: 25px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Aligns text left and amount right */
     align-items: center;
     color: #333;
     font-weight: bold;
     margin-top: 10px;
-    margin-right: 5px;
-  }
+    width: 100%; /* Ensure it stretches fully */
+}
 
-  .subtotal-amount{
-    margin-left: 370px;
-  }
+.subtotal-amount {
+    margin-left: 0; /* Remove this override */
+    text-align: right;
+}
+
+.summary-box {
+  width: 100%;
+  max-width: 575px;
+  margin: 0 auto;
+}
 
   .summary{
     font-size: 30px;

@@ -49,7 +49,10 @@ const ShopCart = () => {
   const [cartProducts, setCartProducts] = useState([]);
   const [subTotal, setSubTotal] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("Credit Card"); 
-  const [confirmation, setConfirmation] = useState("")
+  const [confirmation, setConfirmation] = useState("");
+  const [member, setMember] = useState(false);
+  const [membershipType, setMembershipType] = useState("");
+  const [discount, setDiscount] = useState(1);
 
   const increment = (cartItemId) =>{
     setCartProducts(prev =>
@@ -74,8 +77,8 @@ const ShopCart = () => {
       const total = cartProducts.reduce((sum, item) => {
         return sum + item.Price * item.Quantity;
       }, 0);
-      setSubTotal(total);
-    }, [cartProducts]);//+ or - affects the cartProduct object so it detects it and will run the useEffect when that change is detected
+      setSubTotal(total * discount);
+    }, [cartProducts, discount]);//+ or - affects the cartProduct object so it detects it and will run the useEffect when that change is detected
 
     const fetchShopCart = async () => {
       try {
@@ -165,6 +168,35 @@ const Purchase = async () =>{
   }
 }
 
+useEffect(() => {
+  fetch("https://museumdb.onrender.com/membership", {
+    method: "GET",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data && data.membership_type) {
+        console.log("Membership type:", data.membership_type);
+        setMembershipType(data.membership_type); // Only use membership_type
+        setMember(true);
+        if(data.membership_type == "Contributor"){
+          setDiscount(0.9)//10% off
+        }
+        else if(data.membership_type == "Patron"){
+          setDiscount(0.8)//20% off
+        }
+        else if(data.membership_type == "Benefactor"){
+          setDiscount(0.75)//25% off
+        }
+        else if(data.membership_type == "Founder’s Circle"){
+          setDiscount(0.65)//35% off
+        }
+      }
+    })
+    .catch((error) => console.error("Error fetching membership:", error));
+}, []);
+
   return (
     <div className="cart-wrapper">
       <h1>Shopping Cart</h1>
@@ -182,12 +214,23 @@ const Purchase = async () =>{
       <hr className = "divider" />
       {/* Subtotal Section */}
       <strong className ="summary">Order Summary</strong>
+      <div className="summary-box">
+        {member && discount < 1 && (
+          <div className="subtotal">
+            <strong>Member Discount:</strong>
+            <span className="subtotal-amount">
+              {Math.round((1 - discount) * 100)}% off{" "}
+              <s>${(subTotal / discount).toFixed(2)}</s>
+            </span>
+          </div>
+        )}
+          
         <div className="subtotal">
           
           <strong>Subtotal:</strong>
           <span className="subtotal-amount">${subTotal.toFixed(2)}</span>
         </div>
-
+        </div>
         {/* Payment Method Selection */}
         <div className="payment-box">
           <CreditCard className="payment-icon" />
