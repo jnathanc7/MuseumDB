@@ -189,7 +189,7 @@ useEffect(() => {
         else if(data.membership_type == "Benefactor"){
           setDiscount(0.75)//25% off
         }
-        else if(data.membership_type == "Founder's Circle"){
+        else if(data.membership_type == "Founder’s Circle"){
           setDiscount(0.65)//35% off
         }
       }
