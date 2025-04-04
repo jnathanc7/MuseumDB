@@ -14,15 +14,68 @@ const TotalReport = () => {
 
 
 
+ const fetchReportData = async () => {
+    try {
+        const typeMap = {
+            "total-ticket-sales": "tickets",
+            "total-giftshop-sales": "giftshop",
+            "total-donations": "donations"
+        };
+
+        let url = "https://museumdb.onrender.com/total-report?";
+
+        if (reportType !== "total-sales") {
+            url += `type=${typeMap[reportType]}&`;
+        }
+
+        if (startDate && endDate) {
+            url += `startDate=${startDate}&endDate=${endDate}`;
+        } else {
+            url += `dateRange=${dateRange}`;
+        }
+
+        console.log("Fetching from:", url);
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.sales) {
+            setTicketSales(data.sales);
+            setReportSummary(data.summary || null);
+        } else if (Array.isArray(data)) {
+            setTicketSales(data);
+            setReportSummary(null);
+        } else {
+            setTicketSales([]);
+            setReportSummary(null);
+            console.error("Unexpected data format:", data);
+        }
+
+    } catch (error) {
+        console.error("Error fetching sales report:", error);
+        setTicketSales([]);
+    }
+};
+
+
     // const fetchReportData = async () => {
     //     try {
-    //         let url = `https://museumdb.onrender.com/total-report?dateRange=${dateRange}`;
-    //         if (reportType === "total-ticket-sales") {
-    //             url = `https://museumdb.onrender.com/total-report?type=tickets&dateRange=${dateRange}`;
-    //         } else if (reportType === "total-giftshop-sales") {
-    //             url = `https://museumdb.onrender.com/total-report?type=giftshop&dateRange=${dateRange}`;
-    //         } else if (reportType === "total-donations") {
-    //             url = `https://museumdb.onrender.com/total-report?type=donations&dateRange=${dateRange}`;
+    //         const typeMap = {
+    //             "total-ticket-sales": "tickets",
+    //             "total-giftshop-sales": "giftshop",
+    //             "total-donations": "donations"
+    //         };
+    
+    //         let url = "http://localhost:5000/total-report?";
+            
+    //         if (reportType !== "total-sales") {
+    //             url += `type=${typeMap[reportType]}&`;
+    //         }
+    
+    //         if (startDate && endDate) {
+    //             url += `startDate=${startDate}&endDate=${endDate}`;
+    //         } else {
+    //             url += `dateRange=${dateRange}`;
     //         }
     
     //         console.log("Fetching from:", url);
@@ -30,56 +83,23 @@ const TotalReport = () => {
     //         const response = await fetch(url);
     //         const data = await response.json();
     
-    //         console.log("Received Data:", data);
+    //         if (data.sales) {
+    //             setTicketSales(data.sales);
+    //             setReportSummary(data.summary || null);
+    //         } else if (Array.isArray(data)) {
+    //             setTicketSales(data);
+    //             setReportSummary(null);
+    //         } else {
+    //             setTicketSales([]);
+    //             setReportSummary(null);
+    //             console.error("Unexpected data format:", data);
+    //         }
     
-    //         setTicketSales(data);
     //     } catch (error) {
     //         console.error("Error fetching sales report:", error);
+    //         setTicketSales([]);
     //     }
     // };
-
-    const fetchReportData = async () => {
-        try {
-            const typeMap = {
-                "total-ticket-sales": "tickets",
-                "total-giftshop-sales": "giftshop",
-                "total-donations": "donations"
-            };
-    
-            let url = "http://localhost:5000/total-report?";
-            
-            if (reportType !== "total-sales") {
-                url += `type=${typeMap[reportType]}&`;
-            }
-    
-            if (startDate && endDate) {
-                url += `startDate=${startDate}&endDate=${endDate}`;
-            } else {
-                url += `dateRange=${dateRange}`;
-            }
-    
-            console.log("Fetching from:", url);
-    
-            const response = await fetch(url);
-            const data = await response.json();
-    
-            if (data.sales) {
-                setTicketSales(data.sales);
-                setReportSummary(data.summary || null);
-            } else if (Array.isArray(data)) {
-                setTicketSales(data);
-                setReportSummary(null);
-            } else {
-                setTicketSales([]);
-                setReportSummary(null);
-                console.error("Unexpected data format:", data);
-            }
-    
-        } catch (error) {
-            console.error("Error fetching sales report:", error);
-            setTicketSales([]);
-        }
-    };
     
     
     
@@ -217,31 +237,35 @@ const TotalReport = () => {
                 <th>Customer Name</th>
                 {reportType === "total-sales" && <th>Type</th>}
                 {reportType === "total-giftshop-sales" && <th>Products</th>}
+                {reportType !== "total-donations" && <th>Quantity</th>}
                 <th>Amount</th>
-                <th>Payment Method</th>
                 <th>Date</th>
             </tr>
             </thead>
 
+
             <tbody>
-                {ticketSales.map((sale) => (
-                    <tr key={sale.Sale_ID || sale.Ticket_ID}>
-                    <td>{sale.Sale_ID || sale.Ticket_ID}</td>
-                    <td>{sale.Customer_Name || "N/A"}</td>
-                    {reportType === "total-sales" && <td>{sale.Sale_Type}</td>}
-                    {reportType === "total-giftshop-sales" && (
-                        <td>{sale.Product_Names || "N/A"}</td>
-                    )}
-                    <td>${Number(sale.Amount || sale.Price).toFixed(2)}</td>
-                    <td>{sale.Payment_Method || "N/A"}</td>
-                    <td>
-                        {new Date(
-                        sale.Sale_Date || sale.Date_Purchased
-                        ).toLocaleDateString()}
-                    </td>
-                    </tr>
-                ))}
+            {ticketSales.map((sale) => (
+                <tr key={sale.Sale_ID || sale.Ticket_ID}>
+                <td>{sale.Sale_ID || sale.Ticket_ID}</td>
+                <td>{sale.Customer_Name || "N/A"}</td>
+                {reportType === "total-sales" && <td>{sale.Sale_Type}</td>}
+                {reportType === "total-giftshop-sales" && (
+                    <td>{sale.Product_Names || "N/A"}</td>
+                )}
+                {reportType !== "total-donations" && (
+                    <td>{sale.Quantity || "N/A"}</td>
+                )}
+                <td>${Number(sale.Amount || sale.Price).toFixed(2)}</td>
+                <td>
+                    {new Date(
+                    sale.Sale_Date || sale.Date_Purchased
+                    ).toLocaleDateString()}
+                </td>
+                </tr>
+            ))}
             </tbody>
+
 
             </table>
           </div>

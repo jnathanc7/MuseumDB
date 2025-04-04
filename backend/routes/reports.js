@@ -54,7 +54,7 @@ module.exports = (req, res) => {
             donationDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 YEAR";
         }
 
-        
+
 // If specific start and end dates are provided, override predefined dateRange filters
         if (startDate && endDate) {
             ticketDateFilter = `WHERE p.Date_Purchased BETWEEN '${startDate}' AND '${endDate}'`;
@@ -69,8 +69,8 @@ module.exports = (req, res) => {
             CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name,
             'Ticket' AS Sale_Type,
             pt.Quantity * pt.Price AS Amount,
+            pt.Quantity AS Quantity,
             p.Date_Purchased AS Sale_Date,
-            p.Payment_Method,
             NULL AS Product_Names
         FROM purchase_tickets pt
         JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
@@ -87,8 +87,8 @@ module.exports = (req, res) => {
             CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name,
             'Gift Shop' AS Sale_Type,
             gst.Total_Amount AS Amount,
+            SUM(gsi.Quantity) AS Quantity,
             gst.Date AS Sale_Date,
-            gst.Payment_Method,
             GROUP_CONCAT(DISTINCT p.Name SEPARATOR ', ') AS Product_Names
         FROM gift_shop_transactions gst
         LEFT JOIN customers c ON gst.Customer_ID = c.Customer_ID
@@ -97,20 +97,22 @@ module.exports = (req, res) => {
         ${giftshopDateFilter}
         GROUP BY gst.Transaction_ID
 
+
         `;
 
         const donationQuery = `
-            SELECT 
-                d.Donation_ID AS Sale_ID,
-                CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name,
-                'Donation' AS Sale_Type,
-                d.Amount,
-                d.Date AS Sale_Date,
-                d.Payment_Method,
-                NULL AS Product_Names
-            FROM donations d
-            LEFT JOIN customers c ON d.user_ID = c.Customer_ID
-            ${donationDateFilter}
+        SELECT 
+            d.Donation_ID AS Sale_ID,
+            CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name,
+            'Donation' AS Sale_Type,
+            d.Amount,
+            NULL AS Quantity,
+            d.Date AS Sale_Date,
+            NULL AS Product_Names
+        FROM donations d
+        LEFT JOIN customers c ON d.user_ID = c.Customer_ID
+        ${donationDateFilter}
+
 
 
         `;
