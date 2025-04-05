@@ -19,7 +19,7 @@ const TotalReport = () => {
         const typeMap = {
             "total-ticket-sales": "tickets",
             "total-giftshop-sales": "giftshop",
-            "total-donations": "donations"
+            "total-memberships": "memberships"
         };
 
         let url = "https://museumdb.onrender.com/total-report?";
@@ -63,7 +63,7 @@ const TotalReport = () => {
     //         const typeMap = {
     //             "total-ticket-sales": "tickets",
     //             "total-giftshop-sales": "giftshop",
-    //             "total-donations": "donations"
+    //             "total-memberships": "memberships"
     //         };
     
     //         let url = "http://localhost:5000/total-report?";
@@ -124,7 +124,8 @@ const TotalReport = () => {
               <option value="total-sales">All Sales</option>
               <option value="total-ticket-sales">Ticket Sales Only</option>
               <option value="total-giftshop-sales">Gift Shop Sales Only</option>
-              <option value="total-donations">Donations Only</option>
+              <option value="total-memberships">Memberships Only</option> {/* ← updated */}
+
             </select>
     
             <input
@@ -183,6 +184,20 @@ const TotalReport = () => {
                             <h3>Total Transactions</h3>
                             <p>{reportSummary.total_transactions}</p>
                         </div>
+                        {reportType === "total-sales" && (
+                        <>
+                            <div className="summary-card">
+                            <h3>Top Revenue Source</h3>
+                            <p>{reportSummary.top_revenue_source || "N/A"}</p>
+                            </div>
+                            <div className="summary-card">
+                            <h3>Active Memberships</h3>
+                            <p>{reportSummary.active_memberships || 0}</p>
+                            </div>
+                        </>
+                        )}
+
+
                         {/* Tickets */}
                         {reportType === "total-ticket-sales" && (
                         <>
@@ -214,15 +229,25 @@ const TotalReport = () => {
                         </>
                         )}
                             
-                            {/* Donations */}
-                            {reportType === "total-donations" && (
+                            {/* memberships */}
+                            {reportType === "total-memberships" && (
                             <>
                                 <div className="summary-card">
-                                <h3>Top Donor (User ID)</h3>
-                                <p>{reportSummary.top_donor || "N/A"}</p>
+                                    <h3>Top Member</h3>
+                                    <p>{reportSummary.top_member || "N/A"}</p>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>Most Popular Type</h3>
+                                    <p>{reportSummary.most_popular_membership || "N/A"}</p>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>Active Memberships</h3>
+                                    <p>{reportSummary.active_memberships || 0}</p>
                                 </div>
                             </>
-                            )}
+                        )}
+
+
 
                 </div>
                 )}
@@ -230,14 +255,15 @@ const TotalReport = () => {
          {/* End of Summary Wrapper */}
     
             {/* Report Table */}
+            <div className="report-table-scroll">
             <table className="report-table">
             <thead>
             <tr>
-                <th>Sale ID</th>
+                <th>#</th>
                 <th>Customer Name</th>
                 {reportType === "total-sales" && <th>Type</th>}
                 {reportType === "total-giftshop-sales" && <th>Products</th>}
-                {reportType !== "total-donations" && <th>Quantity</th>}
+                {reportType !== "total-memberships" && <th>Quantity</th>}
                 <th>Amount</th>
                 <th>Date</th>
             </tr>
@@ -245,15 +271,15 @@ const TotalReport = () => {
 
 
             <tbody>
-            {ticketSales.map((sale) => (
+            {ticketSales.map((sale, index) => (
                 <tr key={sale.Sale_ID || sale.Ticket_ID}>
-                <td>{sale.Sale_ID || sale.Ticket_ID}</td>
+                <td>{index + 1}</td>
                 <td>{sale.Customer_Name || "N/A"}</td>
                 {reportType === "total-sales" && <td>{sale.Sale_Type}</td>}
                 {reportType === "total-giftshop-sales" && (
                     <td>{sale.Product_Names || "N/A"}</td>
                 )}
-                {reportType !== "total-donations" && (
+                {reportType !== "total-memberships" && (
                     <td>{sale.Quantity || "N/A"}</td>
                 )}
                 <td>${Number(sale.Amount || sale.Price).toFixed(2)}</td>
@@ -268,6 +294,7 @@ const TotalReport = () => {
 
 
             </table>
+          </div>
           </div>
         </main>
       );

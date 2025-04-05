@@ -33,7 +33,7 @@ module.exports = (req, res) => {
         // range check for startDate and endDate to ensure they are in YYYY-MM-DD format if provided
         let ticketDateFilter = "";
         let giftshopDateFilter = "";
-        let donationDateFilter = "";
+        let membershipDateFilter  = "";
         
         const { startDate, endDate } = parsedUrl.query;
         
@@ -43,15 +43,20 @@ module.exports = (req, res) => {
         if (dateRange === "last-week") {
             ticketDateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 7 DAY";
             giftshopDateFilter = "WHERE Date >= CURDATE() - INTERVAL 7 DAY";
-            donationDateFilter = "WHERE Date >= CURDATE() - INTERVAL 7 DAY";
+            // membershipDateFilter  = "WHERE Date >= CURDATE() - INTERVAL 7 DAY"; not sure if is this or not
+             membershipDateFilter = "WHERE start_date >= CURDATE() - INTERVAL 7 DAY";
+
         } else if (dateRange === "last-month") {
             ticketDateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 1 MONTH";
             giftshopDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 MONTH";
-            donationDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 MONTH";
+            //membershipDateFilter  = "WHERE Date >= CURDATE() - INTERVAL 1 MONTH";
+            membershipDateFilter  = "WHERE start_date >= CURDATE() - INTERVAL 1 MONTH";
+
         } else if (dateRange === "last-year") {
             ticketDateFilter = "WHERE p.Date_Purchased >= CURDATE() - INTERVAL 1 YEAR";
             giftshopDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 YEAR";
-            donationDateFilter = "WHERE Date >= CURDATE() - INTERVAL 1 YEAR";
+            //membershipDateFilter  = "WHERE Date >= CURDATE() - INTERVAL 1 YEAR";
+            membershipDateFilter  = "WHERE start_date  >= CURDATE() - INTERVAL 1 YEAR";
         }
 
 
@@ -59,7 +64,8 @@ module.exports = (req, res) => {
         if (startDate && endDate) {
             ticketDateFilter = `WHERE p.Date_Purchased BETWEEN '${startDate}' AND '${endDate}'`;
             giftshopDateFilter = `WHERE Date BETWEEN '${startDate}' AND '${endDate}'`;
-            donationDateFilter = `WHERE Date BETWEEN '${startDate}' AND '${endDate}'`;
+            //membershipDateFilter = `WHERE Date BETWEEN '${startDate}' AND '${endDate}'`;
+            membershipDateFilter = `WHERE start_date BETWEEN '${startDate}' AND '${endDate}'`;
         }
 
         // Queries
@@ -100,22 +106,20 @@ module.exports = (req, res) => {
 
         `;
 
-        const donationQuery = `
+        const membershipQuery = `
         SELECT 
-            d.Donation_ID AS Sale_ID,
+            m.membership_id AS Sale_ID,
             CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name,
-            'Donation' AS Sale_Type,
-            d.Amount,
+            'Membership' AS Sale_Type,
+            m.payment_amount AS Amount,
             NULL AS Quantity,
-            d.Date AS Sale_Date,
+            m.start_date AS Sale_Date,
             NULL AS Product_Names
-        FROM donations d
-        LEFT JOIN customers c ON d.user_ID = c.Customer_ID
-        ${donationDateFilter}
-
-
-
-        `;
+        FROM memberships m
+        LEFT JOIN customers c ON m.customer_id = c.Customer_ID
+        ${membershipDateFilter}
+    `;
+    
 
         let query = "";
 
@@ -123,18 +127,19 @@ module.exports = (req, res) => {
             query = `${ticketQuery} ORDER BY Sale_Date DESC`;
         } else if (saleType === "giftshop") {
             query = `${giftShopQuery} ORDER BY Sale_Date DESC`;
-        } else if (saleType === "donations") {
-            query = `${donationQuery} ORDER BY Sale_Date DESC`;
+        } else if (saleType === "memberships") {
+            query = `${membershipQuery} ORDER BY Sale_Date DESC`;
         } else {
             query = `
                 ${ticketQuery}
                 UNION ALL
                 ${giftShopQuery}
                 UNION ALL
-                ${donationQuery}
+                ${membershipQuery}
                 ORDER BY Sale_Date DESC
             `;
         }
+    
 
         // Main query
         db.query(query, (err, results) => {
@@ -172,46 +177,79 @@ module.exports = (req, res) => {
 
             }  else if (saleType === "all") {
                 const fullSummaryQuery = `
-                    SELECT
-                        (
-                            (SELECT COUNT(*) FROM purchase_tickets pt JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID ${ticketDateFilter}) +
-                            (SELECT COUNT(*) FROM gift_shop_transactions ${giftshopDateFilter}) +
-                            (SELECT COUNT(*) FROM donations ${donationDateFilter})
-                        ) AS total_transactions,
-
-                        (
-                            (SELECT IFNULL(SUM(pt.Quantity * pt.Price), 0) FROM purchase_tickets pt JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID ${ticketDateFilter}) +
-                            (SELECT IFNULL(SUM(Total_Amount), 0) FROM gift_shop_transactions ${giftshopDateFilter}) +
-                            (SELECT IFNULL(SUM(Amount), 0) FROM donations ${donationDateFilter})
-                        ) AS total_revenue,
-
-                        (
-                            SELECT Customer_Name FROM (
-                                SELECT CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name, COUNT(*) AS activity
-                                FROM purchases p
-                                JOIN customers c ON p.Customer_ID = c.Customer_ID
-                                ${ticketDateFilter}
-                                GROUP BY c.Customer_ID
-
-                                UNION ALL
-
-                                SELECT Customer_ID AS Customer_Name, COUNT(*) AS activity
-                                FROM gift_shop_transactions
-                                ${giftshopDateFilter}
-                                GROUP BY Customer_ID
-
-                                UNION ALL
-
-                                SELECT user_ID AS Customer_Name, COUNT(*) AS activity
-                                FROM donations
-                                ${donationDateFilter}
-                                GROUP BY user_ID
-                            ) AS combined
-                            GROUP BY Customer_Name
-                            ORDER BY SUM(activity) DESC
-                            LIMIT 1
-                        ) AS most_active_customer
-                `;
+                SELECT
+                    (
+                        (SELECT COUNT(*) FROM purchase_tickets pt JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID ${ticketDateFilter}) +
+                        (SELECT COUNT(*) FROM gift_shop_transactions ${giftshopDateFilter}) +
+                        (SELECT COUNT(*) FROM memberships ${membershipDateFilter})
+                    ) AS total_transactions,
+            
+                    (
+                        (SELECT IFNULL(SUM(pt.Quantity * pt.Price), 0) FROM purchase_tickets pt JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID ${ticketDateFilter}) +
+                        (SELECT IFNULL(SUM(Total_Amount), 0) FROM gift_shop_transactions ${giftshopDateFilter}) +
+                        (SELECT IFNULL(SUM(payment_amount), 0) FROM memberships ${membershipDateFilter})
+                    ) AS total_revenue,
+            
+                    (
+                        SELECT source FROM (
+                            SELECT 'Tickets' AS source, SUM(pt.Quantity * pt.Price) AS revenue
+                            FROM purchase_tickets pt
+                            JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
+                            ${ticketDateFilter}
+                            
+                            UNION ALL
+                            
+                            SELECT 'Gift Shop', SUM(Total_Amount)
+                            FROM gift_shop_transactions
+                            ${giftshopDateFilter}
+                            
+                            UNION ALL
+            
+                            SELECT 'Memberships', SUM(payment_amount)
+                            FROM memberships
+                            ${membershipDateFilter}
+                        ) AS revenue_sources
+                        ORDER BY revenue DESC
+                        LIMIT 1
+                    ) AS top_revenue_source,
+            
+                    (
+                        SELECT COUNT(*)
+                        FROM memberships
+                        WHERE status = 'active'
+                        ${membershipDateFilter ? `AND (${membershipDateFilter.replace(/^WHERE\s+/i, '')})` : ''}
+                    ) AS active_memberships,
+            
+                    (
+                        SELECT Customer_Name FROM (
+                            SELECT CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name, COUNT(*) AS activity
+                            FROM purchases p
+                            JOIN customers c ON p.Customer_ID = c.Customer_ID
+                            ${ticketDateFilter}
+                            GROUP BY c.Customer_ID
+            
+                            UNION ALL
+            
+                            SELECT CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name, COUNT(*) AS activity
+                            FROM gift_shop_transactions gst
+                            JOIN customers c ON gst.Customer_ID = c.Customer_ID
+                            ${giftshopDateFilter}
+                            GROUP BY gst.Customer_ID
+            
+                            UNION ALL
+            
+                            SELECT CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name, COUNT(*) AS activity
+                            FROM memberships m
+                            JOIN customers c ON m.customer_id = c.Customer_ID
+                            ${membershipDateFilter}
+                            GROUP BY m.customer_id
+                        ) AS combined
+                        GROUP BY Customer_Name
+                        ORDER BY SUM(activity) DESC
+                        LIMIT 1
+                    ) AS most_active_customer
+            `;
+            
 
                 sendSummary(fullSummaryQuery, results, res, "Error retrieving full summary");
 
@@ -247,27 +285,40 @@ module.exports = (req, res) => {
             
 
             }
-            else if (saleType === "donations") {
-                const summaryQuery = `
+            else if (saleType === "memberships") {
+            const summaryQuery = `
                 SELECT
                     COUNT(*) AS total_transactions,
-                    SUM(Amount) AS total_revenue,
+                    SUM(payment_amount) AS total_revenue,
                     (
                         SELECT CONCAT(c.First_Name, ' ', c.Last_Name)
-                        FROM donations d
-                        JOIN customers c ON d.user_ID = c.Customer_ID
-                        GROUP BY d.user_ID
-                        ORDER BY SUM(d.Amount) DESC
+                        FROM memberships m
+                        JOIN customers c ON m.customer_id = c.Customer_ID
+                        GROUP BY m.customer_id
+                        ORDER BY SUM(m.payment_amount) DESC
                         LIMIT 1
-                    ) AS top_donor
-                FROM donations d
-                JOIN customers c ON d.user_ID = c.Customer_ID
-                ${donationDateFilter}
+                    ) AS top_member,
+                    (
+                        SELECT membership_type
+                        FROM memberships
+                        ${membershipDateFilter}
+                        GROUP BY membership_type
+                        ORDER BY COUNT(*) DESC
+                        LIMIT 1
+                    ) AS most_popular_membership,
+                    (
+                        SELECT COUNT(*)
+                        FROM memberships
+                        WHERE status = 'active'
+                    ) AS active_memberships
+                FROM memberships m
+                JOIN customers c ON m.customer_id = c.Customer_ID
+                ${membershipDateFilter}
             `;
-            
-            
-                sendSummary(summaryQuery, results, res, "Error retrieving donation summary");
+
+                sendSummary(summaryQuery, results, res, "Error retrieving membership summary");
             }
+            
             
             
             
