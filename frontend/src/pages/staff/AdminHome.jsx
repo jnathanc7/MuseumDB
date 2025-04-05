@@ -6,6 +6,17 @@ import React, { useState, useEffect } from "react";
 const AdminHome = () => {
     const navigate = useNavigate(); 
 
+
+    const [notifications, setNotifications] = useState([]);
+
+    useEffect(() => {
+      // Fetch recent notifications
+      fetch("http://localhost:5000/notifications")  // or your deployed URL
+        .then(res => res.json())
+        .then(data => setNotifications(data))
+        .catch(err => console.error("Failed to fetch notifications:", err));
+    }, []);
+
     // Function to handle dropdown selection
     const handleNavigation = (event) => {
         const selectedValue = event.target.value;
@@ -67,6 +78,18 @@ const AdminHome = () => {
     return (
         <main className="admin-container">
           <div className="admin-title-container"></div>
+          {notifications.length > 0 && (
+            <div className="notification-banner">
+              <h4>Notifications</h4>
+              <ul>
+                {notifications.map((note, i) => (
+                  <li key={i}>{note.message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+
         <div className="admin-dashboard">
             
         <div className="admin-title-container">

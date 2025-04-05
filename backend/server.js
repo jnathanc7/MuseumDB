@@ -1,5 +1,7 @@
 const http = require("http"); // Import Node.js HTTP module to create a server
 const url = require("url"); // Import URL module for parsing request URLs
+const db = require("./db"); // added this  for notifications query
+
 const employeesRoutes = require("./routes/employees"); // Import employees routes
 const reportsRoutes = require("./routes/reports"); // Import reports routes
 const authRoutes = require("./routes/auth"); // Import authentication routes
@@ -95,10 +97,25 @@ const server = http.createServer((req, res) => {
         membershipRoutes(req, res, parsedUrl);
         return;
     }
+    else if (parsedUrl.pathname === "/notifications" && req.method === "GET") {
+        db.query("SELECT * FROM notifications ORDER BY created_at DESC LIMIT 10", (err, results) => {
+            if (err) {
+                console.error("Error fetching notifications:", err);
+                res.writeHead(500, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({ message: "Error fetching notifications" }));
+            }
+    
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(results));
+        });
+        return;
+    }
+    
     else {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ message: "Route not found" }));
     }
+
 });
 
 const PORT = process.env.PORT || 5000;
