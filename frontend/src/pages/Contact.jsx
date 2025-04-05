@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import "../styles/contact.css";
 
 const ContactPage = () => {
-  const [filter, setFilter] = useState("All Reviews");
   const [reviews, setReviews] = useState([]);
+  const [filter, setFilter] = useState("All Reviews");
+  // Default sort option is "Most Recent to Oldest"
+  const [sortOption, setSortOption] = useState("Most Recent to Oldest");
   const [showForm, setShowForm] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showNotCustomerPrompt, setShowNotCustomerPrompt] = useState(false);
 
   const [formData, setFormData] = useState({
     topic: "",
@@ -16,19 +21,83 @@ const ContactPage = () => {
   });
 
   const topics = [
-    "General Experience",
-    "Tickets",
-    "Employee",
-    "Art in Technology",
-    "Local Artists",
-    "Installation",
-    "Women in Art",
+    "Ticket Issue",
+    "Staff Behavior",
+    "Exhibition Issue",
+    "Event Problem",
+    "Special Exhibition Issue",
+    "Other",
   ];
 
-  const filteredReviews =
-    filter === "All Reviews"
-      ? reviews
-      : reviews.filter((r) => r.topic === filter);
+  useEffect(() => { // http://localhost:5000/contact
+    fetch("https://museumdb.onrender.com/contact") // https://museumdb.onrender.com
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) setReviews(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => { // http://localhost:5000/auth/profile
+    fetch("https://museumdb.onrender.com/auth/profile", { credentials: "include" })
+      .then((res) => { // https://museumdb.onrender.com/auth/profile
+        if (!res.ok) throw new Error("Not logged in");
+        return res.json();
+      })
+      .then((data) => {
+        setUser(data);
+      })
+      .catch(() => setUser(null));
+  }, []);
+
+  // Compute sorted reviews whenever reviews, filter, or sortOption changes.
+  const sortedReviews = useMemo(() => {
+    let filteredReviews =
+      filter === "All Reviews"
+        ? [...reviews]
+        : reviews.filter((c) => c.Complaint_Type === filter);
+
+    if (sortOption === "Most Recent to Oldest") {
+      filteredReviews.sort((a, b) => {
+        // Convert dates to ISO string for proper parsing.
+        const dateA = new Date(a.Complaint_Date);
+        const dateB = new Date(b.Complaint_Date);
+        const dateStrA = dateA.toISOString().slice(0, 10); // YYYY-MM-DD
+        const dateStrB = dateB.toISOString().slice(0, 10);
+        const timeA = a.Complaint_Time || "00:00:00";
+        const timeB = b.Complaint_Time || "00:00:00";
+        const dateTimeA = new Date(`${dateStrA}T${timeA}`);
+        const dateTimeB = new Date(`${dateStrB}T${timeB}`);
+        console.log(
+          "Sorting (Most Recent to Oldest):",
+          `A: ${dateStrA}T${timeA} => ${dateTimeA.getTime()}`,
+          `B: ${dateStrB}T${timeB} => ${dateTimeB.getTime()}`
+        );
+        return dateTimeB - dateTimeA; // Descending: newest first
+      });
+    } else if (sortOption === "Oldest to Most Recent") {
+      filteredReviews.sort((a, b) => {
+        const dateA = new Date(a.Complaint_Date);
+        const dateB = new Date(b.Complaint_Date);
+        const dateStrA = dateA.toISOString().slice(0, 10);
+        const dateStrB = dateB.toISOString().slice(0, 10);
+        const timeA = a.Complaint_Time || "00:00:00";
+        const timeB = b.Complaint_Time || "00:00:00";
+        const dateTimeA = new Date(`${dateStrA}T${timeA}`);
+        const dateTimeB = new Date(`${dateStrB}T${timeB}`);
+        return dateTimeA - dateTimeB; // Ascending: oldest first
+      });
+    } else if (sortOption === "Rating (Highest to Lowest)") {
+      filteredReviews.sort((a, b) => (b.Complaint_Rating || 0) - (a.Complaint_Rating || 0));
+    } else if (sortOption === "Resolved to Pending") {
+      const order = { "Resolved": 0, "Pending": 1 };
+      filteredReviews.sort((a, b) => (order[a.Status] ?? 2) - (order[b.Status] ?? 2));
+    }
+    return filteredReviews;
+  }, [reviews, filter, sortOption]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,35 +107,99 @@ const ContactPage = () => {
     setFormData({ ...formData, rating });
   };
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
-    const newReview = {
-      ...formData,
-      customer: "Current User",
-      date: new Date().toLocaleDateString(),
+
+    if (!user || user.role !== "customer") {
+      alert("Only customers can submit complaints.");
+      return;
+    }
+
+    const newComplaint = {
+      customer_ID: user.customer_id,
+      complaint_date: new Date().toISOString().slice(0, 10),
+      // This value is in UTC; the backend recalculates Houston time.
+      complaint_time: new Date().toISOString().slice(11, 19),
+      complaint_type: formData.topic,
+      Complaint_Title: formData.title,
+      Complaint_Rating: formData.rating,
+      description: formData.message,
+      status: "Pending",
+      Ticket_ID: null,
+      Staff_ID: null,
+      Events_ID: null,
+      Special_Exhibition_ID: null,
     };
-    setReviews((prev) => [newReview, ...prev]);
-    setFormData({
-      topic: "",
-      title: "",
-      message: "",
-      rating: 0,
-      maxStars: 5,
+
+    // Calculate Houston time on the frontend for an optimistic update
+    const now = new Date();
+    const houstonTime = now.toLocaleTimeString("en-US", {
+      timeZone: "America/Chicago",
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
-    setShowForm(false);
+
+    fetch("https://museumdb.onrender.com/contact", { // http://localhost:5000/contact
+      method: "POST", // https://museumdb.onrender.com/contact
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newComplaint),
+    })
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.error) {
+          return;
+        }
+        setReviews((prev) => [
+          {
+            Complaint_ID: resData.insertedId || Date.now(),
+            Customer_ID: user.customer_id,
+            Complaint_Date: newComplaint.complaint_date,
+            Complaint_Time: houstonTime,
+            Complaint_Type: newComplaint.complaint_type,
+            Complaint_Title: newComplaint.Complaint_Title,
+            Complaint_Rating: newComplaint.Complaint_Rating,
+            Description: newComplaint.description,
+            Status: newComplaint.status,
+            Ticket_ID: null,
+            Staff_ID: null,
+            Events_ID: null,
+            Special_Exhibition_ID: null,
+          },
+          ...prev,
+        ]);
+      })
+      .catch(() => {})
+      .finally(() => {
+        setFormData({
+          topic: "",
+          title: "",
+          message: "",
+          rating: 0,
+          maxStars: 5,
+        });
+        setShowForm(false);
+      });
   };
 
   return (
     <div className="main-layout">
       <div className="review-container">
         <div className="review-header">
-          <h1 className="review-title">Reviews ({filteredReviews.length})</h1>
+          <h1 className="review-title">Reviews ({sortedReviews.length})</h1>
           <div className="review-controls">
             <button
               className="add-review-button"
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => {
+                if (!user) {
+                  setShowLoginPrompt(true);
+                } else if (user.role !== "customer") {
+                  setShowNotCustomerPrompt(true);
+                } else {
+                  setShowForm(!showForm);
+                }
+              }}
             >
               {showForm ? "Cancel" : "Add New Review"}
             </button>
@@ -82,27 +215,65 @@ const ContactPage = () => {
                 </option>
               ))}
             </select>
+            <select
+              className="filter-dropdown"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+            >
+              <option value="Most Recent to Oldest">
+                Most Recent to Oldest
+              </option>
+              <option value="Oldest to Most Recent">
+                Oldest to Most Recent
+              </option>
+              <option value="Rating (Highest to Lowest)">
+                Rating (Highest to Lowest)
+              </option>
+              <option value="Resolved to Pending">
+                Resolved to Pending
+              </option>
+            </select>
           </div>
         </div>
 
-        {showForm && (
-          <div className="form-wrapper">
-            <motion.h1
-              className="form-title"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              Please Describe your Review!
-            </motion.h1>
+        {showLoginPrompt && (
+          <div className="login-modal">
+            <div className="login-modal-content">
+              <p className="login-modal-text">
+                You need to <strong>log in</strong> to submit a review.
+              </p>
+              <button
+                className="submit-review-button"
+                onClick={() => setShowLoginPrompt(false)}
+              >
+                Okay
+              </button>
+            </div>
+          </div>
+        )}
 
-            <motion.form
-              onSubmit={handleSubmit}
-              className="review-form"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
+        {showNotCustomerPrompt && (
+          <div className="login-modal">
+            <div className="login-modal-content">
+              <p className="login-modal-text">
+                Only <strong>customers</strong> are allowed to submit reviews.
+              </p>
+              <button
+                className="submit-review-button"
+                onClick={() => setShowNotCustomerPrompt(false)}
+              >
+                Okay
+              </button>
+            </div>
+          </div>
+        )}
+
+        {showForm && user && (
+          <div className="form-wrapper">
+            <motion.h1 className="form-title">
+              Please Describe Your Review!
+            </motion.h1>
+            <motion.form onSubmit={handleSubmit} className="review-form">
               <div className="form-group">
                 <label>Exhibit</label>
                 <select
@@ -119,7 +290,6 @@ const ContactPage = () => {
                   ))}
                 </select>
               </div>
-
               <div className="form-group">
                 <label>Title</label>
                 <input
@@ -131,7 +301,6 @@ const ContactPage = () => {
                   required
                 />
               </div>
-
               <div className="form-group">
                 <label>Feedback</label>
                 <textarea
@@ -143,26 +312,22 @@ const ContactPage = () => {
                   required
                 />
               </div>
-
-
               <div className="form-group">
                 <label>Rating</label>
                 <div className="rating-stars">
-                  {Array.from(
-                    { length: formData.maxStars },
-                    (_, i) => i + 1
-                  ).map((num) => (
-                    <span
-                      key={num}
-                      className={num <= formData.rating ? "star filled" : "star"}
-                      onClick={() => handleRatingChange(num)}
-                    >
-                      ★
-                    </span>
-                  ))}
+                  {Array.from({ length: formData.maxStars }, (_, i) => i + 1).map(
+                    (num) => (
+                      <span
+                        key={num}
+                        className={num <= formData.rating ? "star filled" : "star"}
+                        onClick={() => handleRatingChange(num)}
+                      >
+                        ★
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
-
               <button type="submit" className="submit-review-button">
                 Submit Review
               </button>
@@ -171,26 +336,45 @@ const ContactPage = () => {
         )}
 
         <div className="review-list">
-          {filteredReviews.length === 0 ? (
+          {sortedReviews.length === 0 ? (
             <p className="no-reviews">No reviews yet.</p>
           ) : (
-            filteredReviews.map((review, index) => (
+            sortedReviews.map((c, index) => (
               <motion.div
                 className="review-card"
                 key={index}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
               >
-                <h2 className="review-card-title">Title: {review.title}</h2>
-                <p><strong>Feedback:</strong> {review.message}</p>
-                <p className="review-rating">
-                  {"★".repeat(review.rating)}
-                  {"☆".repeat(review.maxStars - review.rating)}
+                <h2 className="review-card-title">
+                  {c.Complaint_Title || "Untitled"}{" "}
+                  {c.Complaint_Rating
+                    ? `(Rating: ${c.Complaint_Rating}/5 stars)`
+                    : ""}
+                </h2>
+                <p>
+                  <strong>Description:</strong>{" "}
+                  {c.Description || "No message"}
                 </p>
-                <p><strong>Customer:</strong> {review.customer}</p>
-                <p><strong>Exhibit:</strong> {review.topic}</p>
-                <p><strong>Date Posted:</strong> {review.date}</p>
+                <p>
+                  <strong>Exhibit:</strong>{" "}
+                  {c.Complaint_Type || "N/A"}
+                </p>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {c.Complaint_Date
+                    ? new Date(c.Complaint_Date).toISOString().slice(0, 10)
+                    : "Unknown"}
+                </p>
+                <p>
+                  <strong>Time (CST):</strong>{" "}
+                  {c.Complaint_Time || "Unknown"}
+                </p>
+                <p>
+                  <strong>Status:</strong>{" "}
+                  {c.Status || "Pending"}
+                </p>
               </motion.div>
             ))
           )}
@@ -201,6 +385,3 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
-
-
-
