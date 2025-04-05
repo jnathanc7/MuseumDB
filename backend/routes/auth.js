@@ -533,6 +533,7 @@ function handleProfile(req, res) {
     if (role === "customer") {
         db.query(
             `SELECT 
+                u.user_ID AS customer_id,     
                 u.email, 
                 u.role, 
                 c.First_Name AS first_name, 
@@ -560,6 +561,7 @@ function handleProfile(req, res) {
     } else {
         db.query(
             `SELECT 
+                u.user_ID AS staff_id,            -- optional, for consistency
                 u.email, 
                 u.role, 
                 s.First_Name AS first_name, 
