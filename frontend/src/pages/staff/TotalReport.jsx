@@ -14,92 +14,92 @@ const TotalReport = () => {
 
 
 
-//  const fetchReportData = async () => {
-//     try {
-//         const typeMap = {
-//             "total-ticket-sales": "tickets",
-//             "total-giftshop-sales": "giftshop",
-//             "total-memberships": "memberships"
-//         };
+ const fetchReportData = async () => {
+    try {
+        const typeMap = {
+            "total-ticket-sales": "tickets",
+            "total-giftshop-sales": "giftshop",
+            "total-memberships": "memberships"
+        };
 
-//         let url = "https://museumdb.onrender.com/total-report?";
+        let url = "https://museumdb.onrender.com/total-report?";
 
-//         if (reportType !== "total-sales") {
-//             url += `type=${typeMap[reportType]}&`;
-//         }
-
-//         if (startDate && endDate) {
-//             url += `startDate=${startDate}&endDate=${endDate}`;
-//         } else {
-//             url += `dateRange=${dateRange}`;
-//         }
-
-//         console.log("Fetching from:", url);
-
-//         const response = await fetch(url);
-//         const data = await response.json();
-
-//         if (data.sales) {
-//             setTicketSales(data.sales);
-//             setReportSummary(data.summary || null);
-//         } else if (Array.isArray(data)) {
-//             setTicketSales(data);
-//             setReportSummary(null);
-//         } else {
-//             setTicketSales([]);
-//             setReportSummary(null);
-//             console.error("Unexpected data format:", data);
-//         }
-
-//     } catch (error) {
-//         console.error("Error fetching sales report:", error);
-//         setTicketSales([]);
-//     }
-// };
-
-
-    const fetchReportData = async () => {
-        try {
-            const typeMap = {
-                "total-ticket-sales": "tickets",
-                "total-giftshop-sales": "giftshop",
-                "total-memberships": "memberships"
-            };
-    
-            let url = "http://localhost:5000/total-report?";
-            
-            if (reportType !== "total-sales") {
-                url += `type=${typeMap[reportType]}&`;
-            }
-    
-            if (startDate && endDate) {
-                url += `startDate=${startDate}&endDate=${endDate}`;
-            } else {
-                url += `dateRange=${dateRange}`;
-            }
-    
-            console.log("Fetching from:", url);
-    
-            const response = await fetch(url);
-            const data = await response.json();
-    
-            if (data.sales) {
-                setTicketSales(data.sales);
-                setReportSummary(data.summary || null);
-            } else if (Array.isArray(data)) {
-                setTicketSales(data);
-                setReportSummary(null);
-            } else {
-                setTicketSales([]);
-                setReportSummary(null);
-                console.error("Unexpected data format:", data);
-            }
-    
-        } catch (error) {
-            console.error("Error fetching sales report:", error);
-            setTicketSales([]);
+        if (reportType !== "total-sales") {
+            url += `type=${typeMap[reportType]}&`;
         }
-    };
+
+        if (startDate && endDate) {
+            url += `startDate=${startDate}&endDate=${endDate}`;
+        } else {
+            url += `dateRange=${dateRange}`;
+        }
+
+        console.log("Fetching from:", url);
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.sales) {
+            setTicketSales(data.sales);
+            setReportSummary(data.summary || null);
+        } else if (Array.isArray(data)) {
+            setTicketSales(data);
+            setReportSummary(null);
+        } else {
+            setTicketSales([]);
+            setReportSummary(null);
+            console.error("Unexpected data format:", data);
+        }
+
+    } catch (error) {
+        console.error("Error fetching sales report:", error);
+        setTicketSales([]);
+    }
+};
+
+
+    // const fetchReportData = async () => {
+    //     try {
+    //         const typeMap = {
+    //             "total-ticket-sales": "tickets",
+    //             "total-giftshop-sales": "giftshop",
+    //             "total-memberships": "memberships"
+    //         };
+    
+    //         let url = "http://localhost:5000/total-report?";
+            
+    //         if (reportType !== "total-sales") {
+    //             url += `type=${typeMap[reportType]}&`;
+    //         }
+    
+    //         if (startDate && endDate) {
+    //             url += `startDate=${startDate}&endDate=${endDate}`;
+    //         } else {
+    //             url += `dateRange=${dateRange}`;
+    //         }
+    
+    //         console.log("Fetching from:", url);
+    
+    //         const response = await fetch(url);
+    //         const data = await response.json();
+    
+    //         if (data.sales) {
+    //             setTicketSales(data.sales);
+    //             setReportSummary(data.summary || null);
+    //         } else if (Array.isArray(data)) {
+    //             setTicketSales(data);
+    //             setReportSummary(null);
+    //         } else {
+    //             setTicketSales([]);
+    //             setReportSummary(null);
+    //             console.error("Unexpected data format:", data);
+    //         }
+    
+    //     } catch (error) {
+    //         console.error("Error fetching sales report:", error);
+    //         setTicketSales([]);
+    //     }
+    // };
     
     
     
@@ -184,6 +184,20 @@ const TotalReport = () => {
                             <h3>Total Transactions</h3>
                             <p>{reportSummary.total_transactions}</p>
                         </div>
+                        {reportType === "total-sales" && (
+                        <>
+                            <div className="summary-card">
+                            <h3>Top Revenue Source</h3>
+                            <p>{reportSummary.top_revenue_source || "N/A"}</p>
+                            </div>
+                            <div className="summary-card">
+                            <h3>Active Memberships</h3>
+                            <p>{reportSummary.active_memberships || 0}</p>
+                            </div>
+                        </>
+                        )}
+
+
                         {/* Tickets */}
                         {reportType === "total-ticket-sales" && (
                         <>
@@ -215,15 +229,24 @@ const TotalReport = () => {
                         </>
                         )}
                             
-                            {/* Donations */}
+                            {/* memberships */}
                             {reportType === "total-memberships" && (
-                                <>
-                                    <div className="summary-card">
-                                        <h3>Top Member</h3>
-                                        <p>{reportSummary.top_member || "N/A"}</p>
-                                    </div>
-                                </>
-                            )}
+                            <>
+                                <div className="summary-card">
+                                    <h3>Top Member</h3>
+                                    <p>{reportSummary.top_member || "N/A"}</p>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>Most Popular Type</h3>
+                                    <p>{reportSummary.most_popular_membership || "N/A"}</p>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>Active Memberships</h3>
+                                    <p>{reportSummary.active_memberships || 0}</p>
+                                </div>
+                            </>
+                        )}
+
 
 
                 </div>
@@ -232,10 +255,11 @@ const TotalReport = () => {
          {/* End of Summary Wrapper */}
     
             {/* Report Table */}
+            <div className="report-table-scroll">
             <table className="report-table">
             <thead>
             <tr>
-                <th>Sale ID</th>
+                <th>#</th>
                 <th>Customer Name</th>
                 {reportType === "total-sales" && <th>Type</th>}
                 {reportType === "total-giftshop-sales" && <th>Products</th>}
@@ -247,9 +271,9 @@ const TotalReport = () => {
 
 
             <tbody>
-            {ticketSales.map((sale) => (
+            {ticketSales.map((sale, index) => (
                 <tr key={sale.Sale_ID || sale.Ticket_ID}>
-                <td>{sale.Sale_ID || sale.Ticket_ID}</td>
+                <td>{index + 1}</td>
                 <td>{sale.Customer_Name || "N/A"}</td>
                 {reportType === "total-sales" && <td>{sale.Sale_Type}</td>}
                 {reportType === "total-giftshop-sales" && (
@@ -270,6 +294,7 @@ const TotalReport = () => {
 
 
             </table>
+          </div>
           </div>
         </main>
       );

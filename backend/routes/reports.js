@@ -191,6 +191,36 @@ module.exports = (req, res) => {
                     ) AS total_revenue,
             
                     (
+                        SELECT source FROM (
+                            SELECT 'Tickets' AS source, SUM(pt.Quantity * pt.Price) AS revenue
+                            FROM purchase_tickets pt
+                            JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
+                            ${ticketDateFilter}
+                            
+                            UNION ALL
+                            
+                            SELECT 'Gift Shop', SUM(Total_Amount)
+                            FROM gift_shop_transactions
+                            ${giftshopDateFilter}
+                            
+                            UNION ALL
+            
+                            SELECT 'Memberships', SUM(payment_amount)
+                            FROM memberships
+                            ${membershipDateFilter}
+                        ) AS revenue_sources
+                        ORDER BY revenue DESC
+                        LIMIT 1
+                    ) AS top_revenue_source,
+            
+                    (
+                        SELECT COUNT(*)
+                        FROM memberships
+                        WHERE status = 'active'
+                        ${membershipDateFilter ? `AND (${membershipDateFilter.replace(/^WHERE\s+/i, '')})` : ''}
+                    ) AS active_memberships,
+            
+                    (
                         SELECT Customer_Name FROM (
                             SELECT CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name, COUNT(*) AS activity
                             FROM purchases p
@@ -256,22 +286,36 @@ module.exports = (req, res) => {
 
             }
             else if (saleType === "memberships") {
-                const summaryQuery = `
-                    SELECT
-                        COUNT(*) AS total_transactions,
-                        SUM(payment_amount) AS total_revenue,
-                        (
-                            SELECT CONCAT(c.First_Name, ' ', c.Last_Name)
-                            FROM memberships m
-                            JOIN customers c ON m.customer_id = c.Customer_ID
-                            GROUP BY m.customer_id
-                            ORDER BY SUM(m.payment_amount) DESC
-                            LIMIT 1
-                        ) AS top_member
-                    FROM memberships m
-                    JOIN customers c ON m.customer_id = c.Customer_ID
-                    ${membershipDateFilter}
-                `;
+            const summaryQuery = `
+                SELECT
+                    COUNT(*) AS total_transactions,
+                    SUM(payment_amount) AS total_revenue,
+                    (
+                        SELECT CONCAT(c.First_Name, ' ', c.Last_Name)
+                        FROM memberships m
+                        JOIN customers c ON m.customer_id = c.Customer_ID
+                        GROUP BY m.customer_id
+                        ORDER BY SUM(m.payment_amount) DESC
+                        LIMIT 1
+                    ) AS top_member,
+                    (
+                        SELECT membership_type
+                        FROM memberships
+                        ${membershipDateFilter}
+                        GROUP BY membership_type
+                        ORDER BY COUNT(*) DESC
+                        LIMIT 1
+                    ) AS most_popular_membership,
+                    (
+                        SELECT COUNT(*)
+                        FROM memberships
+                        WHERE status = 'active'
+                    ) AS active_memberships
+                FROM memberships m
+                JOIN customers c ON m.customer_id = c.Customer_ID
+                ${membershipDateFilter}
+            `;
+
                 sendSummary(summaryQuery, results, res, "Error retrieving membership summary");
             }
             
