@@ -1,1 +1,3 @@
-SELECT * FROM memberships
+SELECT * FROM tickets
+
+

@@ -17,7 +17,6 @@ import Memberships from "../pages/Memberships.jsx";
 import ViewComplaints from "../pages/staff/ViewComplaints"; 
 import ContactPage from "../pages/Contact.jsx";
 import { useEffect } from "react"; // Import useEffect
-import Ceramic from "../pages/ceramic";
 import Prints from "../pages/prints";
 import Painting from "../pages/painting";
 import Sculptures from "../pages/sculptures";
@@ -26,6 +25,7 @@ import ExhibitionReport from "../pages/staff/ExhibitionsReport";
 import Artworks from "../pages/Artworks";
 import ManagerHome from "../pages/staff/ManagerHome";
 import CuratorHome from "../pages/staff/CuratorHome";
+import ManageExhibitions from "../pages/staff/ManageExhibition.jsx";
 
 const PageTransition = ({ children }) => {
   return (
@@ -65,6 +65,7 @@ function AnimatedRoutes() {
         <Route path="/Auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/adminhome" element={<PageTransition><AdminHome /></PageTransition>} />
         <Route path="/admin/manage-employees" element={<ManaageEmployees />} />
+        <Route path="/admin/manage-exhibits" element={<ManageExhibitions />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/total-report" element={<TotalReport />} />
         <Route path="/memberships" element={<Memberships />} />

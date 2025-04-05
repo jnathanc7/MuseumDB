@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../../styles/exhibitionsreport.css"; // Reuse or extend this file for common admin styles
-
+ 
 const ExhibitionReport = () => {
   const [exhibitions, setExhibitions] = useState([]);
   const [newExhibition, setNewExhibition] = useState({
