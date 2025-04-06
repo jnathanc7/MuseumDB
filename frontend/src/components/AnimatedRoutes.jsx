@@ -26,6 +26,8 @@ import Artworks from "../pages/Artworks";
 import ManagerHome from "../pages/staff/ManagerHome";
 import CuratorHome from "../pages/staff/CuratorHome";
 import ManageExhibitions from "../pages/staff/ManageExhibition.jsx";
+import AdminNotifications from "../pages/staff/AdminNotifications";
+
 
 const PageTransition = ({ children }) => {
   return (
@@ -68,6 +70,8 @@ function AnimatedRoutes() {
         <Route path="/admin/manage-exhibits" element={<ManageExhibitions />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/total-report" element={<TotalReport />} />
+        <Route path="/admin/notifications" element={<PageTransition><AdminNotifications /></PageTransition>} />
+
         <Route path="/memberships" element={<Memberships />} />
         <Route path="/admin/view-complaints" element={<PageTransition><ViewComplaints /></PageTransition>} />
         <Route path="/admin/exhibition-report" element={<PageTransition><ExhibitionReport /></PageTransition>} />

@@ -78,17 +78,7 @@ const AdminHome = () => {
     return (
         <main className="admin-container">
           <div className="admin-title-container"></div>
-          {notifications.length > 0 && (
-            <div className="notification-banner">
-              <h4>Notifications</h4>
-              <ul>
-                {notifications.map((note, i) => (
-                  <li key={i}>{note.message}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
+          
 
         <div className="admin-dashboard">
             
@@ -97,7 +87,7 @@ const AdminHome = () => {
                 Admin Dashboard
             </h3>
         </div>
-        
+  
     
             {/* Profile Button */}
             <button onClick={() => navigate('/profile')} className="admin-button">
