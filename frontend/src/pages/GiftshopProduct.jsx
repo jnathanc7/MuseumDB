@@ -25,7 +25,7 @@ const GiftshopProduct = () =>{
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }        
                 console.log("Fetched Product Data", data);
-                setProduct(data[0]);
+                setProduct(data);
             }
             catch(error){
                 console.error("Error fetching products:", error);
@@ -84,7 +84,7 @@ const GiftshopProduct = () =>{
               )}       */}
             <div className = "product-wrapper">
                 <div className = "product-left" style = 
-                {{backgroundImage: `url(${product?.Image_URL})`,//need to change to BLOB right now its just statically retreiving the url and matching with our files
+                {{backgroundImage: `url(data:${product.mimeType};base64,${product.viewing_image})`,//need to change to BLOB right now its just statically retreiving the url and matching with our files
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat',

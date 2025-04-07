@@ -2,10 +2,11 @@ import { useState, memo, useEffect } from "react";
 import { Calendar, Plus, Minus, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import "../styles/shopcart.css";
+import "../styles/admin.css";
 
 const CartItem = memo(({ cartItem, OnRemove, Increment, Decrement}) => (
   <div className="cart-product">
-        <img src= {cartItem.Image_URL} alt={cartItem.Name} />
+        <img src= {`data:${cartItem.mimeType};base64,${cartItem.viewing_image}`}  alt={cartItem.Name} />
         <div className="product-info">
           <h2 className="cart-product-info">{cartItem.Name}</h2>
           <p className="cart-product-info">${cartItem.Price}</p>
@@ -52,6 +53,7 @@ const ShopCart = () => {
   const [confirmation, setConfirmation] = useState("");
   const [member, setMember] = useState(false);
   const [membershipType, setMembershipType] = useState("");
+  const [isModal, setIsModal] = useState(null);
   const [discount, setDiscount] = useState(1);
 
   const increment = (cartItemId) =>{
@@ -162,6 +164,8 @@ const Purchase = async () =>{
       const result = await response.json();
       console.log("Server Response: ", result); 
       setConfirmation(result.message);
+      setCartProducts([]);
+      setIsModal(true);
   }
   catch(error){
       console.error("Error processing transaction:", error);
@@ -260,6 +264,16 @@ useEffect(() => {
         
       </>
     )}
+    {isModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h2>Thank You For Your Purchase!</h2>
+                        <div className="modal-buttons">
+                            <button className="close-modal-button" onClick={() => setIsModal(false)}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
     </div>
   );
 };

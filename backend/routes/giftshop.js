@@ -6,7 +6,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 //right now shopcart is universal so every user has access to everyones shopcart
 //need to alter shopcart table to include customer_id
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
     const method = req.method;
@@ -28,20 +28,53 @@ module.exports = (req, res) => {
     //  GET /giftshop/(categoryname)/(productid) - Retrieve the specific product 
     if (pathSegments[0] === 'giftshop' && pathSegments.length === 3 && method === "GET") {
         const productid = decodeURIComponent(pathSegments[2]);
-        console.log(`i am category: ${productid}`)
-        db.query("SELECT P.* FROM products AS P WHERE P.Product_ID = ?", [productid], (err, results) => {
-            if (err) {
-                console.log("Database Query failed", err);
-                res.writeHead(500, { "Content-Type": "application/json" });
-                return res.end(JSON.stringify({ message: "Error retrieving categories", error: err }));                
-            }
-            console.log("Query results",results);
-            res.writeHead(200, { "Content-Type": "application/json" });//we arent able to send it to the frontend
-            res.end(JSON.stringify(results));
-            console.log("I am here for the product type shi");
-            return; 
-        });
-    }
+        const { default: imageType } = await import('image-type');
+      
+        try {
+          const results = await new Promise((resolve, reject) => {
+            db.query(
+              "SELECT P.* FROM products AS P WHERE P.Product_ID = ?",
+              [productid],
+              (err, rows) => {
+                if (err) return reject(err);
+                resolve(rows);
+              }
+            );
+          });
+      
+          if (!results || results.length === 0) {
+            res.writeHead(404, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({ message: "Product not found" }));
+          }
+      
+          const product = results[0];
+      
+          let viewing_image = null;
+          let mimeType = null;
+      
+          if (product.product_image) {
+            const buffer = product.product_image;
+            const detected = await imageType(buffer);
+            mimeType = detected ? detected.mime : "application/octet-stream";
+            viewing_image = buffer.toString("base64");
+          }
+      
+          const processedProduct = {
+            ...product,
+            viewing_image,
+            mimeType,
+          };
+      
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(processedProduct));
+          console.log("Sent processed single product with image");
+        } catch (err) {
+          console.error("Error retrieving product:", err);
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ message: "Error retrieving product", error: err }));
+        }
+      }
+      
     
     //  POST /giftshop/(categoryname)/(productid) - Send product to shop cart 
     //only need to add authmiddleware to this request to add a customerid to shopcart table from there fetch and delete make the query based on the customerid
@@ -51,6 +84,7 @@ module.exports = (req, res) => {
         req.on("data", (chunk) => { body += chunk; });
         req.on("end", () =>{
             const product = JSON.parse(body);
+            console.log("Received product in POSTsss:", product);
             const customer_ID = req.user.id;
             const checkQuery = "SELECT Cart_Item_ID, Quantity FROM shopping_cart WHERE Product_ID = ? AND customer_ID = ?";
             
@@ -101,20 +135,54 @@ module.exports = (req, res) => {
     //  GET /giftshop/(categoryname) - Retrieve all products of given category from database
     else if (pathSegments[0] === 'giftshop' && pathSegments.length === 2 && method === "GET") {
         const category = decodeURIComponent(pathSegments[1]);
-        console.log(`i am category: ${category}`)
-        db.query("SELECT P.* FROM products AS P, product_categories AS PC WHERE P.Category_ID = PC.Category_ID AND PC.Name = ?", [category], (err, results) => {
-            if (err) {
-                console.log("Database Query failed", err);
-                res.writeHead(500, { "Content-Type": "application/json" });
-                return res.end(JSON.stringify({ message: "Error retrieving categories", error: err }));                
+        const { default: imageType } = await import('image-type');
+        console.log(`i am category: ${category}`);
+      
+        try {
+          // Wrap db.query in a Promise so you can await it
+          const results = await new Promise((resolve, reject) => {
+            db.query(
+              "SELECT P.* FROM products AS P, product_categories AS PC WHERE P.Category_ID = PC.Category_ID AND PC.Name = ?",
+              [category],
+              (err, rows) => {
+                if (err) return reject(err);
+                resolve(rows);
+              }
+            );
+          });
+      
+          // Now safely use await inside your async context
+          const processedResults = await Promise.all(results.map(async (item) => {
+            if (item.product_image) {
+              const buffer = item.product_image;
+              const detected = await imageType(buffer);
+              const mimeType = detected ? detected.mime : "application/octet-stream";
+      
+              return {
+                ...item,
+                viewing_image: buffer.toString("base64"),
+                mimeType
+              };
             }
-            console.log("Query results",results);
-            res.writeHead(200, { "Content-Type": "application/json" });//we arent able to send it to the frontend
-            res.end(JSON.stringify(results));
-            console.log("I am here");
-            return; 
-        });
-    }
+      
+            return {
+              ...item,
+              viewing_image: null,
+              mimeType: null
+            };
+          }));
+      
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify(processedResults));
+          console.log("Sent processed results to frontend");
+      
+        } catch (err) {
+          console.error("Database Query failed", err);
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ message: "Error retrieving products", error: err }));
+        }
+      }
+      
     //  GET /giftshop - Retrieve all categories from the database
    else if (parsedUrl.pathname === "/giftshop" && method === "GET") {
         
