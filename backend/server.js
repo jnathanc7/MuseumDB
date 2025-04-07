@@ -11,6 +11,9 @@ const exhibitionReportRoutes = require("./routes/exhibitionReport");
 const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
 const membershipRoutes = require("./routes/membership"); // Import membership routes
 const contactRoutes = require("./routes/contact");
+const notificationRoutes = require("./routes/adminnotification");
+
+
 
 const allowedOrigins = [
     "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
@@ -26,7 +29,7 @@ const server = http.createServer((req, res) => {
         res.setHeader("Access-Control-Allow-Origin", origin);
     }
 
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     res.setHeader("Access-Control-Allow-Credentials", "true");
 
@@ -95,10 +98,19 @@ const server = http.createServer((req, res) => {
         membershipRoutes(req, res, parsedUrl);
         return;
     }
+    // adding notifications routes
+    else if (parsedUrl.pathname.startsWith("/notifications")) {
+        notificationRoutes(req, res, parsedUrl); 
+        return;
+      }
+      
+      
+    
     else {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ message: "Route not found" }));
     }
+
 });
 
 const PORT = process.env.PORT || 5000;

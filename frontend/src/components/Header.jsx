@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import AnimatedLink from "./AnimatedLink";
 import { FaShoppingCart } from "react-icons/fa";
+import { FaBell } from "react-icons/fa"; // Notification bell icon
+
 import "../styles/header.css";
 
 const Header = () => {
@@ -10,6 +12,10 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null); // 'admin' or 'staff' or 'customer'
   const [jobTitle, setJobTitle] = useState(null); // like "Manager" or "Curator"
+
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,6 +57,31 @@ const Header = () => {
 
     checkLogin();
   }, [location.pathname]);
+
+  // Handle notifications dropdown
+// Refresh notifications when other components dispatch a refresh event
+useEffect(() => {
+  const handleRefresh = () => {
+    if (userRole === "admin") {
+      // fetch("http://localhost:5000/notifications?status=unread")
+         fetch("https://museumdb.onrender.com/notifications?status=unread")
+
+        .then(res => res.json())
+        .then(data => setNotifications(data))
+        .catch(err => console.error("Failed to refresh notifications:", err));
+    }
+  };
+
+  window.addEventListener("refresh-notifications", handleRefresh);
+  handleRefresh(); // Initial fetch when component mounts, if userRole is admin
+
+  return () => {
+    window.removeEventListener("refresh-notifications", handleRefresh);
+  };
+}, [userRole]);
+
+
+  
 
   const isTicketsPage = location.pathname === "/tickets";
   const isMembershipPage = location.pathname === "/memberships";
@@ -107,6 +138,35 @@ const Header = () => {
             {isManager ? "Manager" : isCurator ? "Curator" : "Admin"}
           </AnimatedLink>
         )}
+
+
+        {/* Notifications for admin users */}
+        {userRole === "admin" && (
+        <div className="notification-icon-container" style={{ position: "relative" }}>
+          <FaBell
+            style={{ cursor: "pointer", marginRight: "10px" }}
+            onClick={() => setShowNotifications(prev => !prev)}
+            onDoubleClick={() => {
+              window.location.href = "/admin/notifications"; // or use `navigate()` if you're using React Router
+            }}
+          />
+          {notifications.filter(note => note.status === 'unread').length > 0 && (
+            <span className="notification-badge">
+              {notifications.filter(note => note.status === 'unread').length}
+            </span>
+          )}
+
+          {showNotifications && (
+            <div className="notification-dropdown">
+              <ul>
+                {notifications.map((note, i) => (
+                  <li key={i}>{note.message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
 
         <AnimatedLink to="/cart">
           <FaShoppingCart />
