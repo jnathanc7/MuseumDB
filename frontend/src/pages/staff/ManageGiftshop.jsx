@@ -23,7 +23,7 @@ const ManageGiftshop = () => {
           const response = await fetch("https://museumdb.onrender.com/manageGiftshop");
           if (!response.ok) {
             throw new Error("Failed to fetch exhibitions");
-          } 
+          }
           const data = await response.json();
           if (Array.isArray(data)) {
             setProducts(data);

@@ -3,6 +3,19 @@ import "../../styles/manage.css";
 
 const ManageExhibitions = () => {
   const [exhibitions, setExhibitions] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newExhibition, setNewExhibition] = useState({
+    Name: "",
+    Start_Date: "",
+    End_Date: "",
+    Budget: "",
+    Location: "",
+    Num_Tickets_Sold: "",
+    Themes: "",
+    Num_Of_Artworks: "",
+    description: "",
+    require_ticket: false
+  });
 
   useEffect(() => {
     fetchExhibitions();
@@ -10,7 +23,6 @@ const ManageExhibitions = () => {
 
   const fetchExhibitions = async () => {
     try {
-      // Updated fetch URL to match your backend route for managing exhibitions.
       const response = await fetch("https://museumdb.onrender.com/manage-exhibition");
       if (!response.ok) {
         throw new Error("Failed to fetch exhibitions");
@@ -27,10 +39,52 @@ const ManageExhibitions = () => {
     }
   };
 
-  // For now, the "Add Exhibition" button simply logs an action.
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNewExhibition((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Basic validation can be added here
+    try {
+      const response = await fetch("https://museumdb.onrender.com/manage-exhibition", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newExhibition)
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message || "Exhibition added successfully!");
+        fetchExhibitions();
+        setNewExhibition({
+          Name: "",
+          Start_Date: "",
+          End_Date: "",
+          Budget: "",
+          Location: "",
+          Num_Tickets_Sold: "",
+          Themes: "",
+          Num_Of_Artworks: "",
+          description: "",
+          require_ticket: false
+        });
+        setIsModalOpen(false);
+      } else {
+        alert("Error adding exhibition.");
+      }
+    } catch (error) {
+      console.error("Failed to add exhibition:", error);
+    }
+  };
+
   const handleAddExhibition = () => {
-    console.log("Add Exhibition clicked");
-    // Here you can implement a modal or redirect to an add exhibition page.
+    setIsModalOpen(true);
   };
 
   return (
@@ -41,6 +95,8 @@ const ManageExhibitions = () => {
           Add Exhibition
         </button>
       </div>
+
+      {/* Exhibitions Table */}
       <table className="manage-table">
         <thead>
           <tr>
@@ -71,6 +127,119 @@ const ManageExhibitions = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Modal for Adding Exhibition */}
+      {isModalOpen && (
+        <div className="modal-overlay" style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "rgba(0,0,0,0.8)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1000
+        }}>
+          <div className="modal-content" style={{
+            backgroundColor: "#2c2a2a",
+            padding: "20px",
+            borderRadius: "5px",
+            width: "90%",
+            maxWidth: "500px"
+          }}>
+            <h2>Add New Exhibition</h2>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                name="Name"
+                placeholder="Exhibition Name"
+                value={newExhibition.Name}
+                onChange={handleInputChange}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <input
+                type="date"
+                name="Start_Date"
+                placeholder="Start Date"
+                value={newExhibition.Start_Date}
+                onChange={handleInputChange}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <input
+                type="date"
+                name="End_Date"
+                placeholder="End Date"
+                value={newExhibition.End_Date}
+                onChange={handleInputChange}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <input
+                type="number"
+                step="0.01"
+                name="Budget"
+                placeholder="Budget"
+                value={newExhibition.Budget}
+                onChange={handleInputChange}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <input
+                type="text"
+                name="Location"
+                placeholder="Location"
+                value={newExhibition.Location}
+                onChange={handleInputChange}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <input
+                type="text"
+                name="Themes"
+                placeholder="Themes (comma separated)"
+                value={newExhibition.Themes}
+                onChange={handleInputChange}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <input
+                type="number"
+                name="Num_Of_Artworks"
+                placeholder="Number of Artworks"
+                value={newExhibition.Num_Of_Artworks}
+                onChange={handleInputChange}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <textarea
+                name="description"
+                placeholder="Description"
+                value={newExhibition.description}
+                onChange={handleInputChange}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              ></textarea>
+              <label style={{ marginBottom: "10px", display: "block" }}>
+                <input
+                  type="checkbox"
+                  name="require_ticket"
+                  checked={newExhibition.require_ticket}
+                  onChange={handleInputChange}
+                />{" "}
+                Require Additional Ticket?
+              </label>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <button type="submit" className="add-btn">
+                  Add Exhibition
+                </button>
+                <button
+                  type="button"
+                  className="add-btn"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
