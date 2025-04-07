@@ -210,7 +210,7 @@ const ManageExhibitions = () => {
               <label>Theme:</label>
               <input
                 type="text"
-                name="Theme"
+                name="Themes"
                 placeholder="Theme"
                 value={newExhibition.Themes}
                 onChange={handleInputChange}
