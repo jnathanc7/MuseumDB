@@ -20,7 +20,7 @@ const ManageGiftshop = () => {
     
       const fetchProducts = async () => {
         try {
-          const response = await fetch("http://localhost:5000/manageGiftshop");
+          const response = await fetch("https://museumdb.onrender.com/manageGiftshop");
           if (!response.ok) {
             throw new Error("Failed to fetch exhibitions");
           }
@@ -53,7 +53,7 @@ const ManageGiftshop = () => {
           console.log("Submitting Product:", productData);
       
           try {
-            const response = await fetch("http://localhost:5000/manageGiftshop", {
+            const response = await fetch("https://museumdb.onrender.com/manageGiftshop", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -89,7 +89,7 @@ const ManageGiftshop = () => {
 
     const fetchCategories = async () =>{
         try{
-            const response = await fetch("http://localhost:5000/giftshop");
+            const response = await fetch("https://museumdb.onrender.com/giftshop");
             const data = await response.json();
             console.log("Fetched Category Data", data);
             setCategories(data);
@@ -146,7 +146,7 @@ const ManageGiftshop = () => {
         }
 
         try {
-          const response = await fetch("http://localhost:5000/manageGiftshop", {
+          const response = await fetch("https://museumdb.onrender.com/manageGiftshop", {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
@@ -174,7 +174,7 @@ const ManageGiftshop = () => {
       // Function to delete products referring to cart route since it already has a delete query
       const handleDelete = async () => {
         try {
-          const response = await fetch("http://localhost:5000/manageGiftshop", {
+          const response = await fetch("https://museumdb.onrender.com/manageGiftshop", {
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
