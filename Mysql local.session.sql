@@ -1,5 +1,4 @@
-ALTER TABLE exhibitions
-ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
+SELECT * FROM exhibitions;
 
 
 

@@ -42,7 +42,7 @@ module.exports = (req, res) => {
                 const exhibition = JSON.parse(body);
                 const query = `
                   INSERT INTO exhibitions 
-                  (Name, Start_Date, End_Date, Budget, Location, Num_Tickets_Sold, Themes, Num_Of_Artworks, description, exhibition_image, require_ticket, is_active) 
+                  (Name, Start_Date, End_Date, Budget, Location, Num_Tickets_Sold, Themes, Num_Of_Artworks, description, exhibition_image, requires_ticket, is_active) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 `;
                 const params = [
@@ -56,7 +56,7 @@ module.exports = (req, res) => {
                     exhibition.Num_Of_Artworks,
                     exhibition.description,
                     exhibition.exhibition_image, // Expect binary/blob or Base64 string as appropriate
-                    exhibition.require_ticket,     // Boolean (or 0/1)
+                    exhibition.requires_ticket,    // Updated field name
                     true                           // New exhibitions are active by default
                 ];
                 db.query(query, params, (err, result) => {
@@ -90,7 +90,7 @@ module.exports = (req, res) => {
                 }
                 const query = `
                   UPDATE exhibitions 
-                  SET Name = ?, Start_Date = ?, End_Date = ?, Budget = ?, Location = ?, Num_Tickets_Sold = ?, Themes = ?, Num_Of_Artworks = ?, description = ?, exhibition_image = ?, require_ticket = ?, is_active = ?
+                  SET Name = ?, Start_Date = ?, End_Date = ?, Budget = ?, Location = ?, Num_Tickets_Sold = ?, Themes = ?, Num_Of_Artworks = ?, description = ?, exhibition_image = ?, requires_ticket = ?, is_active = ?
                   WHERE Exhibition_ID = ?
                 `;
                 const params = [
@@ -104,7 +104,7 @@ module.exports = (req, res) => {
                     exhibition.Num_Of_Artworks,
                     exhibition.description,
                     exhibition.exhibition_image,
-                    exhibition.require_ticket,
+                    exhibition.requires_ticket, // Updated field name
                     exhibition.is_active,
                     exhibition.Exhibition_ID
                 ];

@@ -14,7 +14,7 @@ const ManageExhibitions = () => {
     Themes: "",
     Num_Of_Artworks: "",
     description: "",
-    require_ticket: false,
+    requires_ticket: false,
     exhibition_image_url: ""
   });
 
@@ -72,7 +72,7 @@ const ManageExhibitions = () => {
           Themes: "",
           Num_Of_Artworks: "",
           description: "",
-          require_ticket: false,
+          requires_ticket: false,
           exhibition_image_url: ""
         });
         setIsModalOpen(false);
@@ -207,11 +207,11 @@ const ManageExhibitions = () => {
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
 
-              <label>Themes (comma separated):</label>
+              <label>Theme:</label>
               <input
                 type="text"
-                name="Themes"
-                placeholder="Themes"
+                name="Theme"
+                placeholder="Theme"
                 value={newExhibition.Themes}
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
@@ -236,7 +236,7 @@ const ManageExhibitions = () => {
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               ></textarea>
 
-              <label>Exhibition Image URL:</label>
+              <label>Exhibition Image:</label>
               <input
                 type="text"
                 name="exhibition_image_url"
@@ -250,8 +250,8 @@ const ManageExhibitions = () => {
                 <span>Ticket Required?</span>
                 <input
                   type="checkbox"
-                  name="require_ticket"
-                  checked={newExhibition.require_ticket}
+                  name="requires_ticket"
+                  checked={newExhibition.requires_ticket}
                   onChange={handleInputChange}
                   style={{ marginLeft: "10px" }}
                 />
