@@ -27,6 +27,7 @@ import ManagerHome from "../pages/staff/ManagerHome";
 import CuratorHome from "../pages/staff/CuratorHome";
 import ManageExhibitions from "../pages/staff/ManageExhibition.jsx";
 import AdminNotifications from "../pages/staff/AdminNotifications";
+import ResetPassword from "../pages/ResetPassword";
 
 
 const PageTransition = ({ children }) => {
@@ -65,6 +66,7 @@ function AnimatedRoutes() {
         <Route path = "/Giftshop/:categoryName/:productID" element={<PageTransition><GiftshopProduct /></PageTransition>}/>
         <Route path = "cart" element = {<PageTransition><ShopCart /></PageTransition> }/>
         <Route path="/Auth" element={<PageTransition><Auth /></PageTransition>} />
+        <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
         <Route path="/adminhome" element={<PageTransition><AdminHome /></PageTransition>} />
         <Route path="/admin/manage-employees" element={<ManaageEmployees />} />
         <Route path="/admin/manage-exhibits" element={<ManageExhibitions />} />
