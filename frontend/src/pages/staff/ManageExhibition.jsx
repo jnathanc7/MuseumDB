@@ -36,7 +36,7 @@ const ManageExhibitions = () => {
   return (
     <div className="manage-wrapper">
       <div className="manage-header">
-        <h1>Exhibition Report</h1>
+        <h1>Manage Exhibitions</h1>
         <button className="add-btn" onClick={handleAddExhibition}>
           Add Exhibition
         </button>
