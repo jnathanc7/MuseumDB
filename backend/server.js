@@ -13,6 +13,7 @@ const membershipRoutes = require("./routes/membership"); // Import membership ro
 const contactRoutes = require("./routes/contact");
 const notificationRoutes = require("./routes/adminnotification");
 const manageGiftshopRoutes = require("./routes/manageGiftshop");
+const exhibition = require("./routes/exhibition");
 
 const allowedOrigins = [
     "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
@@ -57,6 +58,13 @@ const server = http.createServer((req, res) => {
     else if (parsedUrl.pathname.startsWith("/total-report")) {
         // authMiddleware("admin")(req, res, () => {
             reportsRoutes(req, res);
+        // });
+        return;
+    }
+    // Exhibition Routes for managing exhibitions (GET, POST, PUT, and soft-delete via is_active)
+    else if (parsedUrl.pathname.startsWith("/manage-exhibition")) {
+        // authMiddleware(["staff", "admin"])(req, res, () => {
+            exhibitionRoutes(req, res);
         // });
         return;
     }

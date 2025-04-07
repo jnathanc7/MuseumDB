@@ -10,7 +10,8 @@ const ManageExhibitions = () => {
 
   const fetchExhibitions = async () => {
     try {
-      const response = await fetch("https://museumdb.onrender.com/exhibition-report");
+      // Updated fetch URL to match your backend route for managing exhibitions.
+      const response = await fetch("https://museumdb.onrender.com/manage-exhibition");
       if (!response.ok) {
         throw new Error("Failed to fetch exhibitions");
       }
