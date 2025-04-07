@@ -13,7 +13,7 @@ const membershipRoutes = require("./routes/membership"); // Import membership ro
 const contactRoutes = require("./routes/contact");
 const notificationRoutes = require("./routes/adminnotification");
 const manageGiftshopRoutes = require("./routes/manageGiftshop");
-const exhibition = require("./routes/exhibitions");
+const exhibitionRoutes = require("./routes/exhibitions");
 
 const allowedOrigins = [
     "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
