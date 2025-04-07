@@ -95,8 +95,6 @@ const ManageExhibitions = () => {
           Add Exhibition
         </button>
       </div>
-
-      {/* Exhibitions Table */}
       <table className="manage-table">
         <thead>
           <tr>
@@ -149,8 +147,9 @@ const ManageExhibitions = () => {
             width: "90%",
             maxWidth: "500px"
           }}>
-            <h2>Add New Exhibition</h2>
+            <h2 style={{ color: "#ffcc00" }}>Add New Exhibition</h2>
             <form onSubmit={handleSubmit}>
+              <label>Exhibition Name:</label>
               <input
                 type="text"
                 name="Name"
@@ -159,22 +158,26 @@ const ManageExhibitions = () => {
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
+
+              <label>Start Date:</label>
               <input
                 type="date"
                 name="Start_Date"
-                placeholder="Start Date"
                 value={newExhibition.Start_Date}
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
+
+              <label>End Date:</label>
               <input
                 type="date"
                 name="End_Date"
-                placeholder="End Date"
                 value={newExhibition.End_Date}
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
+
+              <label>Budget ($):</label>
               <input
                 type="number"
                 step="0.01"
@@ -184,6 +187,8 @@ const ManageExhibitions = () => {
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
+
+              <label>Location:</label>
               <input
                 type="text"
                 name="Location"
@@ -192,14 +197,18 @@ const ManageExhibitions = () => {
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
+
+              <label>Themes (comma separated):</label>
               <input
                 type="text"
                 name="Themes"
-                placeholder="Themes (comma separated)"
+                placeholder="Themes"
                 value={newExhibition.Themes}
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
+
+              <label>Number of Artworks:</label>
               <input
                 type="number"
                 name="Num_Of_Artworks"
@@ -208,6 +217,8 @@ const ManageExhibitions = () => {
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
+
+              <label>Description:</label>
               <textarea
                 name="description"
                 placeholder="Description"
@@ -215,7 +226,8 @@ const ManageExhibitions = () => {
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               ></textarea>
-              <label style={{ marginBottom: "10px", display: "block" }}>
+
+              <label>
                 <input
                   type="checkbox"
                   name="require_ticket"
@@ -224,15 +236,12 @@ const ManageExhibitions = () => {
                 />{" "}
                 Require Additional Ticket?
               </label>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
                 <button type="submit" className="add-btn">
                   Add Exhibition
                 </button>
-                <button
-                  type="button"
-                  className="add-btn"
-                  onClick={() => setIsModalOpen(false)}
-                >
+                <button type="button" className="add-btn" onClick={() => setIsModalOpen(false)}>
                   Cancel
                 </button>
               </div>
@@ -245,3 +254,4 @@ const ManageExhibitions = () => {
 };
 
 export default ManageExhibitions;
+

@@ -25,118 +25,110 @@ module.exports = (req, res) => {
         return res.end();
     }
  
-    // GET /manage-exhibition - Retrieve all exhibitions
-  if (parsedUrl.pathname === "/manage-exhibition" && method === "GET") {
-    // Optionally, insert authentication middleware here if required.
-    db.query("SELECT * FROM exhibitions", (err, results) => {
-      if (err) {
-        res.writeHead(500, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ message: "Error retrieving exhibitions", error: err }));
-      }
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(results));
-    });
-    return;
-  }
+    // GET /employees - Retrieve all employees from the database (PROTECTED)
+    if (parsedUrl.pathname === "/employees" && method === "GET") {
+        // return authMiddleware(["staff", "admin"])(req, res, () => {
+            db.query("SELECT * FROM staff", (err, results) => {
+                if (err) {
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    return res.end(JSON.stringify({ message: "Error retrieving employees", error: err }));
+                }
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify(results));
+            });
 
-  // POST /manage-exhibition - Add a new exhibition
-  if (parsedUrl.pathname === "/manage-exhibition" && method === "POST") {
-    let body = "";
-    req.on("data", chunk => {
-      body += chunk;
-    });
-    req.on("end", () => {
-      try {
-        const exhibition = JSON.parse(body);
-        // Insert into exhibitions table.
-        // Adjust the columns and parameters as needed. Here we assume that:
-        // - The exhibition table now includes: Name, Start_Date, End_Date, Budget, Location,
-        //   Num_Tickets_Sold, Themes, Num_Of_Artworks, description, exhibition_image, require_ticket.
-        const query = `
-          INSERT INTO exhibitions 
-          (Name, Start_Date, End_Date, Budget, Location, Num_Tickets_Sold, Themes, Num_Of_Artworks, description, exhibition_image, require_ticket) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `;
-        const params = [
-          exhibition.Name,
-          exhibition.Start_Date,
-          exhibition.End_Date,
-          exhibition.Budget,
-          exhibition.Location,
-          exhibition.Num_Tickets_Sold || 0,
-          exhibition.Themes,
-          exhibition.Num_Of_Artworks,
-          exhibition.description,
-          exhibition.exhibition_image, // Expecting binary/blob or Base64 string as appropriate
-          exhibition.require_ticket   // Boolean (or 0/1)
-        ];
+        // });
+    }
 
-        db.query(query, params, (err, result) => {
-          if (err) {
-            res.writeHead(500, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({ message: "Error adding exhibition", error: err }));
-          }
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message: "Exhibition added successfully", Exhibition_ID: result.insertId }));
-        });
-      } catch (err) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "Invalid JSON", error: err.message }));
-      }
-    });
-    return;
-  }
+    // POST /employees - Add a new employee to the database (PROTECTED)
+    else if (parsedUrl.pathname === "/employees" && method === "POST") {
+        // return authMiddleware("staff")(req, res, () => {
+            let body = "";
+            req.on("data", (chunk) => { body += chunk; });
+            req.on("end", () => {
+                try {
+                    const newEmployee = JSON.parse(body);
+                    console.log("Received New Employee Data:", newEmployee); // Debugging log
 
-  // PUT /manage-exhibition - Update an existing exhibition
-  if (parsedUrl.pathname === "/manage-exhibition" && method === "PUT") {
-    let body = "";
-    req.on("data", chunk => {
-      body += chunk;
-    });
-    req.on("end", () => {
-      try {
-        const exhibition = JSON.parse(body);
-        // Ensure Exhibition_ID is provided for updating
-        if (!exhibition.Exhibition_ID) {
-          res.writeHead(400, { "Content-Type": "application/json" });
-          return res.end(JSON.stringify({ message: "Exhibition_ID is required for update" }));
-        }
-        const query = `
-          UPDATE exhibitions 
-          SET Name = ?, Start_Date = ?, End_Date = ?, Budget = ?, Location = ?, Num_Tickets_Sold = ?, Themes = ?, Num_Of_Artworks = ?, description = ?, exhibition_image = ?, require_ticket = ?
-          WHERE Exhibition_ID = ?
-        `;
-        const params = [
-          exhibition.Name,
-          exhibition.Start_Date,
-          exhibition.End_Date,
-          exhibition.Budget,
-          exhibition.Location,
-          exhibition.Num_Tickets_Sold,
-          exhibition.Themes,
-          exhibition.Num_Of_Artworks,
-          exhibition.description,
-          exhibition.exhibition_image,
-          exhibition.require_ticket,
-          exhibition.Exhibition_ID
-        ];
-        db.query(query, params, (err, result) => {
-          if (err) {
-            res.writeHead(500, { "Content-Type": "application/json" });
-            return res.end(JSON.stringify({ message: "Error updating exhibition", error: err }));
-          }
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message: "Exhibition updated successfully" }));
-        });
-      } catch (err) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "Invalid JSON", error: err.message }));
-      }
-    });
-    return;
-  }
+                    // Validate required fields
+                    if (!newEmployee.firstName || !newEmployee.lastName || !newEmployee.position || !newEmployee.hireDate || !newEmployee.salary) {
+                        res.writeHead(400, { "Content-Type": "application/json" });
+                        return res.end(JSON.stringify({ message: "Missing required fields." }));
+                    }
 
-  // If no matching route is found, return a 404 response.
-  res.writeHead(404, { "Content-Type": "application/json" });
-  res.end(JSON.stringify({ message: "Route not found" }));
+                    // Correct SQL query (Staff_ID is auto-increment)
+                    const query = `INSERT INTO Staff (First_Name, Last_Name, Phone_Number, Email, Department, Job_title, Hire_Date, Salary, Active_Status) 
+                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+                    const values = [
+                        newEmployee.firstName,
+                        newEmployee.lastName,
+                        newEmployee.phoneNumber,
+                        newEmployee.email,
+                        newEmployee.department,
+                        newEmployee.position,
+                        newEmployee.hireDate,
+                        parseFloat(newEmployee.salary),
+                        newEmployee.status !== undefined ? newEmployee.status : true // Default to active if not provided
+                    ];
+
+                    db.query(query, values, (err, results) => {
+                        if (err) {
+                            console.error("Database Insert Error:", err);
+                            res.writeHead(500, { "Content-Type": "application/json" });
+                            return res.end(JSON.stringify({ message: "Error adding employee", error: err }));
+                        }
+
+                        res.writeHead(201, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({ message: "Employee added successfully!", insertedId: results.insertId }));
+                    });
+                } catch (error) {
+                    console.error("Invalid JSON format:", error);
+                    res.writeHead(400, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Invalid JSON format" }));
+                }
+            });
+        // });
+    }
+
+
+    // 🔹 PUT /employees/toggle - Activate/Deactivate Employee (PROTECTED)
+    else if (parsedUrl.pathname.startsWith("/employees/toggle") && method === "PUT") {
+        // return authMiddleware("staff")(req, res, () => {
+            const employeeId = parsedUrl.query.id;
+
+            if (!employeeId) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                return res.end(JSON.stringify({ message: "Missing employee ID." }));
+            }
+
+            // Check if employee exists
+            db.query("SELECT Active_Status FROM staff WHERE Staff_ID = ?", [employeeId], (err, results) => {
+                if (err || results.length === 0) {
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    return res.end(JSON.stringify({ message: "Error retrieving employee status.", error: err }));
+                }
+
+                const currentStatus = results[0].Active_Status;
+                const newStatus = currentStatus === 1 ? 0 : 1; // Toggle (1 → 0, 0 → 1)
+              
+                db.query("UPDATE Staff SET Active_Status = ? WHERE Staff_ID = ?", [newStatus, employeeId], (err) => {
+                    if (err) {
+                        res.writeHead(500, { "Content-Type": "application/json" });
+                        return res.end(JSON.stringify({ message: "Error updating employee status.", error: err }));
+                    }
+
+
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: `Employee status updated to ${newStatus ? "Active" : "Inactive"}.` }));
+                });
+            });
+        // });
+    }
+
+    // 🔹 Handle Unknown Routes
+    else {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "Route not found" }));
+    }
 };
