@@ -59,14 +59,28 @@ const Header = () => {
   }, [location.pathname]);
 
   // Handle notifications dropdown
-  useEffect(() => {
+// Refresh notifications when other components dispatch a refresh event
+useEffect(() => {
+  const handleRefresh = () => {
     if (userRole === "admin") {
-      fetch("http://localhost:5000/notifications")
+      // fetch("http://localhost:5000/notifications?status=unread")
+         fetch("https://museumdb.onrender.com/notifications?status=unread")
+
         .then(res => res.json())
         .then(data => setNotifications(data))
-        .catch(err => console.error("Failed to fetch notifications:", err));
+        .catch(err => console.error("Failed to refresh notifications:", err));
     }
-  }, [userRole]);
+  };
+
+  window.addEventListener("refresh-notifications", handleRefresh);
+  handleRefresh(); // Initial fetch when component mounts, if userRole is admin
+
+  return () => {
+    window.removeEventListener("refresh-notifications", handleRefresh);
+  };
+}, [userRole]);
+
+
   
 
   const isTicketsPage = location.pathname === "/tickets";
@@ -136,9 +150,12 @@ const Header = () => {
               window.location.href = "/admin/notifications"; // or use `navigate()` if you're using React Router
             }}
           />
-          {notifications.length > 0 && (
-            <span className="notification-badge">{notifications.length}</span>
+          {notifications.filter(note => note.status === 'unread').length > 0 && (
+            <span className="notification-badge">
+              {notifications.filter(note => note.status === 'unread').length}
+            </span>
           )}
+
           {showNotifications && (
             <div className="notification-dropdown">
               <ul>

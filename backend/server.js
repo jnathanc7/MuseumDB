@@ -1,7 +1,5 @@
 const http = require("http"); // Import Node.js HTTP module to create a server
 const url = require("url"); // Import URL module for parsing request URLs
-const db = require("./db"); // added this  for notifications query
-
 const employeesRoutes = require("./routes/employees"); // Import employees routes
 const reportsRoutes = require("./routes/reports"); // Import reports routes
 const authRoutes = require("./routes/auth"); // Import authentication routes
@@ -13,6 +11,9 @@ const exhibitionReportRoutes = require("./routes/exhibitionReport");
 const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
 const membershipRoutes = require("./routes/membership"); // Import membership routes
 const contactRoutes = require("./routes/contact");
+const notificationRoutes = require("./routes/adminnotification");
+
+
 
 const allowedOrigins = [
     "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
@@ -28,7 +29,7 @@ const server = http.createServer((req, res) => {
         res.setHeader("Access-Control-Allow-Origin", origin);
     }
 
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     res.setHeader("Access-Control-Allow-Credentials", "true");
 
@@ -97,19 +98,13 @@ const server = http.createServer((req, res) => {
         membershipRoutes(req, res, parsedUrl);
         return;
     }
-    else if (parsedUrl.pathname === "/notifications" && req.method === "GET") {
-        db.query("SELECT * FROM notifications ORDER BY created_at DESC LIMIT 10", (err, results) => {
-            if (err) {
-                console.error("Error fetching notifications:", err);
-                res.writeHead(500, { "Content-Type": "application/json" });
-                return res.end(JSON.stringify({ message: "Error fetching notifications" }));
-            }
-    
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(results));
-        });
+    // adding notifications routes
+    else if (parsedUrl.pathname.startsWith("/notifications")) {
+        notificationRoutes(req, res, parsedUrl); 
         return;
-    }
+      }
+      
+      
     
     else {
         res.writeHead(404, { "Content-Type": "application/json" });
