@@ -14,7 +14,8 @@ const ManageExhibitions = () => {
     Themes: "",
     Num_Of_Artworks: "",
     description: "",
-    require_ticket: false
+    require_ticket: false,
+    exhibition_image_url: ""
   });
 
   useEffect(() => {
@@ -49,7 +50,6 @@ const ManageExhibitions = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Basic validation can be added here
     try {
       const response = await fetch("https://museumdb.onrender.com/manage-exhibition", {
         method: "POST",
@@ -72,7 +72,8 @@ const ManageExhibitions = () => {
           Themes: "",
           Num_Of_Artworks: "",
           description: "",
-          require_ticket: false
+          require_ticket: false,
+          exhibition_image_url: ""
         });
         setIsModalOpen(false);
       } else {
@@ -128,25 +129,33 @@ const ManageExhibitions = () => {
 
       {/* Modal for Adding Exhibition */}
       {isModalOpen && (
-        <div className="modal-overlay" style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0,0,0,0.8)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 1000
-        }}>
-          <div className="modal-content" style={{
-            backgroundColor: "#2c2a2a",
-            padding: "20px",
-            borderRadius: "5px",
-            width: "90%",
-            maxWidth: "500px"
-          }}>
+        <div
+          className="modal-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000
+          }}
+        >
+          <div
+            className="modal-content"
+            style={{
+              backgroundColor: "#2c2a2a",
+              padding: "20px",
+              borderRadius: "5px",
+              width: "90%",
+              maxWidth: "500px",
+              maxHeight: "80vh", // Limit height to 80% of the viewport
+              overflowY: "auto"  // Enable vertical scrolling if needed
+            }}
+          >
             <h2 style={{ color: "#ffcc00" }}>Add New Exhibition</h2>
             <form onSubmit={handleSubmit}>
               <label>Exhibition Name:</label>
@@ -227,14 +236,25 @@ const ManageExhibitions = () => {
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               ></textarea>
 
-              <label>
+              <label>Exhibition Image URL:</label>
+              <input
+                type="text"
+                name="exhibition_image_url"
+                placeholder="https://example.com/image.jpg"
+                value={newExhibition.exhibition_image_url}
+                onChange={handleInputChange}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              
+              <label style={{ display: "block", marginBottom: "10px" }}>
+                <span>Ticket Required?</span>
                 <input
                   type="checkbox"
                   name="require_ticket"
                   checked={newExhibition.require_ticket}
                   onChange={handleInputChange}
-                />{" "}
-                Require Additional Ticket?
+                  style={{ marginLeft: "10px" }}
+                />
               </label>
 
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
