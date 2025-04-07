@@ -14,8 +14,8 @@ const ViewComplaints = () => {
   const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
-    fetch("https://museum-db-kappa.vercel.app/auth/profile", { // http://localhost:5000/auth/profile
-      credentials: "include", // https://museum-db-kappa.vercel.app/auth/profile
+    fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
+      credentials: "include", // https://museumdb.onrender.com/auth/profile
     })
       .then((res) => {
         if (!res.ok) throw new Error("Not logged in");
@@ -30,8 +30,8 @@ const ViewComplaints = () => {
 
   const fetchComplaints = async () => {
     try {
-      let url = "https://museum-db-kappa.vercel.app/complaints?"; // http://localhost:5000/complaints?
-      if (filterType !== "All") url += `type=${encodeURIComponent(filterType)}&`; // https://museum-db-kappa.vercel.app/complaints?
+      let url = "https://museumdb.onrender.com/complaints?"; // http://localhost:5000/complaints?
+      if (filterType !== "All") url += `type=${encodeURIComponent(filterType)}&`; // https://museumdb.onrender.com/complaints?
       if (startDate) url += `start=${startDate}&`;
       if (endDate) url += `end=${endDate}&`;
 
@@ -48,8 +48,8 @@ const ViewComplaints = () => {
 
   const fetchComplaintSummary = async () => {
     try {
-      let url = "https://museum-db-kappa.vercel.app/complaints/summary?"; // http://localhost:5000/complaints/summary?
-      if (filterType !== "All") url += `type=${encodeURIComponent(filterType)}&`; // https://museum-db-kappa.vercel.app/complaints/summary?
+      let url = "https://museumdb.onrender.com/complaints/summary?"; // http://localhost:5000/complaints/summary?
+      if (filterType !== "All") url += `type=${encodeURIComponent(filterType)}&`; // https://museumdb.onrender.com/complaints/summary?
       if (startDate) url += `start=${startDate}&`;
       if (endDate) url += `end=${endDate}&`;
       const res = await fetch(url, {
@@ -88,8 +88,8 @@ const ViewComplaints = () => {
       };
 
       const res = await fetch(
-        `https://museum-db-kappa.vercel.app/complaints/${complaint.Complaint_ID}`, // http://localhost:5000/complaints/${complaint.Complaint_ID}
-        { // https://museum-db-kappa.vercel.app/complaints/${complaint.Complaint_ID}
+        `https://museumdb.onrender.com/complaints/${complaint.Complaint_ID}`, // http://localhost:5000/complaints/${complaint.Complaint_ID}
+        { // https://museumdb.onrender.com/complaints/${complaint.Complaint_ID}
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updated),
@@ -137,8 +137,8 @@ const ViewComplaints = () => {
       }
 
       const response = await fetch( // http://localhost:5000/complaints/${complaint.Complaint_ID}
-        `https://museum-db-kappa.vercel.app/complaints/${complaint.Complaint_ID}`,
-        { // https://museum-db-kappa.vercel.app/complaints/${complaint.Complaint_ID}
+        `https://museumdb.onrender.com/complaints/${complaint.Complaint_ID}`,
+        { // https://museumdb.onrender.com/complaints/${complaint.Complaint_ID}
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
