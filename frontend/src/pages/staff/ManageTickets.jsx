@@ -73,7 +73,7 @@ const ManageTickets = () => {
         ...newTicket,
         Exhibition_ID: newTicket.Exhibition_ID ? parseInt(newTicket.Exhibition_ID, 10) : null,
       };
-      const response = await fetch("https://museumdb.onrender.com/tickets", {
+      const response = await fetch("https://museumdb.onrender.com/purchase", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
