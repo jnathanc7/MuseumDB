@@ -1,4 +1,5 @@
-SELECT * FROM exhibitions WHERE Exhibition_ID = 3;
+ALTER TABLE exhibitions AUTO_INCREMENT = 2;
+
 
 
 
