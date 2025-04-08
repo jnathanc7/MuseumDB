@@ -159,7 +159,9 @@ const Purchase = async () =>{
       });
        
       if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        const error = await response.json();
+        alert(error.message); // Show trigger message
+        return;
       }
       const result = await response.json();
       console.log("Server Response: ", result); 
@@ -205,8 +207,8 @@ useEffect(() => {
     <div className="cart-wrapper">
       <h1>Shopping Cart</h1>
       {cartProducts.length === 0 ? (
-      <div>   
-      <Link className = "giftshop-link" to ="/giftshop" ><p>Your cart is empty...</p></Link>
+      <div className = "giftshop-link" >   
+      <Link className = "giftshop-link-text" to ="/giftshop" ><p>Your cart is empty...</p></Link>
       </div>
     ) : (
       <>

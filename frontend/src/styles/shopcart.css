@@ -139,3 +139,11 @@
     width: 100%;
     outline: none;
   }
+  
+  .giftshop-link{
+    margin-top: 10px;
+  }
+  .giftshop-link-text{
+    text-decoration: none;
+    color: blue;
+  }

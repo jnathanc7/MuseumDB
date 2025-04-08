@@ -11,7 +11,7 @@ const AdminHome = () => {
 
     useEffect(() => {
       // Fetch recent notifications
-      fetch("http://localhost:5000/notifications")  // or your deployed URL
+      fetch("https://museumdb.onrender.com/notifications")  // or your deployed URL
         .then(res => res.json())
         .then(data => setNotifications(data))
         .catch(err => console.error("Failed to fetch notifications:", err));

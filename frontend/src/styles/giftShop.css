@@ -88,7 +88,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 25px;
+  margin-top: 10px;
 }
 .product-container{
   display: grid;
@@ -99,6 +99,7 @@
 .product {
   width: 250px;
   background: white;
+  margin-top: 20px;
   padding: 10px;
   border-radius: 8px;
   text-align: center;
@@ -139,19 +140,21 @@
   background: white;
   padding: 30px;
   border-radius: 10px;
-  margin-top: 30px;
+  margin-top: 55px;
   text-align: left;
 
 }
 
 .product-right p{
   font-size: 18px;
+  margin-top:10px;
 }
 
 .product-counter {
   display:flex;
   align-items: center;
   gap: 10px;
+  margin-top: 10px;
 }
 
 .cart-button{
