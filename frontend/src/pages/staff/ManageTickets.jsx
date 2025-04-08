@@ -2,23 +2,25 @@ import { useState, useEffect } from "react";
 import "../../styles/manage.css";
 
 const ManageTickets = () => {
-  // State to hold the tickets list
+  // State for tickets and exhibitions
   const [tickets, setTickets] = useState([]);
-  // State to show/hide add ticket modal
+  const [exhibitions, setExhibitions] = useState([]);
+  // Modal state for adding a new ticket
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  // State for the new ticket form data; note the optional Exhibition_Title field
+  // Ticket form state, including an optional Exhibition_ID field
   const [newTicket, setNewTicket] = useState({
     Ticket_Type: "",
     Price: "",
-    Exhibition_Title: "", // optional field for linking ticket to an exhibition
+    Exhibition_ID: "", // Optional; if provided, should be a number
   });
 
-  // Fetch tickets when the component mounts
+  // Fetch tickets and exhibitions on mount
   useEffect(() => {
     fetchTickets();
+    fetchExhibitions();
   }, []);
 
-  // Function to fetch all tickets from the server
+  // Fetch tickets from the backend
   const fetchTickets = async () => {
     try {
       const response = await fetch("https://museumdb.onrender.com/tickets");
@@ -26,11 +28,10 @@ const ManageTickets = () => {
         throw new Error("Failed to fetch tickets");
       }
       const data = await response.json();
-      // Ensure that the response is an array before updating state
       if (Array.isArray(data)) {
         setTickets(data);
       } else {
-        console.error("Data is not an array:", data);
+        console.error("Tickets data is not an array:", data);
         setTickets([]);
       }
     } catch (error) {
@@ -38,35 +39,56 @@ const ManageTickets = () => {
     }
   };
 
-  // Generic input change handler for the new ticket form
-  const handleInputChange = (e, setter) => {
-    const { name, value } = e.target;
-    setter(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Fetch exhibitions from the backend
+  const fetchExhibitions = async () => {
+    try {
+      const response = await fetch("https://museumdb.onrender.com/exhibitions");
+      if (!response.ok) {
+        throw new Error("Failed to fetch exhibitions");
+      }
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setExhibitions(data);
+      } else {
+        console.error("Exhibitions data is not an array:", data);
+        setExhibitions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching exhibitions:", error);
+    }
   };
 
-  // Handles submission of the add ticket form (POST request)
+  // Generic input change handler
+  const handleInputChange = (e, setter) => {
+    const { name, value } = e.target;
+    setter((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Submit the add ticket form
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Convert Exhibition_ID to a number if provided; otherwise set to null
+      const ticketData = {
+        ...newTicket,
+        Exhibition_ID: newTicket.Exhibition_ID ? parseInt(newTicket.Exhibition_ID, 10) : null,
+      };
       const response = await fetch("https://museumdb.onrender.com/tickets", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newTicket),
+        body: JSON.stringify(ticketData),
       });
       const result = await response.json();
       if (response.ok) {
         alert(result.message || "Ticket added successfully!");
         fetchTickets();
-        // Reset form state
+        // Reset the form state
         setNewTicket({
           Ticket_Type: "",
           Price: "",
-          Exhibition_Title: "",
+          Exhibition_ID: "",
         });
         setIsAddModalOpen(false);
       } else {
@@ -77,9 +99,26 @@ const ManageTickets = () => {
     }
   };
 
+  // Helper function that returns the exhibition title for a given ticket.
+  // The logic is:
+  // - If ticket.Exhibition_ID exists, find that exhibition.
+  // - If found and exhibition.requires_ticket is true and the ticket's Ticket_Type
+  //   exactly matches the exhibition's Name, return the exhibition's Name.
+  // - Otherwise, return "N/A".
+  const getExhibitionTitle = (ticket) => {
+    if (!ticket.Exhibition_ID) return "N/A";
+    const exhibition = exhibitions.find(
+      (ex) => ex.Exhibition_ID === ticket.Exhibition_ID
+    );
+    if (exhibition && exhibition.requires_ticket && ticket.Ticket_Type === exhibition.Name) {
+      return exhibition.Name;
+    } else {
+      return "N/A";
+    }
+  };
+
   return (
     <div className="manage-wrapper">
-      {/* Header with title and Add Ticket button */}
       <div className="manage-header">
         <h1>Manage Tickets</h1>
         <button className="add-btn" onClick={() => setIsAddModalOpen(true)}>
@@ -87,7 +126,6 @@ const ManageTickets = () => {
         </button>
       </div>
 
-      {/* Table to display the tickets */}
       <table className="manage-table">
         <thead>
           <tr>
@@ -103,13 +141,13 @@ const ManageTickets = () => {
               <td>{ticket.Ticket_ID}</td>
               <td>{ticket.Ticket_Type}</td>
               <td>${parseFloat(ticket.Price).toFixed(2)}</td>
-              <td>{ticket.Exhibition_Title ? ticket.Exhibition_Title : "N/A"}</td>
+              <td>{getExhibitionTitle(ticket)}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Modal for Adding a Ticket */}
+      {/* Modal for Adding a New Ticket */}
       {isAddModalOpen && (
         <div
           className="modal-overlay"
@@ -129,7 +167,7 @@ const ManageTickets = () => {
         >
           <div
             className="modal-content"
-            onClick={(e) => e.stopPropagation()} // Prevent modal from closing if the content is clicked
+            onClick={(e) => e.stopPropagation()}
             style={{
               backgroundColor: "#2c2a2a",
               padding: "20px",
@@ -161,12 +199,12 @@ const ManageTickets = () => {
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
 
-              <label>Exhibition Title (optional):</label>
+              <label>Exhibition ID (optional):</label>
               <input
-                type="text"
-                name="Exhibition_Title"
-                placeholder="Exhibition Title"
-                value={newTicket.Exhibition_Title}
+                type="number"
+                name="Exhibition_ID"
+                placeholder="Exhibition ID"
+                value={newTicket.Exhibition_ID}
                 onChange={(e) => handleInputChange(e, setNewTicket)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
