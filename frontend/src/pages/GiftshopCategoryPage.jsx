@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const ProductItem = memo(({product, categoryName}) =>(
     <Link className = "product-link" to ={ `/Giftshop/${categoryName}/${encodeURIComponent(product.Product_ID)}`}>
     <div className = "product">
-        <img src={product.Image_URL} alt={product.Name} />
+        <img src={`data:${product.mimeType};base64,${product.viewing_image}`} alt={product.Name} />
         <p>{product.Name} <br /> ${product.Price}</p>
      </div>
     </Link>

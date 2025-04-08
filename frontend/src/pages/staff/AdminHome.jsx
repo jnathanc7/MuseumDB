@@ -1,6 +1,6 @@
 import "../../styles/admin.css";
 import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react"; 
 
 
 const AdminHome = () => {
@@ -116,6 +116,7 @@ const AdminHome = () => {
                 <option value="/admin/manage-artworks">Manage Artworks</option>
                 <option value="/admin/manage-exhibits">Manage Exhibits</option>
                 <option value="/admin/manage-giftshop">Manage Gift Shop</option>
+                <option value="/admin/manage-tickets">Manage Tickets</option>
             </select>
         </div>
 

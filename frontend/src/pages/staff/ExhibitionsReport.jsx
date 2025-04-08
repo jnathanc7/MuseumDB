@@ -1,28 +1,27 @@
 import { useState, useEffect } from "react";
-import "../../styles/exhibitionsreport.css"; // Reuse or extend this file for common admin styles
- 
+import "../../styles/reports.css"; // New custom CSS file for report styles
+
 const ExhibitionReport = () => {
   const [exhibitions, setExhibitions] = useState([]);
+  const [exhibitionPurchases, setExhibitionPurchases] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [newExhibition, setNewExhibition] = useState({
     Name: "",
-    Start_Date: "",
-    End_Date: "",
-    Budget: "",
-    Location: "",
-    Num_Tickets_Sold: "",
-    Themes: "",
-    Num_Of_Artworks: ""
+    Tickets_Bought: "",
+    Amount_Made: "",
+    Num_Complaints: "",
+    IsActive: true
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchExhibitions();
+    fetchExhibitionPurchases();
   }, []);
 
   const fetchExhibitions = async () => {
-    try { // https://museumdb.onrender.com/exhibition-report
+    try {
       const response = await fetch("https://museumdb.onrender.com/exhibition-report");
-        //  const response = await fetch("http://localhost:5000/exhibition-report");
       if (!response.ok) {
         throw new Error("Failed to fetch exhibitions");
       }
@@ -31,55 +30,61 @@ const ExhibitionReport = () => {
       if (Array.isArray(data)) {
         setExhibitions(data);
       } else {
-        console.error("Data is not an array:", data);
-        setExhibitions([]); // Fallback to empty array to avoid errors
+        console.error("Exhibitions data is not an array:", data);
+        setExhibitions([]);
       }
     } catch (error) {
       console.error("Error fetching exhibitions:", error);
     }
   };
-  
+
+  const fetchExhibitionPurchases = async () => {
+    try {
+      const response = await fetch("https://museumdb.onrender.com/exhibition-purchases");
+      if (!response.ok) {
+        throw new Error("Failed to fetch exhibition purchase data");
+      }
+      const data = await response.json();
+      console.log("Fetched Aggregated Exhibition Purchases Data:", data);
+      setExhibitionPurchases(data);
+    } catch (error) {
+      console.error("Error fetching exhibition purchases:", error);
+    }
+  };
 
   const handleInputChange = (e) => {
     setNewExhibition({ ...newExhibition, [e.target.name]: e.target.value });
   };
 
   const addExhibition = async () => {
-    // Basic validation for required fields
+    // Validate required fields
     if (
       !newExhibition.Name ||
-      !newExhibition.Start_Date ||
-      !newExhibition.End_Date ||
-      !newExhibition.Budget ||
-      !newExhibition.Location
+      !newExhibition.Tickets_Bought ||
+      !newExhibition.Amount_Made
     ) {
-      alert("Please fill out all required fields (Name, Start Date, End Date, Budget, Location).");
+      alert("Please fill out the required fields: Name, Tickets Bought, and Amount Made.");
       return;
     }
 
-    try { // https://museumdb.onrender.com/exhibition-report
+    try {
       const response = await fetch("https://museumdb.onrender.com/exhibition-report", {
-      //  const response = awaitfetch("http://localhost:5000/exhibition-report", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newExhibition)
       });
       const result = await response.json();
       if (response.ok) {
         alert(result.message || "Exhibition added successfully!");
+        // After adding, refetch exhibitions and aggregated purchase data
         fetchExhibitions();
-        // Reset the form
+        fetchExhibitionPurchases();
         setNewExhibition({
           Name: "",
-          Start_Date: "",
-          End_Date: "",
-          Budget: "",
-          Location: "",
-          Num_Tickets_Sold: "",
-          Themes: "",
-          Num_Of_Artworks: ""
+          Tickets_Bought: "",
+          Amount_Made: "",
+          Num_Complaints: "",
+          IsActive: true
         });
         setIsModalOpen(false);
       } else {
@@ -90,53 +95,118 @@ const ExhibitionReport = () => {
     }
   };
 
+  // Filter exhibitions based on search query
+  const filteredExhibitions = exhibitions.filter((exhibition) =>
+    exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Helper: Get aggregated purchase data for an exhibition.
+  // For exhibitions that require a ticket, look for matching Exhibition_ID.
+  // For regular (non-ticket-required) exhibitions, use the aggregation where Exhibition_ID is null.
+  const getAggregatedDataForExhibition = (exhibition) => {
+    if (exhibition.requires_ticket) {
+      const agg = exhibitionPurchases.find(item =>
+        Number(item.Exhibition_ID) === Number(exhibition.Exhibition_ID)
+      );
+      console.log(`For exhibition ${exhibition.Exhibition_ID} (requires ticket), aggregated data:`, agg);
+      return agg || { Tickets_Bought: 0, Amount_Made: 0 };
+    } else {
+      const agg = exhibitionPurchases.find(item => item.Exhibition_ID === null);
+      console.log(`For exhibition ${exhibition.Exhibition_ID} (regular), aggregated data:`, agg);
+      return agg || { Tickets_Bought: 0, Amount_Made: 0 };
+    }
+  };
+
+  // Total summary is computed by summing aggregated data for each exhibition in the filtered list.
+  const totalTicketsBought = filteredExhibitions.reduce((acc, exhibition) => {
+    const agg = getAggregatedDataForExhibition(exhibition);
+    return acc + Number(agg.Tickets_Bought || 0);
+  }, 0);
+
+  const totalAmountMade = filteredExhibitions.reduce((acc, exhibition) => {
+    const agg = getAggregatedDataForExhibition(exhibition);
+    return acc + Number(agg.Amount_Made || exhibition.Amount_Made || 0);
+  }, 0);
+
+  const totalComplaints = filteredExhibitions.reduce(
+    (acc, exhibition) => acc + Number(exhibition.Num_Complaints || 0),
+    0
+  );
+
+  console.log("Total tickets bought (summary):", totalTicketsBought);
+
   return (
-    <main className="manage-exhibitions-container">
-      <div className="manage-header">
-        <h1 className="page-title">Exhibition Report</h1>
-        <button className="open-modal-button" onClick={() => setIsModalOpen(true)}>
+    <main className="exh-report-container">
+      <div className="exh-report-header">
+        <h1>Exhibition Report</h1>
+        <button
+          className="exh-btn exh-btn-open"
+          onClick={() => setIsModalOpen(true)}
+        >
           Add Exhibition
         </button>
       </div>
 
+      {/* Total Summary Section */}
+      <div className="exh-report-summary">
+        <div>Total Exhibits: {filteredExhibitions.length}</div>
+        <div>Total Tickets Bought: {totalTicketsBought}</div>
+        <div>Total Amount Made: ${parseFloat(totalAmountMade).toLocaleString()}</div>
+        <div>Total Complaints: {totalComplaints}</div>
+      </div>
+
+      {/* Search Filter */}
+      <div className="exh-report-search">
+        <input
+          type="text"
+          placeholder="Search exhibitions..."
+          className="search-input"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
       {/* Exhibitions Table */}
-      <div className="table-container">
-        <table className="data-table">
+      <div className="exh-report-table-container">
+        <table className="exh-report-table">
           <thead>
             <tr>
               <th>ID</th>
-              <th>Name</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Budget ($)</th>
-              <th>Location</th>
-              <th>Tickets Sold</th>
-              <th>Themes</th>
-              <th># Artworks</th>
+              <th>Exhibit Name</th>
+              <th>Tickets Bought</th>
+              <th>Amount Made ($)</th>
+              <th># Of Complaints</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {exhibitions.map((exhibition) => (
-              <tr key={exhibition.Exhibition_ID}>
-                <td>{exhibition.Exhibition_ID}</td>
-                <td>{exhibition.Name}</td>
-                <td>{new Date(exhibition.Start_Date).toLocaleDateString()}</td>
-                <td>{new Date(exhibition.End_Date).toLocaleDateString()}</td>
-                <td>${parseFloat(exhibition.Budget).toLocaleString()}</td>
-                <td>{exhibition.Location}</td>
-                <td>{exhibition.Num_Tickets_Sold}</td>
-                <td>{exhibition.Themes}</td>
-                <td>{exhibition.Num_Of_Artworks}</td>
-              </tr>
-            ))}
+            {filteredExhibitions.map((exhibition) => {
+              const agg = getAggregatedDataForExhibition(exhibition);
+              return (
+                <tr key={exhibition.Exhibition_ID}>
+                  <td>{exhibition.Exhibition_ID}</td>
+                  <td>{exhibition.Name}</td>
+                  <td>{agg.Tickets_Bought}</td>
+                  <td>${parseFloat(agg.Amount_Made || exhibition.Amount_Made).toLocaleString()}</td>
+                  <td>{exhibition.Num_Complaints || 0}</td>
+                  <td>
+                    {exhibition.IsActive ? (
+                      <span className="badge-active">Active</span>
+                    ) : (
+                      <span className="badge-inactive">Inactive</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
 
       {/* Modal for Adding New Exhibition */}
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="exh-modal-overlay">
+          <div className="exh-modal-content">
             <h2>Add New Exhibition</h2>
             <input
               type="text"
@@ -144,70 +214,55 @@ const ExhibitionReport = () => {
               placeholder="Exhibition Name"
               value={newExhibition.Name}
               onChange={handleInputChange}
-              className="input-field"
+              className="exh-input"
             />
             <input
-              type="date"
-              name="Start_Date"
-              placeholder="Start Date"
-              value={newExhibition.Start_Date}
+              type="number"
+              name="Tickets_Bought"
+              placeholder="Tickets Bought"
+              value={newExhibition.Tickets_Bought}
               onChange={handleInputChange}
-              className="input-field"
-            />
-            <input
-              type="date"
-              name="End_Date"
-              placeholder="End Date"
-              value={newExhibition.End_Date}
-              onChange={handleInputChange}
-              className="input-field"
+              className="exh-input"
             />
             <input
               type="number"
               step="0.01"
-              name="Budget"
-              placeholder="Budget"
-              value={newExhibition.Budget}
+              name="Amount_Made"
+              placeholder="Amount Made"
+              value={newExhibition.Amount_Made}
               onChange={handleInputChange}
-              className="input-field"
-            />
-            <input
-              type="text"
-              name="Location"
-              placeholder="Location"
-              value={newExhibition.Location}
-              onChange={handleInputChange}
-              className="input-field"
+              className="exh-input"
             />
             <input
               type="number"
-              name="Num_Tickets_Sold"
-              placeholder="Tickets Sold"
-              value={newExhibition.Num_Tickets_Sold}
+              name="Num_Complaints"
+              placeholder="# Of Complaints"
+              value={newExhibition.Num_Complaints}
               onChange={handleInputChange}
-              className="input-field"
+              className="exh-input"
             />
-            <input
-              type="text"
-              name="Themes"
-              placeholder="Themes (comma separated)"
-              value={newExhibition.Themes}
-              onChange={handleInputChange}
-              className="input-field"
-            />
-            <input
-              type="number"
-              name="Num_Of_Artworks"
-              placeholder="Number of Artworks"
-              value={newExhibition.Num_Of_Artworks}
-              onChange={handleInputChange}
-              className="input-field"
-            />
-            <div className="modal-buttons">
-              <button className="add-button" onClick={addExhibition}>
+            <select
+              name="IsActive"
+              value={newExhibition.IsActive}
+              onChange={(e) =>
+                setNewExhibition({
+                  ...newExhibition,
+                  IsActive: e.target.value === "true"
+                })
+              }
+              className="exh-input"
+            >
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+            <div className="exh-modal-buttons">
+              <button className="exh-btn exh-btn-add" onClick={addExhibition}>
                 Add Exhibition
               </button>
-              <button className="close-modal-button" onClick={() => setIsModalOpen(false)}>
+              <button
+                className="exh-btn exh-btn-close"
+                onClick={() => setIsModalOpen(false)}
+              >
                 Cancel
               </button>
             </div>
@@ -219,3 +274,5 @@ const ExhibitionReport = () => {
 };
 
 export default ExhibitionReport;
+
+
