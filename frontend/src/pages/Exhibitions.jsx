@@ -92,7 +92,7 @@ const Exhibitions = () => {
                 variants={cardVariants}
                 whileHover={{
                   scale: 1.03,
-                  backgroundColor: exhibition.themeColor || "#ffffff",
+                  backgroundColor: "#2a2a2a",
                 }}
                 onHoverStart={() => setHoveredColor(themeColor)}
                 onHoverEnd={() => setHoveredColor(null)}
