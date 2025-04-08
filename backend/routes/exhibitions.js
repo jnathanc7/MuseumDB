@@ -18,18 +18,30 @@ module.exports = (req, res) => {
     }
 
     // GET /manage-exhibition - Retrieve all active exhibitions
-    if (parsedUrl.pathname === "/manage-exhibition" && method === "GET") {
-        // Optionally use authMiddleware(["staff", "admin"]) here
-        db.query("SELECT * FROM exhibitions WHERE is_active = TRUE", (err, results) => {
-            if (err) {
-                res.writeHead(500, { "Content-Type": "application/json" });
-                return res.end(JSON.stringify({ message: "Error retrieving exhibitions", error: err }));
+if (parsedUrl.pathname === "/manage-exhibition" && method === "GET") {
+    // Optionally use authMiddleware(["staff", "admin"]) here
+    db.query("SELECT * FROM exhibitions WHERE is_active = TRUE", (err, results) => {
+        if (err) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({ message: "Error retrieving exhibitions", error: err }));
+        }
+        // Convert the exhibition_image blob to a Base64-encoded string for each result.
+        const updatedResults = results.map(row => {
+            if (row.exhibition_image) {
+                // Ensure that the value is a Buffer (it should be for a blob field)
+                const bufferValue = Buffer.isBuffer(row.exhibition_image)
+                    ? row.exhibition_image
+                    : Buffer.from(row.exhibition_image);
+                row.exhibition_image = `data:image/jpeg;base64,${bufferValue.toString('base64')}`;
             }
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(results));
+            return row;
         });
-        return;
-    }
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(updatedResults));
+    });
+    return;
+}
+
 
     // POST /manage-exhibition - Add a new exhibition
     if (parsedUrl.pathname === "/manage-exhibition" && method === "POST") {
