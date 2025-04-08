@@ -40,6 +40,11 @@ module.exports = (req, res) => {
         req.on("end", () => {
             try {
                 const exhibition = JSON.parse(body);
+                // If image data is provided, decode it from Base64 into a Buffer
+                let imageBuffer = null;
+                if (exhibition.exhibition_image) {
+                    imageBuffer = Buffer.from(exhibition.exhibition_image, 'base64');
+                }
                 const query = `
                   INSERT INTO exhibitions 
                   (Name, Start_Date, End_Date, Budget, Location, Num_Tickets_Sold, Themes, Num_Of_Artworks, description, exhibition_image, requires_ticket, is_active) 
@@ -55,9 +60,9 @@ module.exports = (req, res) => {
                     exhibition.Themes,
                     exhibition.Num_Of_Artworks,
                     exhibition.description,
-                    exhibition.exhibition_image, // Expect binary/blob or Base64 string as appropriate
-                    exhibition.requires_ticket,    // Updated field name
-                    true                           // New exhibitions are active by default
+                    imageBuffer,                       // Insert the binary data (Buffer) here
+                    exhibition.requires_ticket,        // This field comes from the frontend as a boolean or 0/1
+                    true                               // New exhibitions are active by default
                 ];
                 db.query(query, params, (err, result) => {
                     if (err) {
@@ -74,6 +79,7 @@ module.exports = (req, res) => {
         });
         return;
     }
+    
 
     // PUT /manage-exhibition - Update an existing exhibition
     if (parsedUrl.pathname === "/manage-exhibition" && method === "PUT") {

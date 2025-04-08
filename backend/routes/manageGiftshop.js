@@ -79,7 +79,7 @@ module.exports = (req, res) => {
     }
     else if (parsedUrl.pathname === "/manageGiftshop" && method === "PUT") {
         
-        let body = "";
+        let body = ""; 
 
     req.on("data", chunk => {
         body += chunk;
