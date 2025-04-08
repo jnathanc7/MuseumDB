@@ -3,7 +3,7 @@ import "../../styles/reports.css"; // New custom CSS file for report styles
 
 const ExhibitionReport = () => {
   const [exhibitions, setExhibitions] = useState([]);
-  const [tickets, setTickets] = useState([]);
+  const [exhibitionPurchases, setExhibitionPurchases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [newExhibition, setNewExhibition] = useState({
     Name: "",
@@ -16,7 +16,7 @@ const ExhibitionReport = () => {
 
   useEffect(() => {
     fetchExhibitions();
-    fetchTickets();
+    fetchExhibitionPurchases();
   }, []);
 
   const fetchExhibitions = async () => {
@@ -38,17 +38,17 @@ const ExhibitionReport = () => {
     }
   };
 
-  const fetchTickets = async () => {
+  const fetchExhibitionPurchases = async () => {
     try {
-      const response = await fetch("https://museumdb.onrender.com/tickets");
+      const response = await fetch("https://museumdb.onrender.com/exhibition-purchases");
       if (!response.ok) {
-        throw new Error("Failed to fetch tickets");
+        throw new Error("Failed to fetch exhibition purchase data");
       }
       const data = await response.json();
-      console.log("Fetched Tickets Data:", data);
-      setTickets(data);
+      console.log("Fetched Aggregated Exhibition Purchases Data:", data);
+      setExhibitionPurchases(data);
     } catch (error) {
-      console.error("Error fetching tickets:", error);
+      console.error("Error fetching exhibition purchases:", error);
     }
   };
 
@@ -76,10 +76,9 @@ const ExhibitionReport = () => {
       const result = await response.json();
       if (response.ok) {
         alert(result.message || "Exhibition added successfully!");
-        // After adding, refetch exhibitions and tickets
+        // After adding, refetch exhibitions and aggregated purchase data
         fetchExhibitions();
-        fetchTickets();
-        // Reset the form fields
+        fetchExhibitionPurchases();
         setNewExhibition({
           Name: "",
           Tickets_Bought: "",
@@ -101,47 +100,36 @@ const ExhibitionReport = () => {
     exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Compute tickets sold for each exhibition.
-  // If exhibition.requires_ticket is true, count tickets where Exhibition_ID matches.
-  // Otherwise, count tickets where Exhibition_ID is null (or falsy) indicating a regular ticket.
-  const computeTicketsSold = (exhibition) => {
+  // Helper: Get aggregated purchase data for an exhibition.
+  // For exhibitions that require a ticket, look for matching Exhibition_ID.
+  // For regular (non-ticket-required) exhibitions, use the aggregation where Exhibition_ID is null.
+  const getAggregatedDataForExhibition = (exhibition) => {
     if (exhibition.requires_ticket) {
-      const count = tickets.filter(ticket => {
-        // Log each check for debugging.
-        const match = ticket.Purchase_ID !== null && Number(ticket.Exhibition_ID) === Number(exhibition.Exhibition_ID);
-        if(match) {
-          console.log(`Ticket ${ticket.Ticket_ID} counted for exhibition ${exhibition.Exhibition_ID} (requires ticket).`);
-        }
-        return match;
-      }).length;
-      console.log(`Exhibition ${exhibition.Exhibition_ID} requires ticket: computed count = ${count}`);
-      return count;
+      const agg = exhibitionPurchases.find(item =>
+        Number(item.Exhibition_ID) === Number(exhibition.Exhibition_ID)
+      );
+      console.log(`For exhibition ${exhibition.Exhibition_ID} (requires ticket), aggregated data:`, agg);
+      return agg || { Tickets_Bought: 0, Amount_Made: 0 };
     } else {
-      const count = tickets.filter(ticket => {
-        // Consider tickets as regular if Exhibition_ID is null or falsy.
-        const match = ticket.Purchase_ID !== null && (!ticket.Exhibition_ID || Number(ticket.Exhibition_ID) === 0);
-        if(match) {
-          console.log(`Ticket ${ticket.Ticket_ID} counted as regular ticket for exhibition ${exhibition.Exhibition_ID}.`);
-        }
-        return match;
-      }).length;
-      console.log(`Exhibition ${exhibition.Exhibition_ID} does not require ticket: computed global regular count = ${count}`);
-      return count;
+      const agg = exhibitionPurchases.find(item => item.Exhibition_ID === null);
+      console.log(`For exhibition ${exhibition.Exhibition_ID} (regular), aggregated data:`, agg);
+      return agg || { Tickets_Bought: 0, Amount_Made: 0 };
     }
   };
 
-  // Total tickets bought computed as the sum for each exhibition row.
-  const totalTicketsBought = filteredExhibitions.reduce(
-    (acc, curr) => acc + computeTicketsSold(curr),
-    0
-  );
+  // Total summary is computed by summing aggregated data for each exhibition in the filtered list.
+  const totalTicketsBought = filteredExhibitions.reduce((acc, exhibition) => {
+    const agg = getAggregatedDataForExhibition(exhibition);
+    return acc + Number(agg.Tickets_Bought || 0);
+  }, 0);
 
-  const totalAmountMade = filteredExhibitions.reduce(
-    (acc, curr) => acc + Number(curr.Amount_Made),
-    0
-  );
+  const totalAmountMade = filteredExhibitions.reduce((acc, exhibition) => {
+    const agg = getAggregatedDataForExhibition(exhibition);
+    return acc + Number(agg.Amount_Made || exhibition.Amount_Made || 0);
+  }, 0);
+
   const totalComplaints = filteredExhibitions.reduce(
-    (acc, curr) => acc + Number(curr.Num_Complaints || 0),
+    (acc, exhibition) => acc + Number(exhibition.Num_Complaints || 0),
     0
   );
 
@@ -159,7 +147,7 @@ const ExhibitionReport = () => {
         </button>
       </div>
 
-      {/* Total Summary Section at the Top */}
+      {/* Total Summary Section */}
       <div className="exh-report-summary">
         <div>Total Exhibits: {filteredExhibitions.length}</div>
         <div>Total Tickets Bought: {totalTicketsBought}</div>
@@ -192,22 +180,25 @@ const ExhibitionReport = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredExhibitions.map((exhibition) => (
-              <tr key={exhibition.Exhibition_ID}>
-                <td>{exhibition.Exhibition_ID}</td>
-                <td>{exhibition.Name}</td>
-                <td>{computeTicketsSold(exhibition)}</td>
-                <td>${parseFloat(exhibition.Amount_Made).toLocaleString()}</td>
-                <td>{exhibition.Num_Complaints || 0}</td>
-                <td>
-                  {exhibition.IsActive ? (
-                    <span className="badge-active">Active</span>
-                  ) : (
-                    <span className="badge-inactive">Inactive</span>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {filteredExhibitions.map((exhibition) => {
+              const agg = getAggregatedDataForExhibition(exhibition);
+              return (
+                <tr key={exhibition.Exhibition_ID}>
+                  <td>{exhibition.Exhibition_ID}</td>
+                  <td>{exhibition.Name}</td>
+                  <td>{agg.Tickets_Bought}</td>
+                  <td>${parseFloat(agg.Amount_Made || exhibition.Amount_Made).toLocaleString()}</td>
+                  <td>{exhibition.Num_Complaints || 0}</td>
+                  <td>
+                    {exhibition.IsActive ? (
+                      <span className="badge-active">Active</span>
+                    ) : (
+                      <span className="badge-inactive">Inactive</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
