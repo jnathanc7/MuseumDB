@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import "../../styles/reports.css"; // Custom CSS file for report styles
+import "../../styles/reports.css"; // New custom CSS file for report styles
 
 const ExhibitionReport = () => {
   const [exhibitions, setExhibitions] = useState([]);
+  const [tickets, setTickets] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [newExhibition, setNewExhibition] = useState({
     Name: "",
@@ -12,11 +13,10 @@ const ExhibitionReport = () => {
     IsActive: true
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [regularTicketsSold, setRegularTicketsSold] = useState(0);
 
   useEffect(() => {
     fetchExhibitions();
-    fetchRegularTicketsSold();
+    fetchTickets();
   }, []);
 
   const fetchExhibitions = async () => {
@@ -30,7 +30,7 @@ const ExhibitionReport = () => {
       if (Array.isArray(data)) {
         setExhibitions(data);
       } else {
-        console.error("Data is not an array:", data);
+        console.error("Exhibitions data is not an array:", data);
         setExhibitions([]);
       }
     } catch (error) {
@@ -38,19 +38,17 @@ const ExhibitionReport = () => {
     }
   };
 
-  // For regular tickets: fetch tickets not linked to an exhibition that have been purchased.
-  const fetchRegularTicketsSold = async () => {
+  const fetchTickets = async () => {
     try {
       const response = await fetch("https://museumdb.onrender.com/tickets");
       if (!response.ok) {
         throw new Error("Failed to fetch tickets");
       }
       const data = await response.json();
-      // Adjust the filter if needed (for example, check if Purchase_ID is set).
-      const count = data.filter(ticket => ticket.Purchase_ID !== null && !ticket.Exhibition_ID).length;
-      setRegularTicketsSold(count);
+      console.log("Fetched Tickets Data:", data);
+      setTickets(data);
     } catch (error) {
-      console.error("Error fetching regular tickets sold:", error);
+      console.error("Error fetching tickets:", error);
     }
   };
 
@@ -78,7 +76,10 @@ const ExhibitionReport = () => {
       const result = await response.json();
       if (response.ok) {
         alert(result.message || "Exhibition added successfully!");
+        // After adding, refetch exhibitions and tickets
         fetchExhibitions();
+        fetchTickets();
+        // Reset the form fields
         setNewExhibition({
           Name: "",
           Tickets_Bought: "",
@@ -100,17 +101,40 @@ const ExhibitionReport = () => {
     exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Compute the tickets sold for each exhibition row:
-  // - If the exhibition requires a ticket, use its own Tickets_Bought (default to 0 if missing).
-  // - Otherwise, display the global regularTicketsSold value.
+  // Compute tickets sold for each exhibition.
+  // If exhibition.requires_ticket is true, count tickets where Exhibition_ID matches.
+  // Otherwise, count tickets where Exhibition_ID is null (or falsy) indicating a regular ticket.
   const computeTicketsSold = (exhibition) => {
-    return exhibition.requires_ticket ? Number(exhibition.Tickets_Bought || 0) : regularTicketsSold;
+    if (exhibition.requires_ticket) {
+      const count = tickets.filter(ticket => {
+        // Log each check for debugging.
+        const match = ticket.Purchase_ID !== null && Number(ticket.Exhibition_ID) === Number(exhibition.Exhibition_ID);
+        if(match) {
+          console.log(`Ticket ${ticket.Ticket_ID} counted for exhibition ${exhibition.Exhibition_ID} (requires ticket).`);
+        }
+        return match;
+      }).length;
+      console.log(`Exhibition ${exhibition.Exhibition_ID} requires ticket: computed count = ${count}`);
+      return count;
+    } else {
+      const count = tickets.filter(ticket => {
+        // Consider tickets as regular if Exhibition_ID is null or falsy.
+        const match = ticket.Purchase_ID !== null && (!ticket.Exhibition_ID || Number(ticket.Exhibition_ID) === 0);
+        if(match) {
+          console.log(`Ticket ${ticket.Ticket_ID} counted as regular ticket for exhibition ${exhibition.Exhibition_ID}.`);
+        }
+        return match;
+      }).length;
+      console.log(`Exhibition ${exhibition.Exhibition_ID} does not require ticket: computed global regular count = ${count}`);
+      return count;
+    }
   };
 
-  // For summary: add up all ticket-required counts plus (if any exhibition is non-ticket-required, add the global count once)
-  const totalTicketsBought = filteredExhibitions.filter(ex => ex.requires_ticket)
-    .reduce((acc, curr) => acc + Number(curr.Tickets_Bought || 0), 0)
-    + (filteredExhibitions.some(ex => !ex.requires_ticket) ? regularTicketsSold : 0);
+  // Total tickets bought computed as the sum for each exhibition row.
+  const totalTicketsBought = filteredExhibitions.reduce(
+    (acc, curr) => acc + computeTicketsSold(curr),
+    0
+  );
 
   const totalAmountMade = filteredExhibitions.reduce(
     (acc, curr) => acc + Number(curr.Amount_Made),
@@ -120,6 +144,8 @@ const ExhibitionReport = () => {
     (acc, curr) => acc + Number(curr.Num_Complaints || 0),
     0
   );
+
+  console.log("Total tickets bought (summary):", totalTicketsBought);
 
   return (
     <main className="exh-report-container">
