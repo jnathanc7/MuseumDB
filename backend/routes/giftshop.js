@@ -203,6 +203,5 @@ module.exports = async (req, res) => {
         return res.end(JSON.stringify({ message: "Route not found" }));
     }
 
-    
 
 }
