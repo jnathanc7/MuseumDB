@@ -105,17 +105,37 @@ const ExhibitionReport = () => {
   // For regular (non-ticket-required) exhibitions, use the aggregation where Exhibition_ID is null.
   const getAggregatedDataForExhibition = (exhibition) => {
     if (exhibition.requires_ticket) {
-      const agg = exhibitionPurchases.find(item =>
-        Number(item.Exhibition_ID) === Number(exhibition.Exhibition_ID)
+      const agg = exhibitionPurchases.find(
+        (item) => Number(item.Exhibition_ID) === Number(exhibition.Exhibition_ID)
       );
-      console.log(`For exhibition ${exhibition.Exhibition_ID} (requires ticket), aggregated data:`, agg);
-      return agg || { Tickets_Bought: 0, Amount_Made: 0 };
+      if (!agg) {
+        console.log(
+          `For exhibition ${exhibition.Exhibition_ID} (requires ticket), no aggregated record found—using default.`
+        );
+        return { Tickets_Bought: 0, Amount_Made: 0 };
+      }
+      console.log(
+        `For exhibition ${exhibition.Exhibition_ID} (requires ticket), aggregated data:`,
+        agg
+      );
+      return agg;
     } else {
-      const agg = exhibitionPurchases.find(item => item.Exhibition_ID === null);
-      console.log(`For exhibition ${exhibition.Exhibition_ID} (regular), aggregated data:`, agg);
-      return agg || { Tickets_Bought: 0, Amount_Made: 0 };
+      // For regular exhibitions, we expect a single row where Exhibition_ID is null.
+      const agg = exhibitionPurchases.find((item) => item.Exhibition_ID === null);
+      if (!agg) {
+        console.log(
+          `For exhibition ${exhibition.Exhibition_ID} (regular), no aggregated record found—using default.`
+        );
+        return { Tickets_Bought: 0, Amount_Made: 0 };
+      }
+      console.log(
+        `For exhibition ${exhibition.Exhibition_ID} (regular), aggregated data:`,
+        agg
+      );
+      return agg;
     }
   };
+  
 
   // Total summary is computed by summing aggregated data for each exhibition in the filtered list.
   const totalTicketsBought = filteredExhibitions.reduce((acc, exhibition) => {
