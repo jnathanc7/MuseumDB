@@ -6,10 +6,11 @@ const ManageTickets = () => {
   const [tickets, setTickets] = useState([]);
   // State to show/hide add ticket modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  // State for the new ticket form data
+  // State for the new ticket form data; note the optional Exhibition_Title field
   const [newTicket, setNewTicket] = useState({
     Ticket_Type: "",
     Price: "",
+    Exhibition_Title: "", // optional field for linking ticket to an exhibition
   });
 
   // Fetch tickets when the component mounts
@@ -25,7 +26,7 @@ const ManageTickets = () => {
         throw new Error("Failed to fetch tickets");
       }
       const data = await response.json();
-      // Ensure that the response is an array before setting state
+      // Ensure that the response is an array before updating state
       if (Array.isArray(data)) {
         setTickets(data);
       } else {
@@ -46,7 +47,7 @@ const ManageTickets = () => {
     }));
   };
 
-  // Handles submission of the add ticket form
+  // Handles submission of the add ticket form (POST request)
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -65,6 +66,7 @@ const ManageTickets = () => {
         setNewTicket({
           Ticket_Type: "",
           Price: "",
+          Exhibition_Title: "",
         });
         setIsAddModalOpen(false);
       } else {
@@ -92,6 +94,7 @@ const ManageTickets = () => {
             <th>ID</th>
             <th>Ticket Type</th>
             <th>Price ($)</th>
+            <th>Exhibition</th>
           </tr>
         </thead>
         <tbody>
@@ -100,6 +103,7 @@ const ManageTickets = () => {
               <td>{ticket.Ticket_ID}</td>
               <td>{ticket.Ticket_Type}</td>
               <td>${parseFloat(ticket.Price).toFixed(2)}</td>
+              <td>{ticket.Exhibition_Title ? ticket.Exhibition_Title : "N/A"}</td>
             </tr>
           ))}
         </tbody>
@@ -125,7 +129,7 @@ const ManageTickets = () => {
         >
           <div
             className="modal-content"
-            onClick={(e) => e.stopPropagation()} // Prevent closing modal when clicking inside content
+            onClick={(e) => e.stopPropagation()} // Prevent modal from closing if the content is clicked
             style={{
               backgroundColor: "#2c2a2a",
               padding: "20px",
@@ -153,6 +157,16 @@ const ManageTickets = () => {
                 name="Price"
                 placeholder="Price"
                 value={newTicket.Price}
+                onChange={(e) => handleInputChange(e, setNewTicket)}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+
+              <label>Exhibition Title (optional):</label>
+              <input
+                type="text"
+                name="Exhibition_Title"
+                placeholder="Exhibition Title"
+                value={newTicket.Exhibition_Title}
                 onChange={(e) => handleInputChange(e, setNewTicket)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
