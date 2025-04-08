@@ -360,7 +360,8 @@ const ManageExhibitions = () => {
                     style={{ maxWidth: "100%", maxHeight: "200px" }}
                   />
                 ) : (
-                  <p>Drop image here or click to select</p>
+                  <p style={{ color: "black" }}>Drop image here or click to select</p>
+
                 )}
                 <input
                   type="file"
