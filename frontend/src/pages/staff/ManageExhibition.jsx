@@ -73,7 +73,7 @@ const ManageExhibitions = () => {
           Num_Of_Artworks: "",
           description: "",
           requires_ticket: false,
-          exhibition_image_url: ""
+          exhibition_image: ""
         });
         setIsModalOpen(false);
       } else {
@@ -239,7 +239,7 @@ const ManageExhibitions = () => {
               <label>Exhibition Image:</label>
               <input
                 type="text"
-                name="exhibition_image_url"
+                name="exhibition_image"
                 placeholder="https://example.com/image.jpg"
                 value={newExhibition.exhibition_image_url}
                 onChange={handleInputChange}

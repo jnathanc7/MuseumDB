@@ -1,4 +1,5 @@
-SELECT * FROM exhibitions;
+SELECT * FROM products;
+
 
 
 
