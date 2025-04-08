@@ -17,6 +17,11 @@ const Exhibitions = () => {
     fetchExhibitions();
   }, []);
 
+  useEffect(() => {
+    // Log the exhibition data whenever it's updated.
+    console.log("Fetched exhibitions:", exhibitions);
+  }, [exhibitions]);
+  
   const fetchExhibitions = async () => {
     try {
       // Fetch data from your backend endpoint.
