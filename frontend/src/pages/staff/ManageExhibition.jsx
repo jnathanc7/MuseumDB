@@ -42,12 +42,43 @@ const ManageExhibitions = () => {
     }
   };
 
+  // Generic input change handler: stateSetter should be either setNewExhibition or setEditExhibition.
   const handleInputChange = (e, stateSetter) => {
     const { name, value, type, checked } = e.target;
     stateSetter(prev => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value
     }));
+  };
+
+  // File drop handler
+  const handleDrop = (e, stateSetter) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      convertFileToBase64(file, stateSetter);
+    }
+  };
+
+  // File input change handler (when user selects a file)
+  const handleFileChange = (e, stateSetter) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      convertFileToBase64(file, stateSetter);
+    }
+  };
+
+  // Convert file to Base64 data URL and update the given stateSetter's exhibition_image field
+  const convertFileToBase64 = (file, stateSetter) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      // reader.result is a full data URL (e.g., "data:image/jpeg;base64,...")
+      stateSetter(prev => ({
+        ...prev,
+        exhibition_image: reader.result
+      }));
+    };
+    reader.readAsDataURL(file);
   };
 
   // Add Exhibition Submission (POST)
@@ -112,15 +143,13 @@ const ManageExhibitions = () => {
     }
   };
 
-  // Delete Exhibition (assuming DELETE method is supported)
+  // Delete Exhibition (DELETE)
   const handleDeleteExhibition = async (exhibitionId) => {
     if (!window.confirm("Are you sure you want to delete this exhibition?")) return;
     try {
       const response = await fetch("https://museumdb.onrender.com/manage-exhibition", {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Exhibition_ID: exhibitionId })
       });
       const result = await response.json();
@@ -139,21 +168,6 @@ const ManageExhibitions = () => {
   const handleEdit = (exhibition) => {
     setEditExhibition({ ...exhibition });
     setIsEditModalOpen(true);
-  };
-
-  // Framer Motion variants (same as before)
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 100, damping: 20 }
-    }
   };
 
   return (
@@ -192,17 +206,17 @@ const ManageExhibitions = () => {
               <td>{exhibition.Themes}</td>
               <td>{exhibition.Num_Of_Artworks}</td>
               <td>
-                <button 
-                  className="add-btn" 
-                  onClick={() => handleEdit(exhibition)}
+                <button
+                  className="add-btn"
                   style={{ marginRight: "5px" }}
+                  onClick={() => handleEdit(exhibition)}
                 >
                   Edit
                 </button>
-                <button 
-                  className="add-btn" 
+                <button
+                  className="add-btn"
+                  style={{ backgroundColor: "#dc3545" }}
                   onClick={() => handleDeleteExhibition(exhibition.Exhibition_ID)}
-                  style={{ backgroundColor: "#dc3545" }} // Change color for delete
                 >
                   Delete
                 </button>
@@ -216,6 +230,8 @@ const ManageExhibitions = () => {
       {isAddModalOpen && (
         <div
           className="modal-overlay"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => handleDrop(e, setNewExhibition)}
           style={{
             position: "fixed",
             top: 0,
@@ -321,16 +337,43 @@ const ManageExhibitions = () => {
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               ></textarea>
 
-              <label>Exhibition Image (Base64):</label>
-              <input
-                type="text"
-                name="exhibition_image"
-                placeholder="Paste Base64 encoded image here"
-                value={newExhibition.exhibition_image}
-                onChange={(e) => handleInputChange(e, setNewProduct)} // fix typo: should be setNewExhibition
-                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
-              />
-
+              <label>Exhibition Image:</label>
+              <div 
+                className="drop-zone"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => handleDrop(e, setNewExhibition)}
+                style={{
+                  border: "2px dashed #555",
+                  padding: "10px",
+                  textAlign: "center",
+                  marginBottom: "10px"
+                }}
+              >
+                {newExhibition.exhibition_image ? (
+                  <img
+                    src={newExhibition.exhibition_image}
+                    alt="Preview"
+                    style={{ maxWidth: "100%", maxHeight: "200px" }}
+                  />
+                ) : (
+                  <p>Drop image here or click to select</p>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, setNewExhibition)}
+                  style={{ display: "none" }}
+                  id="fileInput"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => document.getElementById("fileInput").click()}
+                style={{ marginBottom: "10px", padding: "10px", width: "100%", cursor: "pointer" }}
+              >
+                Select Image
+              </button>
+              
               <label style={{ display: "block", marginBottom: "10px" }}>
                 <span>Ticket Required?</span>
                 <input
@@ -468,7 +511,7 @@ const ManageExhibitions = () => {
               <input
                 type="text"
                 name="exhibition_image"
-                placeholder="Paste Base64 encoded image here"
+                placeholder="Paste Base64 encoded image here or use file upload"
                 value={editExhibition.exhibition_image}
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
@@ -489,7 +532,11 @@ const ManageExhibitions = () => {
                 <button type="submit" className="add-btn">
                   Save Changes
                 </button>
-                <button type="button" className="add-btn" onClick={() => { setIsEditModalOpen(false); setEditExhibition(null); }}>
+                <button
+                  type="button"
+                  className="add-btn"
+                  onClick={() => { setIsEditModalOpen(false); setEditExhibition(null); }}
+                >
                   Cancel
                 </button>
               </div>
@@ -502,4 +549,5 @@ const ManageExhibitions = () => {
 };
 
 export default ManageExhibitions;
+
 
