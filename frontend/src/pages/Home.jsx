@@ -79,8 +79,8 @@ const Home = () => {
             <li><AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink></li>
             <li><AnimatedLink to="/tickets">Tickets</AnimatedLink></li>
             <li><AnimatedLink to="/memberships">Memberships</AnimatedLink></li>
-            <li><AnimatedLink to="/giftshop">Gift Shop</AnimatedLink></li>
-            <li><AnimatedLink to="/contact">Contact</AnimatedLink></li>
+            <li><AnimatedLink to="/giftshop">Shop</AnimatedLink></li>
+            <li><AnimatedLink to="/contact">Review</AnimatedLink></li>
 
             {/* Admin/Manager/Curator Link */}
             {isLoggedIn && (userRole === "admin" || userRole === "staff") && (
