@@ -46,60 +46,90 @@ module.exports = (req, res) => {
         return;
     }
 
-    // POST /manage-exhibition - Add a new exhibition
-    if (parsedUrl.pathname === "/manage-exhibition" && method === "POST") {
-        let body = "";
-        req.on("data", chunk => { body += chunk; });
-        req.on("end", () => {
-            try {
-                const exhibition = JSON.parse(body);
+    // POST /manage-exhibition - Add a new exhibition (with auto-ticket creation if required)
+if (parsedUrl.pathname === "/manage-exhibition" && method === "POST") {
+    let body = "";
+    req.on("data", chunk => { body += chunk; });
+    req.on("end", () => {
+        try {
+            const exhibition = JSON.parse(body);
 
-                // Convert the Base64 image data (if provided) to a Buffer.
-                const imageBuffer = exhibition.exhibition_image_data
-                    ? Buffer.from(exhibition.exhibition_image_data, "base64")
-                    : null;
+            // Convert the Base64 image data (if provided) to a Buffer.
+            const imageBuffer = exhibition.exhibition_image_data
+                ? Buffer.from(exhibition.exhibition_image_data, "base64")
+                : null;
 
-                const sql = `
-                  INSERT INTO exhibitions 
-                  (Name, Start_Date, End_Date, Budget, Location, Num_Tickets_Sold, Themes, Num_Of_Artworks, description, exhibition_image, requires_ticket, is_active) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-                `;
-                const values = [
-                    exhibition.Name,
-                    exhibition.Start_Date,
-                    exhibition.End_Date,
-                    exhibition.Budget,
-                    exhibition.Location,
-                    exhibition.Num_Tickets_Sold || 0,
-                    exhibition.Themes,
-                    exhibition.Num_Of_Artworks,
-                    exhibition.description,
-                    imageBuffer,  // Insert the binary (Buffer) data
-                    exhibition.requires_ticket,
-                    true  // New exhibitions are active by default
-                ];
-                // Check for required fields, if desired.
-                if (values.some(v => v === undefined)) {
-                    console.error("Missing exhibition field(s):", values);
-                    res.writeHead(400, { "Content-Type": "application/json" });
-                    return res.end(JSON.stringify({ message: "Missing required exhibition fields", values }));
-                }
-                db.query(sql, values, (err, result) => {
-                    if (err) {
-                        console.error("MySQL Insert Error:", err);
-                        res.writeHead(500, { "Content-Type": "application/json" });
-                        return res.end(JSON.stringify({ message: "Error adding exhibition", error: err }));
-                    }
-                    res.writeHead(200, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ message: "Exhibition added successfully", Exhibition_ID: result.insertId }));
-                });
-            } catch (err) {
+            const sql = `
+              INSERT INTO exhibitions 
+              (Name, Start_Date, End_Date, Budget, Location, Num_Tickets_Sold, Themes, Num_Of_Artworks, description, exhibition_image, requires_ticket, is_active) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            `;
+            const values = [
+                exhibition.Name,
+                exhibition.Start_Date,
+                exhibition.End_Date,
+                exhibition.Budget,
+                exhibition.Location,
+                exhibition.Num_Tickets_Sold || 0,
+                exhibition.Themes,
+                exhibition.Num_Of_Artworks,
+                exhibition.description,
+                imageBuffer,  // Insert the binary data (Buffer) for the image
+                exhibition.requires_ticket,
+                true  // New exhibitions are active by default
+            ];
+            // Check for required fields, if desired.
+            if (values.some(v => v === undefined)) {
+                console.error("Missing exhibition field(s):", values);
                 res.writeHead(400, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ message: "Invalid JSON", error: err.message }));
+                return res.end(JSON.stringify({ message: "Missing required exhibition fields", values }));
             }
-        });
-        return;
-    }
+            db.query(sql, values, (err, result) => {
+                if (err) {
+                    console.error("MySQL Insert Error:", err);
+                    res.writeHead(500, { "Content-Type": "application/json" });
+                    return res.end(JSON.stringify({ message: "Error adding exhibition", error: err }));
+                }
+                const exhibition_ID = result.insertId;
+
+                // If the exhibition requires a ticket, automatically create a corresponding ticket
+                if (exhibition.requires_ticket) {
+                    const ticketSql = `
+                      INSERT INTO tickets 
+                      (Ticket_Type, Price, Status, Visit_Date, Exhibition_ID) 
+                      VALUES (?, ?, 'Available', ?, ?);
+                    `;
+                    // Optionally, you could set Visit_Date to a default value (e.g., exhibition.Start_Date)
+                    const ticketValues = [
+                        exhibition.Name,   // Ticket_Type is set to the exhibition's title
+                        30,                // Fixed ticket price
+                        exhibition.Start_Date, // Using the exhibition's Start_Date for Visit_Date (or customize as needed)
+                        exhibition_ID      // Link ticket to the newly created exhibition
+                    ];
+                    db.query(ticketSql, ticketValues, (ticketErr) => {
+                        if (ticketErr) {
+                            // Log the error if ticket creation fails.
+                            console.error("Error creating automatic ticket:", ticketErr);
+                            // Decide whether to notify the client or simply log the error.
+                        }
+                        res.writeHead(200, { "Content-Type": "application/json" });
+                        return res.end(JSON.stringify({ 
+                            message: "Exhibition added successfully with ticket creation", 
+                            Exhibition_ID: exhibition_ID 
+                        }));
+                    });
+                } else {
+                    res.writeHead(200, { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ message: "Exhibition added successfully", Exhibition_ID: exhibition_ID }));
+                }
+            });
+        } catch (err) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ message: "Invalid JSON", error: err.message }));
+        }
+    });
+    return;
+}
 
     // PUT /manage-exhibition - Update an existing exhibition
     if (parsedUrl.pathname === "/manage-exhibition" && method === "PUT") {
