@@ -26,30 +26,40 @@ if (parsedUrl.pathname === "/manage-exhibition" && method === "GET") {
             return res.end(JSON.stringify({ message: "Error retrieving exhibitions", error: err }));
         }
         
-        // For each result, convert the hex string image data to a Buffer then to Base64.
+        // Process each row to convert the exhibition_image, if needed.
         const updatedResults = results.map(row => {
             if (row.exhibition_image) {
-                // Assuming the stored image is a hexadecimal string
-                try {
-                    const bufferValue = Buffer.from(row.exhibition_image, 'hex');
-                    // Convert to a Base64-encoded string and prepend the data URL prefix.
-                    row.exhibition_image = `data:image/jpeg;base64,${bufferValue.toString('base64')}`;
-                } catch (conversionErr) {
-                    console.error("Error converting image data", conversionErr);
-                    row.exhibition_image = null;
+                console.log("Raw exhibition_image:", row.exhibition_image);
+                // If the image already appears to be a URL or data URL, don't convert.
+                if (
+                  row.exhibition_image.startsWith("http") ||
+                  row.exhibition_image.startsWith("data:image")
+                ) {
+                    // It already is a proper URL or data URL.
+                    console.log("Image already in URL format:", row.exhibition_image);
+                } else {
+                    try {
+                        // Assume the stored string is hexadecimal and convert.
+                        const bufferValue = Buffer.from(row.exhibition_image, 'hex');
+                        const base64Image = bufferValue.toString('base64');
+                        const dataUrl = `data:image/jpeg;base64,${base64Image}`;
+                        console.log("Converted image (Base64):", dataUrl);
+                        row.exhibition_image = dataUrl;
+                    } catch (conversionErr) {
+                        console.error("Error converting image data", conversionErr);
+                        row.exhibition_image = null;
+                    }
                 }
             }
             return row;
         });
-
-        // Log the updated results for debugging
-        console.log("Exhibitions with converted image data:", updatedResults);
-
+        
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(updatedResults));
     });
     return;
 }
+
 
 
 
