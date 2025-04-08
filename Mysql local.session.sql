@@ -1,4 +1,4 @@
-ALTER TABLE exhibitions AUTO_INCREMENT = 2;
+SELECT * FROM exhibitions;
 
 
 

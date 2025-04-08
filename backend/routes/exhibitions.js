@@ -25,22 +25,32 @@ if (parsedUrl.pathname === "/manage-exhibition" && method === "GET") {
             res.writeHead(500, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ message: "Error retrieving exhibitions", error: err }));
         }
-        // Convert the exhibition_image blob to a Base64-encoded string for each result.
+        
+        // For each result, convert the hex string image data to a Buffer then to Base64.
         const updatedResults = results.map(row => {
             if (row.exhibition_image) {
-                // Ensure that the value is a Buffer (it should be for a blob field)
-                const bufferValue = Buffer.isBuffer(row.exhibition_image)
-                    ? row.exhibition_image
-                    : Buffer.from(row.exhibition_image);
-                row.exhibition_image = `data:image/jpeg;base64,${bufferValue.toString('base64')}`;
+                // Assuming the stored image is a hexadecimal string
+                try {
+                    const bufferValue = Buffer.from(row.exhibition_image, 'hex');
+                    // Convert to a Base64-encoded string and prepend the data URL prefix.
+                    row.exhibition_image = `data:image/jpeg;base64,${bufferValue.toString('base64')}`;
+                } catch (conversionErr) {
+                    console.error("Error converting image data", conversionErr);
+                    row.exhibition_image = null;
+                }
             }
             return row;
         });
+
+        // Log the updated results for debugging
+        console.log("Exhibitions with converted image data:", updatedResults);
+
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(updatedResults));
     });
     return;
 }
+
 
 
     // POST /manage-exhibition - Add a new exhibition
