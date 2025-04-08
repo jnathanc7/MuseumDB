@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "../../styles/reports.css"; // New custom CSS file for report styles
+import "../../styles/reports.css"; // Custom CSS file for report styles
 
 const ExhibitionReport = () => {
   const [exhibitions, setExhibitions] = useState([]);
@@ -12,9 +12,12 @@ const ExhibitionReport = () => {
     IsActive: true
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // New state for holding regular ticket count (tickets without an exhibition)
+  const [regularTicketsSold, setRegularTicketsSold] = useState(0);
 
   useEffect(() => {
     fetchExhibitions();
+    fetchRegularTicketsSold();
   }, []);
 
   const fetchExhibitions = async () => {
@@ -34,6 +37,22 @@ const ExhibitionReport = () => {
       }
     } catch (error) {
       console.error("Error fetching exhibitions:", error);
+    }
+  };
+
+  // Fetch regular tickets (those not linked to an exhibition) count from the tickets endpoint.
+  const fetchRegularTicketsSold = async () => {
+    try {
+      const response = await fetch("https://museumdb.onrender.com/tickets");
+      if (!response.ok) {
+        throw new Error("Failed to fetch tickets");
+      }
+      const data = await response.json();
+      // Count tickets that have been purchased (Purchase_ID not null) and have no Exhibition_ID.
+      const count = data.filter(ticket => ticket.Purchase_ID !== null && !ticket.Exhibition_ID).length;
+      setRegularTicketsSold(count);
+    } catch (error) {
+      console.error("Error fetching regular tickets sold:", error);
     }
   };
 
@@ -84,12 +103,14 @@ const ExhibitionReport = () => {
     exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Aggregate calculations for the summary section
-  const totalExhibits = filteredExhibitions.length;
+  // For each exhibition, use its own Tickets_Bought if it requires a ticket;
+  // otherwise, use the regularTicketsSold count.
   const totalTicketsBought = filteredExhibitions.reduce(
-    (acc, curr) => acc + Number(curr.Tickets_Bought),
+    (acc, curr) =>
+      acc + (curr.requires_ticket ? Number(curr.Tickets_Bought) : regularTicketsSold),
     0
   );
+
   const totalAmountMade = filteredExhibitions.reduce(
     (acc, curr) => acc + Number(curr.Amount_Made),
     0
@@ -113,9 +134,14 @@ const ExhibitionReport = () => {
 
       {/* Total Summary Section at the Top */}
       <div className="exh-report-summary">
-        <div>Total Exhibits: {totalExhibits}</div>
-        <div>Total Tickets Bought: {totalTicketsBought}</div>
-        <div>Total Amount Made: ${parseFloat(totalAmountMade).toLocaleString()}</div>
+        <div>Total Exhibits: {filteredExhibitions.length}</div>
+        <div>
+          Total Tickets Bought:{" "}
+          {totalTicketsBought}
+        </div>
+        <div>
+          Total Amount Made: ${parseFloat(totalAmountMade).toLocaleString()}
+        </div>
         <div>Total Complaints: {totalComplaints}</div>
       </div>
 
@@ -148,7 +174,11 @@ const ExhibitionReport = () => {
               <tr key={exhibition.Exhibition_ID}>
                 <td>{exhibition.Exhibition_ID}</td>
                 <td>{exhibition.Name}</td>
-                <td>{exhibition.Tickets_Bought}</td>
+                <td>
+                  {exhibition.requires_ticket
+                    ? exhibition.Tickets_Bought
+                    : regularTicketsSold}
+                </td>
                 <td>${parseFloat(exhibition.Amount_Made).toLocaleString()}</td>
                 <td>{exhibition.Num_Complaints}</td>
                 <td>
@@ -235,3 +265,4 @@ const ExhibitionReport = () => {
 };
 
 export default ExhibitionReport;
+
