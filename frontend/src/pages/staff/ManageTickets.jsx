@@ -42,7 +42,7 @@ const ManageTickets = () => {
   // Fetch exhibitions from the backend
   const fetchExhibitions = async () => {
     try {
-      const response = await fetch("https://museumdb.onrender.com/exhibitions");
+      const response = await fetch("https://museumdb.onrender.com/manage-exhibition");
       if (!response.ok) {
         throw new Error("Failed to fetch exhibitions");
       }
