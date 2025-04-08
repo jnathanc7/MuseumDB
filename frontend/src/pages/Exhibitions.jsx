@@ -1,129 +1,125 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import '../styles/exhibition.css';
-import image1 from '/src/assets/image1.jpg';
-import image2 from '/src/assets/image2.jpg';
-import image3 from '/src/assets/image3.jpg';
-import image4 from '/src/assets/image4.jpg';
+import "../styles/exhibition.css";
 
-const exhibitionsData = [
-  {
-    id: 1,
-    image: image1,
-    title: 'Exhibition Title 1',
-    date: '2025-01-01',
-    description: 'Brief description of exhibition 1',
-    themeColor: "#b3000c" // Red
-  },
-  {
-    id: 2,
-    image: image2,
-    title: 'Exhibition Title 2',
-    date: '2025-02-01',
-    description: 'Brief description of exhibition 2',
-    themeColor: "#007bff" // Blue
-  },
-  {
-    id: 3,
-    image: image3,
-    title: 'Exhibition Title 3',
-    date: '2025-03-01',
-    description: 'Brief description of exhibition 3',
-    themeColor: "#28a745" // Green
-  },
-  {
-    id: 4,
-    image: image4,
-    title: 'Exhibition Title 4',
-    date: '2025-04-01',
-    description: 'Brief description of exhibition 4',
-    themeColor: "#ffc107" // Yellow
-  },
-];
-
-// Container variants for staggered entrance
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.2 }
-  }
-};
-
-// Card variants for entrance (fade in + slide upward with spring)
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100, damping: 20 }
-  }
+// Helper function to truncate a string if it exceeds maxLength.
+const truncateText = (str, maxLength) => {
+  if (!str) return "";
+  return str.length > maxLength ? str.substring(0, maxLength - 3) + "..." : str;
 };
 
 const Exhibitions = () => {
-  // This state holds the theme color of the card currently hovered.
+  const [exhibitions, setExhibitions] = useState([]);
   const [hoveredColor, setHoveredColor] = useState(null);
+
+  useEffect(() => {
+    fetchExhibitions();
+  }, []);
+
+  const fetchExhibitions = async () => {
+    try {
+      // Fetch data from your backend endpoint.
+      const response = await fetch(
+        "https://museumdb.onrender.com/manage-exhibition"
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch exhibitions");
+      }
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setExhibitions(data);
+      } else {
+        console.error("Data is not an array:", data);
+        setExhibitions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching exhibitions:", error);
+    }
+  };
+
+  // Framer Motion container variants for staggered entrance.
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.2 },
+    },
+  };
+
+  // Framer Motion card variants for fade in + slide upward.
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 100, damping: 20 },
+    },
+  };
 
   return (
     <div className="exhibitions-page">
-      {/* Background overlay with gradient dots whose dot color is animated */}
-      <motion.div 
+      {/* Background overlay with animated dot color */}
+      <motion.div
         className="background-overlay"
         animate={{
           backgroundColor: "rgba(0,0,0,0)", // remains transparent
-          "--dot-color": hoveredColor || "rgba(255,255,255,0.1)"
+          "--dot-color": hoveredColor || "rgba(255,255,255,0.1)",
         }}
         transition={{ duration: 0.5 }}
       />
       <div className="exhibitions-container">
         {/* Header Section */}
         <div className="exhibitions-header">
-          <h1>WELCOME TO EXHIBITIONS</h1>
-          <p>Explore our special exhibitions and discover pivotal moments.</p>
+          <h1>Welcome to Exhibitions!</h1>
+          <p>Explore our special exhibitions and discover pivotal moments in history!</p>
         </div>
-
         {/* Exhibitions Grid with staggered entrance */}
-        <motion.div 
+        <motion.div
           className="exhibitions-grid"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {exhibitionsData.map((exhibition) => (
-            <motion.div
-              key={exhibition.id}
-              className="exhibition-card"
-              variants={cardVariants}
-              whileHover={{ 
-                scale: 1.03,
-                backgroundColor: exhibition.themeColor 
-              }}
-              onHoverStart={() => setHoveredColor(exhibition.themeColor)}
-              onHoverEnd={() => setHoveredColor(null)}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-            >
-              <Link to={`/artworks`} className="card-link">
-                <img
-                  src={exhibition.image}
-                  alt={exhibition.title}
-                  loading="lazy"
-                  width="600"
-                  height="400"
-                  srcSet={`
-                    ${exhibition.image} 600w,
-                    ${exhibition.image} 300w
-                  `}
-                  sizes="(max-width: 600px) 300px, 600px"
-                />
-                <div className="card-content">
-                  <h2>{exhibition.title}</h2>
-                  <p>{exhibition.description}</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+          {exhibitions.map((exhibition, index) => {
+            const dotColors = ["#e74c3c", "#3498db", "#2ecc71", "#f39c12"]; // red, blue, green, orange
+            const themeColor = dotColors[index % dotColors.length]; // cycle through colors
+
+            return (
+              <motion.div
+                key={exhibition.Exhibition_ID}
+                className="exhibition-card"
+                variants={cardVariants}
+                whileHover={{
+                  scale: 1.03,
+                  backgroundColor: "#2a2a2a",
+                }}
+                onHoverStart={() => setHoveredColor(themeColor)}
+                onHoverEnd={() => setHoveredColor(null)}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+              >
+                <Link to={`/artworks`} className="card-link">
+                  <img
+                    src={exhibition.exhibition_image}
+                    alt={exhibition.Name}
+                    loading="lazy"
+                    width="600"
+                    height="400"
+                    srcSet={`
+            ${exhibition.exhibition_image} 600w,
+            ${exhibition.exhibition_image} 300w
+          `}
+                    sizes="(max-width: 600px) 300px, 600px"
+                  />
+                  <div className="card-content">
+                    <h2>{truncateText(exhibition.Name, 30)}</h2>
+                    <p>{truncateText(exhibition.description, 100)}</p>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </div>

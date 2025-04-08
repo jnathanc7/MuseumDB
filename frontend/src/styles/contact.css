@@ -73,7 +73,7 @@
 
   
 .main-layout {
-  background-color: #ed4040;
+  background-color: #1e1b1b;
     min-height: 100vh;
     padding: 12rem 1rem 2rem; /* Top padding increased for fixed header */
     display: flex;

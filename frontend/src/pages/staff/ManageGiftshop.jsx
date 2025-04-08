@@ -52,7 +52,7 @@ const ManageGiftshop = () => {
           };
           console.log("Submitting Product:", productData);
       
-          try {
+          try { 
             const response = await fetch("https://museumdb.onrender.com/manageGiftshop", {
               method: "POST",
               headers: {

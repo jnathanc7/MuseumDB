@@ -1,3 +1,7 @@
-SELECT * FROM tickets
+SELECT * FROM tickets;
+
+
+
+
 
 

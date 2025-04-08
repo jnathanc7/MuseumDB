@@ -109,6 +109,7 @@ useEffect(() => {
         <AnimatedLink to="/tickets">Tickets</AnimatedLink>
         <AnimatedLink to="/exhibitions">Exhibitions</AnimatedLink>
         <AnimatedLink to="/memberships">Memberships</AnimatedLink>
+        <AnimatedLink to="/contact">Review</AnimatedLink>
 
         {/* Login tab - visible only if not logged in */}
         {!isLoggedIn && (
