@@ -68,6 +68,11 @@ const server = http.createServer((req, res) => {
         // });
         return;
     }
+    else if (parsedUrl.pathname.startsWith("/exhibition-purchases")) {
+        ticketsRoutes(req, res);
+        return;
+    }
+    
     else if (parsedUrl.pathname.startsWith("/exhibition-report")) {
         // authMiddleware(["staff", "admin"])(req, res, () => {
             exhibitionReportRoutes(req, res);
