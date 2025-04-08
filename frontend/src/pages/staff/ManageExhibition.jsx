@@ -15,7 +15,7 @@ const ManageExhibitions = () => {
     Num_Of_Artworks: "",
     description: "",
     requires_ticket: false,
-    exhibition_image_url: ""
+    exhibition_image: ""
   });
 
   useEffect(() => {
@@ -241,7 +241,7 @@ const ManageExhibitions = () => {
                 type="text"
                 name="exhibition_image"
                 placeholder="https://example.com/image.jpg"
-                value={newExhibition.exhibition_image_url}
+                value={newExhibition.exhibition_image}
                 onChange={handleInputChange}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
