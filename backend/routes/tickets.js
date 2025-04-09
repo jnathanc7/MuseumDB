@@ -18,20 +18,17 @@ module.exports = (req, res) => {
     return;
   }
 
-  // 🔹 GET /tickets - Fetch all available tickets
+  // 🔹 GET /tickets - Fetch all tickets (do not filter by Status)
   if (method === "GET" && parsedUrl.pathname === "/tickets") {
-    // Optionally filter to only return available tickets:
-    const query = "SELECT * FROM tickets WHERE Status = 'Available'";
-    db.query(query, (err, results) => {
+    const query = "SELECT * FROM tickets";
+    db.query(query, (err, results) => { 
       if (err) {
         console.error("Database Error:", err);
         res.writeHead(500, { "Content-Type": "application/json" });
-        return res.end(
-          JSON.stringify({ error: "Error fetching tickets", details: err.message })
-        );
+        return res.end(JSON.stringify({ error: "Error fetching tickets", details: err.message }));
       }
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(results));
+      return res.end(JSON.stringify(results));
     });
     return;
   }
@@ -45,30 +42,24 @@ module.exports = (req, res) => {
         return res.end(JSON.stringify({ error: "Error fetching purchases" }));
       }
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(results));
+      return res.end(JSON.stringify(results));
     });
     return;
   }
 
   // 🔹 Handle ticket purchase (protected route)
   if (method === "POST" && parsedUrl.pathname === "/purchase") {
-    // Use auth middleware
     authMiddleware([])(req, res, () => {
       let body = "";
-      req.on("data", (chunk) => {
-        body += chunk;
-      });
-
+      req.on("data", (chunk) => { body += chunk; });
       req.on("end", () => {
         try {
           const { payment_Method, tickets } = JSON.parse(body);
-          const customer_ID = req.user.id; // ✅ Extracted from JWT
-
+          const customer_ID = req.user.id; // Extracted from JWT
           if (!Array.isArray(tickets) || tickets.length === 0) {
             res.writeHead(400, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ error: "Invalid request data" }));
           }
-
           let totalAmount = 0;
           const ticketQueries = tickets.map(({ ticket_ID, quantity }) => {
             return new Promise((resolve, reject) => {
@@ -86,7 +77,6 @@ module.exports = (req, res) => {
               );
             });
           });
-
           Promise.all(ticketQueries)
             .then(() => {
               db.query(
@@ -98,9 +88,7 @@ module.exports = (req, res) => {
                     res.writeHead(500, { "Content-Type": "application/json" });
                     return res.end(JSON.stringify({ error: "Error recording purchase" }));
                   }
-
                   const purchase_ID = purchaseResult.insertId;
-
                   const purchaseTicketQueries = tickets.map(({ ticket_ID, quantity }) => {
                     return new Promise((resolve, reject) => {
                       db.query(
@@ -113,14 +101,10 @@ module.exports = (req, res) => {
                       );
                     });
                   });
-
                   Promise.all(purchaseTicketQueries)
                     .then(() => {
                       res.writeHead(200, { "Content-Type": "application/json" });
-                      res.end(JSON.stringify({
-                        message: "Purchase successful",
-                        totalAmount,
-                      }));
+                      res.end(JSON.stringify({ message: "Purchase successful", totalAmount }));
                     })
                     .catch((err) => {
                       console.error("Error recording ticket purchase:", err);
@@ -148,9 +132,7 @@ module.exports = (req, res) => {
   // 🔹 POST /tickets - Create a new ticket (regular, no exhibition)
   if (method === "POST" && parsedUrl.pathname === "/tickets") {
     let body = "";
-    req.on("data", (chunk) => {
-      body += chunk;
-    });
+    req.on("data", (chunk) => { body += chunk; });
     req.on("end", () => {
       try {
         const ticket = JSON.parse(body);
@@ -158,9 +140,6 @@ module.exports = (req, res) => {
           res.writeHead(400, { "Content-Type": "application/json" });
           return res.end(JSON.stringify({ error: "Ticket_Type and Price are required" }));
         }
-        // Insert a new ticket:
-        // Set Status to 'Available', Visit_Date to the current date (CURDATE()), 
-        // and set Exhibition_ID and Purchase_ID to NULL.
         const sql = `
           INSERT INTO tickets (Ticket_Type, Price, Status, Visit_Date, Exhibition_ID, Purchase_ID)
           VALUES (?, ?, 'Available', CURDATE(), NULL, NULL)
@@ -184,12 +163,10 @@ module.exports = (req, res) => {
     return;
   }
 
-  // 🔹 PUT /tickets - Update an existing ticket (edit Ticket_Type, Price, Exhibition_ID)
+  // 🔹 PUT /tickets - Update an existing ticket (edit Ticket_Type, Price, and Exhibition_ID)
   if (method === "PUT" && parsedUrl.pathname === "/tickets") {
     let body = "";
-    req.on("data", (chunk) => {
-      body += chunk;
-    });
+    req.on("data", (chunk) => { body += chunk; });
     req.on("end", () => {
       try {
         const ticket = JSON.parse(body);
@@ -239,7 +216,6 @@ module.exports = (req, res) => {
           res.writeHead(400, { "Content-Type": "application/json" });
           return res.end(JSON.stringify({ error: "Ticket_ID is required" }));
         }
-        // Update the ticket's Status to "Sold"
         const sql = "UPDATE tickets SET Status = 'Sold' WHERE Ticket_ID = ?";
         db.query(sql, [Ticket_ID], (err, result) => {
           if (err) {
@@ -259,7 +235,40 @@ module.exports = (req, res) => {
     return;
   }
 
+  // 🔹 PUT /tickets/reactivate - Reactivate a ticket by updating its Status back to "Available"
+  if (method === "PUT" && parsedUrl.pathname === "/tickets/reactivate") {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk;
+    });
+    req.on("end", () => {
+      try {
+        const { Ticket_ID } = JSON.parse(body);
+        if (!Ticket_ID) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ error: "Ticket_ID is required" }));
+        }
+        const sql = "UPDATE tickets SET Status = 'Available' WHERE Ticket_ID = ?";
+        db.query(sql, [Ticket_ID], (err, result) => {
+          if (err) {
+            console.error("Error reactivating ticket:", err);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({ error: "Error reactivating ticket", details: err.message }));
+          }
+          res.writeHead(200, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "Ticket reactivated successfully" }));
+        });
+      } catch (parseError) {
+        console.error("JSON Parse Error:", parseError);
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ error: "Invalid JSON format", details: parseError.message }));
+      }
+    });
+    return;
+  }
+
   // 🔸 Fallback
   res.writeHead(404, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ message: "Route not found" }));
 };
+

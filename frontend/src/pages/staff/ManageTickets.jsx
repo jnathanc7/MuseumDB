@@ -2,29 +2,26 @@ import { useState, useEffect } from "react";
 import "../../styles/manage.css";
 
 const ManageTickets = () => {
-  // State for tickets and exhibitions (exhibitions are only used for display purposes)
   const [tickets, setTickets] = useState([]);
   const [exhibitions, setExhibitions] = useState([]);
-  // Modal state for adding a new ticket and editing an existing ticket
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  // Ticket form state for adding a new ticket (only requires Ticket_Type and Price)
+  // Ticket form state for adding a new ticket
   const [newTicket, setNewTicket] = useState({
     Ticket_Type: "",
     Price: "",
   });
-  // Ticket form state for editing an existing ticket (allows editing Ticket_Type, Price, and Exhibition_ID)
+  // Ticket form state for editing an existing ticket, including an optional Exhibition_ID field.
   const [editTicket, setEditTicket] = useState(null);
 
-  // Fetch tickets and exhibitions on mount
   useEffect(() => {
     fetchTickets();
     fetchExhibitions();
   }, []);
 
-  // Fetch tickets from the backend (GET /tickets - should return only tickets with Status 'Available')
   const fetchTickets = async () => {
     try {
+      // Now fetch all tickets (both Available and Sold)
       const response = await fetch("https://museumdb.onrender.com/tickets");
       if (!response.ok) {
         throw new Error("Failed to fetch tickets");
@@ -33,7 +30,6 @@ const ManageTickets = () => {
       if (Array.isArray(data)) {
         setTickets(data);
       } else {
-        console.error("Tickets data is not an array:", data);
         setTickets([]);
       }
     } catch (error) {
@@ -41,7 +37,6 @@ const ManageTickets = () => {
     }
   };
 
-  // Fetch exhibitions from the backend (GET /manage-exhibition)
   const fetchExhibitions = async () => {
     try {
       const response = await fetch("https://museumdb.onrender.com/manage-exhibition");
@@ -52,7 +47,6 @@ const ManageTickets = () => {
       if (Array.isArray(data)) {
         setExhibitions(data);
       } else {
-        console.error("Exhibitions data is not an array:", data);
         setExhibitions([]);
       }
     } catch (error) {
@@ -60,13 +54,11 @@ const ManageTickets = () => {
     }
   };
 
-  // Generic input change handler
   const handleInputChange = (e, setter) => {
     const { name, value } = e.target;
     setter((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Submit the add ticket form (POST /tickets)
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -95,8 +87,6 @@ const ManageTickets = () => {
     }
   };
 
-  // Submit the edit ticket form (PUT /tickets).
-  // Now allows editing Ticket_Type, Price, and Exhibition_ID.
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -121,7 +111,7 @@ const ManageTickets = () => {
     }
   };
 
-  // Deactivate a ticket (updates Status to "Sold") using PUT /tickets/deactivate
+  // Deactivate ticket: update Status to "Sold"
   const handleDeactivate = async (ticketID) => {
     if (!window.confirm("Are you sure you want to deactivate this ticket?")) return;
     try {
@@ -144,7 +134,30 @@ const ManageTickets = () => {
     }
   };
 
-  // Helper function: If a ticket is linked to an exhibition, returns its title; otherwise returns "Regular".
+  // Reactivate ticket: update Status back to "Available"
+  const handleReactivate = async (ticketID) => {
+    if (!window.confirm("Are you sure you want to reactivate this ticket?")) return;
+    try {
+      const response = await fetch("https://museumdb.onrender.com/tickets/reactivate", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ Ticket_ID: ticketID }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message || "Ticket reactivated successfully!");
+        fetchTickets();
+      } else {
+        alert("Error reactivating ticket.");
+      }
+    } catch (error) {
+      console.error("Failed to reactivate ticket:", error);
+    }
+  };
+
+  // Helper: Get exhibition title for a ticket.
   const getExhibitionTitle = (ticket) => {
     if (!ticket.Exhibition_ID) return "Regular";
     const exhibition = exhibitions.find((ex) => ex.Exhibition_ID === ticket.Exhibition_ID);
@@ -167,6 +180,7 @@ const ManageTickets = () => {
             <th>Ticket Type</th>
             <th>Price ($)</th>
             <th>Exhibition</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -177,24 +191,37 @@ const ManageTickets = () => {
               <td>{ticket.Ticket_Type}</td>
               <td>${parseFloat(ticket.Price).toFixed(2)}</td>
               <td>{getExhibitionTitle(ticket)}</td>
+              <td>{ticket.Status}</td>
               <td>
-                <button
-                  className="add-btn"
-                  style={{ marginRight: "5px" }}
-                  onClick={() => {
-                    setEditTicket(ticket);
-                    setIsEditModalOpen(true);
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  className="add-btn"
-                  style={{ backgroundColor: "#dc3545" }}
-                  onClick={() => handleDeactivate(ticket.Ticket_ID)}
-                >
-                  Deactivate
-                </button>
+                {ticket.Status === "Available" ? (
+                  <>
+                    <button
+                      className="add-btn"
+                      style={{ marginRight: "5px" }}
+                      onClick={() => {
+                        setEditTicket(ticket);
+                        setIsEditModalOpen(true);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="add-btn"
+                      style={{ backgroundColor: "#dc3545" }}
+                      onClick={() => handleDeactivate(ticket.Ticket_ID)}
+                    >
+                      Deactivate
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    className="add-btn"
+                    style={{ backgroundColor: "#28a745" }}
+                    onClick={() => handleReactivate(ticket.Ticket_ID)}
+                  >
+                    Reactivate
+                  </button>
+                )}
               </td>
             </tr>
           ))}
