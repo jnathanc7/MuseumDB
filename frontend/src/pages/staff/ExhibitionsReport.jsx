@@ -142,7 +142,7 @@ const ExhibitionReport = () => {
   // Compute totals:
   // For special exhibitions (requires_ticket true), sum each exhibition's aggregated value individually.
   const specialExhibitions = filteredExhibitions.filter(
-    (ex) => ex.requires_ticket === true || ex.requires_ticket === 1
+    (ex) => ex.requires_ticket === 1
   );
   const specialTotalAmount = specialExhibitions.reduce((acc, ex) => {
     const agg = getAggregatedDataForExhibition(ex);
@@ -156,7 +156,7 @@ const ExhibitionReport = () => {
   // For regular exhibitions (requires_ticket false), take the aggregated data
   // from the first regular exhibition only (to avoid duplication).
   const regularExhibitions = filteredExhibitions.filter(
-    (ex) => ex.requires_ticket === false || ex.requires_ticket === 0
+    (ex) => ex.requires_ticket === 0
   );
   let regularTotalAmount = 0;
   let regularTotalTickets = 0;
@@ -176,12 +176,6 @@ const ExhibitionReport = () => {
   const totalTicketsBought = specialTotalTickets + regularTotalTickets;
   const totalComplaints = filteredExhibitions.reduce((acc, ex) => acc + Number(ex.Num_Complaints || 0), 0);
 
-  // Log totals for debugging.
-  console.log("specialTotalAmount:", specialTotalAmount);
-  console.log("regularTotalAmount:", regularTotalAmount);
-  console.log("Total Tickets Bought:", totalTicketsBought);
-  console.log("Total Amount Made:", totalAmountMade);
-
   return (
     <main className="exh-report-container">
       <div className="exh-report-header">
@@ -192,7 +186,6 @@ const ExhibitionReport = () => {
       <div className="exh-report-controls">
         <div className="exh-report-date-controls">
           <div className="exh-report-date-select">
-            <label htmlFor="quickDateRange">Quick Date Range:</label>
             <select id="quickDateRange" onChange={handleQuickFilterChange}>
               <option value="">--Select Range--</option>
               <option value="lastWeek">Last Week</option>
