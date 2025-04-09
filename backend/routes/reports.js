@@ -123,7 +123,7 @@ module.exports = (req, res) => {
 
         let query = "";
 
-        if (saleType === "tickets") {
+        if (saleType === "tickets") { 
             query = `${ticketQuery} ORDER BY Sale_Date DESC`;
         } else if (saleType === "giftshop") {
             query = `${giftShopQuery} ORDER BY Sale_Date DESC`;
