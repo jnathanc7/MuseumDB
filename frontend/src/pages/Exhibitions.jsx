@@ -99,7 +99,7 @@ const Exhibitions = () => {
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
               >
-                <Link to={`/artworks`} className="card-link">
+                <Link to={`/artworks/${exhibition.Exhibition_ID}`} className="card-link">
                   <img
                     src={exhibition.exhibition_image}
                     alt={exhibition.Name}

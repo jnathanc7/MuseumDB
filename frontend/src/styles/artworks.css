@@ -82,7 +82,7 @@
     font-size: 2rem;
     font-family: "Roboto Mono", monospace;
     font-weight:700;
-    color: var(--primary-clr);
+    color: #000000;
     opacity:1;
     transition:0.8s ease;
 }
