@@ -125,7 +125,7 @@ const ManageTickets = () => {
   const handleDeactivate = async (ticketID) => {
     if (!window.confirm("Are you sure you want to deactivate this ticket?")) return;
     try {
-      const response = await fetch("https://museumdb.onrender.com//tickets/deactivate", {
+      const response = await fetch("https://museumdb.onrender.com/tickets/deactivate", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
