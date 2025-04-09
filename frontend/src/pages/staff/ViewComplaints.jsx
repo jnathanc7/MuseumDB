@@ -7,11 +7,24 @@ const ViewComplaints = () => {
   const [summary, setSummary] = useState(null);
   const [editingComplaintId, setEditingComplaintId] = useState(null);
   const [notesInput, setNotesInput] = useState("");
+  const [exhibitions, setExhibitions] = useState([])
 
   // Filters
   const [filterType, setFilterType] = useState("All");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+
+  useEffect(() => { // https://museumdb.onrender.com/contact
+    fetch("https://museumdb.onrender.com/manage-exhibition") // https://museumdb.onrender.com
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) setExhibitions(data);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
@@ -202,7 +215,9 @@ const ViewComplaints = () => {
           <option value="Staff Behavior">Staff Behavior</option>
           <option value="Exhibition Issue">Exhibition Issue</option>
           <option value="Event Problem">Event Problem</option>
-          <option value="Special Exhibition Issue">Special Exhibition Issue</option>
+          {exhibitions.map((exhibit, index) => (
+           <option key={index} value={exhibit.Name}>{exhibit.Name}</option>
+           ))} 
           <option value="Other">Other</option>
         </select>
 

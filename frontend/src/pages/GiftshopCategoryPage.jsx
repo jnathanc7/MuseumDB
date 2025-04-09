@@ -7,7 +7,9 @@ import { Link } from "react-router-dom";
 const ProductItem = memo(({product, categoryName}) =>(
     <Link className = "product-link" to ={ `/Giftshop/${categoryName}/${encodeURIComponent(product.Product_ID)}`}>
     <div className = "product">
-        <img src={`data:${product.mimeType};base64,${product.viewing_image}`} alt={product.Name} />
+        <img loading = "lazy" 
+             src={`data:${product.mimeType};base64,${product.viewing_image}`} 
+             alt={product.Name} />
         <p>{product.Name} <br /> ${product.Price}</p>
      </div>
     </Link>
@@ -15,6 +17,7 @@ const ProductItem = memo(({product, categoryName}) =>(
 
 //displaying products based on the category
 const GiftshopCategoryPage = () =>{
+    const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
     /*extract category name from url, once i get that i can use the categoryname to fetch from api.
     lowkey should prob use id cause of uniqueness idkkk */
@@ -28,6 +31,9 @@ const GiftshopCategoryPage = () =>{
         }
         catch(error){
             console.error("Error fetching products:", error);
+        } 
+        finally{
+            setLoading(false);
         }
     }
 
@@ -40,12 +46,19 @@ const GiftshopCategoryPage = () =>{
     <div className = "CategoryPage-wrapper">
         <h1 className = "product-header">{categoryName}</h1>
         <div className = "product-container"> 
-            {products.length > 0 ? (products.map((product) => (
-            <ProductItem key={product.Product_ID} product={product} categoryName={categoryName} />
-            ))
-        ) : (
-            <p>No products available.</p> //implemented a conditional statement to check whether or not there are products or not
-        )}
+                    {loading ? (
+                <p>Loading...</p>
+            ) : products.length === 0 ? (
+                <p>No Products Available.</p>
+            ) : (
+                products.map((product) => (
+                <ProductItem
+                    key={product.Product_ID}
+                    product={product}
+                    categoryName={categoryName}
+                />
+                ))
+            )}
         </div>
     </div>
     )

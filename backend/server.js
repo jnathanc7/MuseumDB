@@ -16,7 +16,7 @@ const manageGiftshopRoutes = require("./routes/manageGiftshop");
 const exhibitionRoutes = require("./routes/exhibitions");
 
 const allowedOrigins = [
-    "http://localhost:5183", // Vercel frontend (adjust if different)
+    "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
     "http://localhost:5183", // Local frontend
     "http://localhost:5173", // gabe local frontend
 ];

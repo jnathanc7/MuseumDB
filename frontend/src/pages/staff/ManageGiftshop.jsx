@@ -211,7 +211,7 @@ const ManageGiftshop = () => {
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Category ID</th>
+            <th>Category</th>
             <th>Price</th>
             <th>Stock Quantity</th>
             <th>Description</th>
@@ -226,7 +226,13 @@ const ManageGiftshop = () => {
             <tr key={product.Product_ID}>
             <td>{product.Product_ID}</td>
               <td>{product.Name}</td>
-              <td>{product.Category_ID}</td>
+              <td>{product.Category_ID === 1 ? 'Painting' :
+                    product.Category_ID === 2 ? 'Jewlry' :
+                    product.Category_ID === 3 ? 'Books' :
+                    product.Category_ID === 4 ? 'Toys & Games' :
+                    product.Category_ID === 5 ? 'Home & Decor' :
+                    product.Category_ID === 6 ? 'Arts & Crafts' :
+   'Unknown'}</td>
               <td>{product.Price}</td>
               <td>{product.Stock_Quantity}</td>
               <td>{product.Description}</td>

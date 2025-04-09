@@ -19,7 +19,7 @@ module.exports = (req, res) => {
     else if (parsedUrl.pathname === "/manageGiftshop" && method === "GET") {
         
 
-        db.query("SELECT * FROM products", (err, results) => {
+        db.query("SELECT Product_ID, Name, Category_ID, Price, Stock_Quantity, Description FROM products", (err, results) => {
             if (err) {
                 res.writeHead(500, { "Content-Type": "application/json" });
                 return res.end(JSON.stringify({ message: "Error retrieving categories", error: err }));

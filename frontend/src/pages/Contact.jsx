@@ -11,6 +11,7 @@ const ContactPage = () => {
   const [user, setUser] = useState(null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showNotCustomerPrompt, setShowNotCustomerPrompt] = useState(false);
+  const [exhibitions, setExhibitions] = useState([]);
 
   const [formData, setFormData] = useState({
     topic: "",
@@ -25,11 +26,23 @@ const ContactPage = () => {
     "Staff Behavior",
     "Exhibition Issue",
     "Event Problem",
-    "Special Exhibition Issue",
+    ...exhibitions.map((exhibit) => exhibit.Name),
     "Other",
   ];
 
-  useEffect(() => { // http://localhost:5000/contact
+  useEffect(() => { // https://museumdb.onrender.com/contact
+    fetch("https://museumdb.onrender.com/manage-exhibition") // https://museumdb.onrender.com
+      .then((res) => {
+        if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) setExhibitions(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => { // https://museumdb.onrender.com/contact
     fetch("https://museumdb.onrender.com/contact") // https://museumdb.onrender.com
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
