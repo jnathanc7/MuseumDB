@@ -5,10 +5,10 @@ const ExhibitionReport = () => {
   const [exhibitions, setExhibitions] = useState([]);
   const [exhibitionPurchases, setExhibitionPurchases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  // Date filter state variables (used by both manual inputs and dropdown)
+  // Date filter state variables
   const [filterStartDate, setFilterStartDate] = useState("");
   const [filterEndDate, setFilterEndDate] = useState("");
-  // State for filtering by special exhibition status
+  // Special exhibition filter: "" for all, "special" for those that require a ticket, "regular" for those that do not.
   const [specialFilter, setSpecialFilter] = useState("");
 
   useEffect(() => {
@@ -49,7 +49,7 @@ const ExhibitionReport = () => {
     }
   };
 
-  // Helper function to format a Date object as "YYYY-MM-DD"
+  // Helper function to format a Date as "YYYY-MM-DD"
   const formatDate = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -106,23 +106,27 @@ const ExhibitionReport = () => {
     setSpecialFilter(e.target.value);
   };
 
-  // Filter exhibitions based on search query, date range (using Start_Date), and special exhibition filter.
+  // Filter exhibitions based on search, date range (using both Start_Date and End_Date) and special filter.
   const filteredExhibitions = exhibitions.filter((exhibition) => {
     const exhibitionNameMatch = exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase());
     const exhibitionStart = new Date(exhibition.Start_Date);
+    const exhibitionEnd = new Date(exhibition.End_Date);
+    // Now we filter using exhibition's start and end dates:
     const passesStartFilter = filterStartDate ? exhibitionStart >= new Date(filterStartDate) : true;
-    const passesEndFilter = filterEndDate ? exhibitionStart <= new Date(filterEndDate) : true;
-
+    const passesEndFilter = filterEndDate ? exhibitionEnd <= new Date(filterEndDate) : true;
+    
+    // Use Number() conversion in case requires_ticket comes as 1/0
     let specialMatch = true;
     if (specialFilter === "special") {
-      specialMatch = exhibition.requires_ticket === true;
+      specialMatch = Number(exhibition.requires_ticket) === 1;
     } else if (specialFilter === "regular") {
-      specialMatch = exhibition.requires_ticket === false;
+      specialMatch = Number(exhibition.requires_ticket) === 0;
     }
     return exhibitionNameMatch && passesStartFilter && passesEndFilter && specialMatch;
   });
 
   // Helper: Get aggregated purchase data for an exhibition.
+  // This returns the aggregated data for special exhibitions.
   const getAggregatedDataForExhibition = (exhibition) => {
     const agg = exhibitionPurchases.find(
       (item) => Number(item.Exhibition_ID) === Number(exhibition.Exhibition_ID)
@@ -135,18 +139,33 @@ const ExhibitionReport = () => {
     return agg;
   };
 
-  const totalTicketsBought = filteredExhibitions.reduce((acc, exhibition) => {
-    const agg = getAggregatedDataForExhibition(exhibition);
+  // Separate totals for special and regular exhibitions:
+  const specialExhibitions = filteredExhibitions.filter(
+    (ex) => Number(ex.requires_ticket) === 1
+  );
+  const specialTotalTickets = specialExhibitions.reduce((acc, ex) => {
+    const agg = getAggregatedDataForExhibition(ex);
     return acc + Number(agg.Tickets_Bought || 0);
   }, 0);
-
-  const totalAmountMade = filteredExhibitions.reduce((acc, exhibition) => {
-    const agg = getAggregatedDataForExhibition(exhibition);
+  const specialTotalAmount = specialExhibitions.reduce((acc, ex) => {
+    const agg = getAggregatedDataForExhibition(ex);
     return acc + Number(agg.Amount_Made || 0);
   }, 0);
 
+  const regularExhibitions = filteredExhibitions.filter(
+    (ex) => Number(ex.requires_ticket) === 0
+  );
+  // For regular exhibitions, all share the same aggregated record (where Exhibition_ID is null)
+  const regularAgg = exhibitionPurchases.find((item) => item.Exhibition_ID === null) || { Tickets_Bought: 0, Amount_Made: 0 };
+  const regularTotalTickets = regularExhibitions.length > 0 ? Number(regularAgg.Tickets_Bought) : 0;
+  const regularTotalAmount = regularExhibitions.length > 0 ? Number(regularAgg.Amount_Made) : 0;
+
+  // The final totals: regular aggregated data is only added once.
+  const totalTicketsBought = specialTotalTickets + regularTotalTickets;
+  const totalAmountMade = specialTotalAmount + regularTotalAmount;
+
   const totalComplaints = filteredExhibitions.reduce(
-    (acc, exhibition) => acc + Number(exhibition.Num_Complaints || 0),
+    (acc, ex) => acc + Number(ex.Num_Complaints || 0),
     0
   );
 
@@ -162,6 +181,7 @@ const ExhibitionReport = () => {
       <div className="exh-report-controls">
         <div className="exh-report-date-controls">
           <div className="exh-report-date-select">
+            <label htmlFor="quickDateRange">Quick Date Range:</label>
             <select id="quickDateRange" onChange={handleQuickFilterChange}>
               <option value="">--Select Range--</option>
               <option value="lastWeek">Last Week</option>
@@ -241,7 +261,7 @@ const ExhibitionReport = () => {
                   <td>{exhibition.Name}</td>
                   <td>{new Date(exhibition.Start_Date).toLocaleDateString()}</td>
                   <td>{new Date(exhibition.End_Date).toLocaleDateString()}</td>
-                  <td>{exhibition.requires_ticket ? "Yes" : "No"}</td>
+                  <td>{Number(exhibition.requires_ticket) === 1 ? "Yes" : "No"}</td>
                   <td>{agg.Tickets_Bought}</td>
                   <td>${parseFloat(agg.Amount_Made).toLocaleString()}</td>
                   <td>{exhibition.Num_Complaints || 0}</td>

@@ -39,7 +39,7 @@
     align-items: center;
   }
   
-  /* Date Range Dropdown */
+  /* Date Range Dropdown & Special Filter */
   .exh-report-date-select,
   .exh-report-special-filter {
     display: flex;
@@ -224,4 +224,5 @@
   .exh-btn-open:hover {
     background-color: #218838;
   }
+  
   
