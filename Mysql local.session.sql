@@ -1,4 +1,4 @@
-SELECT * FROM purchases;
+SELECT * FROM tickets;
 
 
 
