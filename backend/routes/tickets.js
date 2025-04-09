@@ -18,6 +18,8 @@ module.exports = (req, res) => {
     return;
   }
 
+
+
   // 🔹 GET /tickets - Fetch all tickets (do not filter by Status)
   if (method === "GET" && parsedUrl.pathname === "/tickets") {
     const query = "SELECT * FROM tickets";
@@ -29,6 +31,24 @@ module.exports = (req, res) => {
       }
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(JSON.stringify(results));
+    });
+    return;
+  }
+
+  // 🔹 GET /tickets - Fetch all available tickets
+  if (method === "GET" && parsedUrl.pathname === "/tickets/customers") {
+    // Optionally filter to only return available tickets:
+    const query = "SELECT * FROM tickets WHERE Status = 'Available'";
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error("Database Error:", err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        return res.end(
+          JSON.stringify({ error: "Error fetching tickets", details: err.message })
+        );
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(results));
     });
     return;
   }
