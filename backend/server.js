@@ -14,6 +14,8 @@ const contactRoutes = require("./routes/contact");
 const notificationRoutes = require("./routes/adminnotification");
 const manageGiftshopRoutes = require("./routes/manageGiftshop");
 const exhibitionRoutes = require("./routes/exhibitions");
+const manageArtworksRoutes = require("./routes/manageArtworks");
+const artworksRoutes = require("./routes/artworks");
 const customerPurchasesRoute = require("./routes/customerpurchases");
 
 
@@ -70,6 +72,16 @@ const server = http.createServer((req, res) => {
         // });
         return;
     }
+    else if (parsedUrl.pathname.startsWith("/manage-artworks")) {
+        // authMiddleware(["staff", "admin"])(req, res, () => {
+            manageArtworksRoutes(req, res);
+        // });
+        return;
+    }
+    else if (parsedUrl.pathname.startsWith("/artworks")) {
+        artworksRoutes(req, res);
+        return;
+    }    
     else if (parsedUrl.pathname.startsWith("/exhibition-purchases")) {
         exhibitionRoutes(req, res);
         return;

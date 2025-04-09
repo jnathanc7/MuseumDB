@@ -29,6 +29,7 @@ import ManageExhibitions from "../pages/staff/ManageExhibition.jsx";
 import ManageGiftshop from "../pages/staff/ManageGiftshop";
 import AdminNotifications from "../pages/staff/AdminNotifications";
 import ResetPassword from "../pages/ResetPassword";
+import ManageArtworks from "../pages/staff/ManageArtworks.jsx";
 import ManageTickets from "../pages/staff/ManageTickets.jsx";
 
 const PageTransition = ({ children }) => {
@@ -76,6 +77,7 @@ function AnimatedRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/total-report" element={<TotalReport />} />
         <Route path="/admin/notifications" element={<PageTransition><AdminNotifications /></PageTransition>} />
+        <Route path="/admin/manage-artworks" element={<PageTransition><ManageArtworks /></PageTransition>} />
 
         <Route path="/memberships" element={<Memberships />} />
         <Route path="/admin/view-complaints" element={<PageTransition><ViewComplaints /></PageTransition>} />
@@ -84,7 +86,7 @@ function AnimatedRoutes() {
         <Route path="/managerhome" element={<PageTransition><ManagerHome /></PageTransition>} />
         <Route path="/curatorhome" element={<PageTransition><CuratorHome /></PageTransition>} />
 
-        <Route path="/artworks" element={<PageTransition><Artworks/></PageTransition>}/>
+        <Route path="/artworks/:exhibitionId" element={<PageTransition><Artworks /></PageTransition>} />
         <Route path="/prints" element={<PageTransition><Prints/></PageTransition>}/>
         <Route path="/paintings" element={<PageTransition><Painting/></PageTransition>}/>
         <Route path="/sculptures" element={<PageTransition><Sculptures/></PageTransition>}/>
