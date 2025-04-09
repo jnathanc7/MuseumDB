@@ -106,13 +106,15 @@ const ExhibitionReport = () => {
     setSpecialFilter(e.target.value);
   };
 
-  // Filter exhibitions based on search, date range (using Start_Date and End_Date) and special filter.
+  // Filter exhibitions based on search, date range (using both Start_Date and End_Date) and special filter.
   const filteredExhibitions = exhibitions.filter((exhibition) => {
     const exhibitionNameMatch = exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase());
     const exhibitionStart = new Date(exhibition.Start_Date);
     const exhibitionEnd = new Date(exhibition.End_Date);
-    const passesStartFilter = filterStartDate ? exhibitionStart >= new Date(filterStartDate) : true;
-    const passesEndFilter = filterEndDate ? exhibitionEnd <= new Date(filterEndDate) : true;
+    // Exhibition is included if its End_Date is on/after filterStartDate 
+    // and its Start_Date is on/before filterEndDate.
+    const passesStartFilter = filterStartDate ? exhibitionEnd >= new Date(filterStartDate) : true;
+    const passesEndFilter = filterEndDate ? exhibitionStart <= new Date(filterEndDate) : true;
 
     let specialMatch = true;
     if (specialFilter === "special") {
@@ -138,7 +140,7 @@ const ExhibitionReport = () => {
   };
 
   // Compute totals:
-  // For special exhibitions, sum each individually.
+  // For special exhibitions, sum each exhibition's aggregated amount individually.
   const specialExhibitions = filteredExhibitions.filter(
     (ex) => ex.requires_ticket === true || ex.requires_ticket === 1
   );
@@ -146,29 +148,30 @@ const ExhibitionReport = () => {
     const agg = getAggregatedDataForExhibition(ex);
     return acc + Number(agg.Amount_Made || 0);
   }, 0);
-
-  // For regular exhibitions, use the aggregated record (where Exhibition_ID is null)
-  const regularExhibitions = filteredExhibitions.filter(
-    (ex) => ex.requires_ticket === false || ex.requires_ticket === 0
-  );
-  const regularAgg = exhibitionPurchases.find((item) => item.Exhibition_ID === null) || { Amount_Made: 0 };
-  // Ensure we add the regular amount only once (if there is at least one regular exhibition)
-  const regularTotalAmount = regularExhibitions.length > 0 ? Number(regularAgg.Amount_Made) : 0;
-
-  const totalAmountMade = specialTotalAmount + regularTotalAmount;
-
-  // For tickets (we assume similar logic as before)
   const specialTotalTickets = specialExhibitions.reduce((acc, ex) => {
     const agg = getAggregatedDataForExhibition(ex);
     return acc + Number(agg.Tickets_Bought || 0);
   }, 0);
-  const regularTotalTickets = regularExhibitions.length > 0 ? Number((exhibitionPurchases.find(item => item.Exhibition_ID === null) || { Tickets_Bought: 0 }).Tickets_Bought) : 0;
+
+  // For regular exhibitions, use the aggregated record (where Exhibition_ID is null) only once.
+  const regularExhibitions = filteredExhibitions.filter(
+    (ex) => ex.requires_ticket === false || ex.requires_ticket === 0
+  );
+  const regularAgg = exhibitionPurchases.find((item) => item.Exhibition_ID === null) || { Amount_Made: 0, Tickets_Bought: 0 };
+  const regularTotalAmount = regularExhibitions.length > 0 ? Number(regularAgg.Amount_Made) : 0;
+  const regularTotalTickets = regularExhibitions.length > 0 ? Number(regularAgg.Tickets_Bought) : 0;
+
+  // Combine the totals; regular aggregated data is only added once.
+  const totalAmountMade = specialTotalAmount + regularTotalAmount;
   const totalTicketsBought = specialTotalTickets + regularTotalTickets;
 
   const totalComplaints = filteredExhibitions.reduce((acc, ex) => acc + Number(ex.Num_Complaints || 0), 0);
 
-  console.log("Total tickets bought (summary):", totalTicketsBought);
-  console.log("Total amount made (summary):", totalAmountMade);
+  // Log the individual totals for debugging:
+  console.log("specialTotalAmount:", specialTotalAmount);
+  console.log("regularTotalAmount:", regularTotalAmount);
+  console.log("Total Tickets Bought:", totalTicketsBought);
+  console.log("Total Amount Made:", totalAmountMade);
 
   return (
     <main className="exh-report-container">
