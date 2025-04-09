@@ -42,7 +42,7 @@ const ExhibitionReport = () => {
         throw new Error("Failed to fetch exhibition purchase data");
       }
       const data = await response.json();
-      console.log("Fetched Aggregated Exhibition Purchases Data:", data);
+     
       setExhibitionPurchases(data);
     } catch (error) {
       console.error("Error fetching exhibition purchases:", error);
@@ -118,13 +118,10 @@ const ExhibitionReport = () => {
 
     let specialMatch = true;
     if (specialFilter === "special") {
-      specialMatch = exhibition.requires_ticket === true || exhibition.requires_ticket === 1;
+      specialMatch = exhibition.requires_ticket === 1;
     } else if (specialFilter === "regular") {
-      specialMatch = exhibition.requires_ticket === false || exhibition.requires_ticket === 0;
+      specialMatch = exhibition.requires_ticket === 0;
     }
-
-    // Log for debugging the requires_ticket value.
-    console.log(`Exhibition ${exhibition.Exhibition_ID} requires_ticket:`, exhibition.requires_ticket);
 
     return exhibitionNameMatch && passesStartFilter && passesEndFilter && specialMatch;
   });
