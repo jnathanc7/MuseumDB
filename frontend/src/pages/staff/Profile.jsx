@@ -82,7 +82,7 @@ const Profile = () => {
       try {
         if (user?.role === "customer" && user?.id) {
           console.log("Fetching purchases for customer_id:", user.id);
-          const res = await fetch(`http://localhost:5000/customer/purchases?id=${user.id}`, {
+          const res = await fetch(`https://museumdb.onrender.com/customer/purchases?id=${user.id}`, {
             credentials: "include",
           });
           const data = await res.json();
@@ -392,7 +392,10 @@ const Profile = () => {
               <>
                 <strong>Ticket:</strong> {p.Ticket_Type} |{" "}
                 <strong>Qty:</strong> {p.Quantity} |{" "}
-                <strong>Price:</strong> ${p.Price}
+                <strong>Price:</strong> ${p.Price} |{" "}
+                <strong>Total:</strong> ${p.Total}
+
+
               </>
             ) : p.Type === "giftshop" ? (
               <>

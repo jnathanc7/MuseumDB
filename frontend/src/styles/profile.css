@@ -131,14 +131,17 @@
     margin-top: 1rem;
   }
   
+
   .history-row {
-    white-space: nowrap;      /* ← keeps it all on one line */
-    overflow-x: auto;         /* ← lets you scroll if it’s too wide */
-    text-overflow: ellipsis;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
-    font-size: 0.95rem;
+    white-space: nowrap;
+    margin-bottom: 1rem; /* or increase to 1.5rem for more space */
+    line-height: 1.6;     /* increases vertical space inside each row */
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee; /* optional: subtle line between items */
   }
+  
+
+
   .close-button {
     margin-top: 1rem;
     background-color: #c0392b;
