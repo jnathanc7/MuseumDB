@@ -5,10 +5,10 @@ const ExhibitionReport = () => {
   const [exhibitions, setExhibitions] = useState([]);
   const [exhibitionPurchases, setExhibitionPurchases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  // Date filter state variables for manual input and quick filter
+  // Date filter state variables
   const [filterStartDate, setFilterStartDate] = useState("");
   const [filterEndDate, setFilterEndDate] = useState("");
-  // Special exhibition filter: "" = all, "special" = requires_ticket true, "regular" = requires_ticket false.
+  // Special exhibition filter: "" for all, "special" for those that require a ticket, "regular" for those that do not.
   const [specialFilter, setSpecialFilter] = useState("");
 
   useEffect(() => {
@@ -49,7 +49,7 @@ const ExhibitionReport = () => {
     }
   };
 
-  // Helper to format a Date as "YYYY-MM-DD"
+  // Helper function to format a Date as "YYYY-MM-DD"
   const formatDate = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -57,7 +57,7 @@ const ExhibitionReport = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // Quick filter functions for date ranges using the entire exhibition date range (Start_Date to End_Date)
+  // Quick filter functions for date ranges
   const setLastWeek = () => {
     const today = new Date();
     const lastWeek = new Date(today);
@@ -101,43 +101,27 @@ const ExhibitionReport = () => {
     }
   };
 
-  // Handler for the special exhibition filter dropdown
+  // Handler for special exhibition filter dropdown
   const handleSpecialFilterChange = (e) => {
     setSpecialFilter(e.target.value);
   };
 
-  // Filter exhibitions using search and date range. We now check that the exhibition's
-  // date range overlaps with the filter range. That is, the exhibition is included if:
-  //   - Its End_Date is on/after filterStartDate (if specified) AND
-  //   - Its Start_Date is on/before filterEndDate (if specified).
+  // Filter exhibitions based on search, date range (using Start_Date and End_Date) and special filter.
   const filteredExhibitions = exhibitions.filter((exhibition) => {
     const exhibitionNameMatch = exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase());
-
     const exhibitionStart = new Date(exhibition.Start_Date);
     const exhibitionEnd = new Date(exhibition.End_Date);
-
-    let passesDateFilter = true;
-    if (filterStartDate) {
-      // The exhibition should end on or after the filter start
-      if (exhibitionEnd < new Date(filterStartDate)) {
-        passesDateFilter = false;
-      }
-    }
-    if (filterEndDate) {
-      // The exhibition should start on or before the filter end
-      if (exhibitionStart > new Date(filterEndDate)) {
-        passesDateFilter = false;
-      }
-    }
+    const passesStartFilter = filterStartDate ? exhibitionStart >= new Date(filterStartDate) : true;
+    const passesEndFilter = filterEndDate ? exhibitionEnd <= new Date(filterEndDate) : true;
 
     let specialMatch = true;
     if (specialFilter === "special") {
-      specialMatch = Number(exhibition.requires_ticket) === 1;
+      specialMatch = exhibition.requires_ticket === true || exhibition.requires_ticket === 1;
     } else if (specialFilter === "regular") {
-      specialMatch = Number(exhibition.requires_ticket) === 0;
+      specialMatch = exhibition.requires_ticket === false || exhibition.requires_ticket === 0;
     }
 
-    return exhibitionNameMatch && passesDateFilter && specialMatch;
+    return exhibitionNameMatch && passesStartFilter && passesEndFilter && specialMatch;
   });
 
   // Helper: Get aggregated purchase data for an exhibition.
@@ -153,33 +137,38 @@ const ExhibitionReport = () => {
     return agg;
   };
 
-  // For totals, group exhibitions into special and regular.
+  // Compute totals:
+  // For special exhibitions, sum each individually.
   const specialExhibitions = filteredExhibitions.filter(
-    (ex) => Number(ex.requires_ticket) === 1
+    (ex) => ex.requires_ticket === true || ex.requires_ticket === 1
   );
-  const specialTotalTickets = specialExhibitions.reduce((acc, ex) => {
-    const agg = getAggregatedDataForExhibition(ex);
-    return acc + Number(agg.Tickets_Bought || 0);
-  }, 0);
   const specialTotalAmount = specialExhibitions.reduce((acc, ex) => {
     const agg = getAggregatedDataForExhibition(ex);
     return acc + Number(agg.Amount_Made || 0);
   }, 0);
 
-  // For regular exhibitions, assume all share the same aggregated data (from Exhibition_ID = null).
+  // For regular exhibitions, use the aggregated record (where Exhibition_ID is null)
   const regularExhibitions = filteredExhibitions.filter(
-    (ex) => Number(ex.requires_ticket) === 0
+    (ex) => ex.requires_ticket === false || ex.requires_ticket === 0
   );
-  const regularAgg = exhibitionPurchases.find((item) => item.Exhibition_ID === null) || { Tickets_Bought: 0, Amount_Made: 0 };
-  // If any regular exhibitions exist, count the regular aggregated value once.
-  const regularTotalTickets = regularExhibitions.length > 0 ? Number(regularAgg.Tickets_Bought) : 0;
+  const regularAgg = exhibitionPurchases.find((item) => item.Exhibition_ID === null) || { Amount_Made: 0 };
+  // Ensure we add the regular amount only once (if there is at least one regular exhibition)
   const regularTotalAmount = regularExhibitions.length > 0 ? Number(regularAgg.Amount_Made) : 0;
 
-  const totalTicketsBought = specialTotalTickets + regularTotalTickets;
   const totalAmountMade = specialTotalAmount + regularTotalAmount;
+
+  // For tickets (we assume similar logic as before)
+  const specialTotalTickets = specialExhibitions.reduce((acc, ex) => {
+    const agg = getAggregatedDataForExhibition(ex);
+    return acc + Number(agg.Tickets_Bought || 0);
+  }, 0);
+  const regularTotalTickets = regularExhibitions.length > 0 ? Number((exhibitionPurchases.find(item => item.Exhibition_ID === null) || { Tickets_Bought: 0 }).Tickets_Bought) : 0;
+  const totalTicketsBought = specialTotalTickets + regularTotalTickets;
+
   const totalComplaints = filteredExhibitions.reduce((acc, ex) => acc + Number(ex.Num_Complaints || 0), 0);
 
   console.log("Total tickets bought (summary):", totalTicketsBought);
+  console.log("Total amount made (summary):", totalAmountMade);
 
   return (
     <main className="exh-report-container">
@@ -271,7 +260,7 @@ const ExhibitionReport = () => {
                   <td>{exhibition.Name}</td>
                   <td>{new Date(exhibition.Start_Date).toLocaleDateString()}</td>
                   <td>{new Date(exhibition.End_Date).toLocaleDateString()}</td>
-                  <td>{Number(exhibition.requires_ticket) === 1 ? "Yes" : "No"}</td>
+                  <td>{(exhibition.requires_ticket === true || exhibition.requires_ticket === 1) ? "Yes" : "No"}</td>
                   <td>{agg.Tickets_Bought}</td>
                   <td>${parseFloat(agg.Amount_Made).toLocaleString()}</td>
                   <td>{exhibition.Num_Complaints || 0}</td>
