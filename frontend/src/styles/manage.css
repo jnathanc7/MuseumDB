@@ -63,4 +63,10 @@
     color: #fff;
 }
 
+.manage-controls-row { /* for Manage Artworks by gabe*/
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Space between dropdown and the button */
+    margin-bottom: 15px; /* Control how close or far they appear above the table */
+  }
   
