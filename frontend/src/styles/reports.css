@@ -1,0 +1,228 @@
+/* Container for the Entire Report */
+.exh-report-container {
+    background-color: #1e1b1b;
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+    color: #e0e0e0;
+    padding-top: 110px;
+  }
+  
+  /* Header Section */
+  .exh-report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .exh-report-header h1 {
+    font-size: 2em;
+    color: #ffffff;
+  }
+  
+  /* Combined Controls: Date Range Dropdown, Manual Date Inputs, Special Filter, and Search Bar */
+  .exh-report-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 10px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Date Controls Container */
+  .exh-report-date-controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  /* Date Range Dropdown & Special Filter */
+  .exh-report-date-select,
+  .exh-report-special-filter {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .exh-report-date-select label,
+  .exh-report-special-filter label {
+    font-size: 16px;
+    color: #333;
+  }
+  .exh-report-date-select select,
+  .exh-report-special-filter select {
+    padding: 6px 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .exh-report-date-select select:focus,
+  .exh-report-special-filter select:focus {
+    border-color: #007bff;
+  }
+  
+  /* Manual Date Inputs */
+  .exh-report-manual-dates {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .exh-report-manual-dates label {
+    font-size: 16px;
+    color: #333;
+    margin-right: 5px;
+  }
+  .exh-report-manual-dates input[type="date"] {
+    padding: 6px 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .exh-report-manual-dates input[type="date"]:focus {
+    border-color: #007bff;
+  }
+  
+  /* Search Bar */
+  .exh-report-search {
+    text-align: right;
+  }
+  .exh-report-search input[type="text"] {
+    padding: 6px 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 250px;
+    transition: border-color 0.3s;
+  }
+  .exh-report-search input[type="text"]:focus {
+    border-color: #007bff;
+  }
+  
+  /* Total Summary Section */
+  .exh-report-summary {
+    display: flex;
+    justify-content: space-around;
+    background-color: #333333;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    font-size: 16px;
+    color: #ffffff;
+  }
+  
+  /* Table Container */
+  .exh-report-table-container {
+    overflow-x: auto;
+    margin-bottom: 30px;
+  }
+  
+  /* Table Styles */
+  .exh-report-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+  }
+  .exh-report-table thead {
+    background-color: #444444;
+    color: #ffffff;
+  }
+  .exh-report-table th,
+  .exh-report-table td {
+    padding: 12px;
+    border: 1px solid #cccccc;
+    font-size: 14px;
+    text-align: left;
+  }
+  .exh-report-table td {
+    color: #333333;
+  }
+  
+  /* Status Badge Styles */
+  .badge-active {
+    background-color: #28a745;
+    color: #ffffff;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    text-align: center;
+  }
+  .badge-inactive {
+    background-color: #dc3545;
+    color: #ffffff;
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    text-align: center;
+  }
+  
+  /* Modal Overlay and Content */
+  .exh-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  .exh-modal-content {
+    background-color: #222222;
+    padding: 25px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+  }
+  
+  /* Modal Input Fields */
+  .exh-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #000000;
+  }
+  
+  /* Button Styles */
+  .exh-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .exh-btn-add {
+    background-color: #007bff;
+    color: #ffffff;
+  }
+  .exh-btn-add:hover {
+    background-color: #0056b3;
+  }
+  .exh-btn-close {
+    background-color: #dc3545;
+    color: #ffffff;
+  }
+  .exh-btn-close:hover {
+    background-color: #c82333;
+  }
+  .exh-btn-open {
+    background-color: #28a745;
+    color: #ffffff;
+  }
+  .exh-btn-open:hover {
+    background-color: #218838;
+  }
+  
+  

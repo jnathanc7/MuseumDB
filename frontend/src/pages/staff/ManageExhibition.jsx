@@ -16,7 +16,7 @@ const ManageExhibitions = () => {
     Num_Of_Artworks: "",
     description: "",
     requires_ticket: false,
-    exhibition_image_data: "", // new field for Base64 image data
+    exhibition_image_data: "", // Base64 image data
   });
   const [editExhibition, setEditExhibition] = useState(null);
 
@@ -44,7 +44,7 @@ const ManageExhibitions = () => {
     }
   };
 
-  // Generic input change handler; stateSetter can be setNewExhibition or setEditExhibition.
+  // Generic input change handler
   const handleInputChange = (e, stateSetter) => {
     const { name, value, type, checked } = e.target;
     stateSetter((prev) => ({
@@ -74,11 +74,10 @@ const ManageExhibitions = () => {
   const convertFileToBase64 = (file, stateSetter) => {
     const reader = new FileReader();
     reader.onloadend = () => {
-      // reader.result is something like "data:image/jpeg;base64,..."
-      // You can store the full data URL or strip the prefix if desired.
+      // Store only the Base64 portion
       stateSetter((prev) => ({
         ...prev,
-        exhibition_image_data: reader.result.split(",")[1], // storing only the Base64 portion
+        exhibition_image_data: reader.result.split(",")[1],
       }));
     };
     reader.readAsDataURL(file);
@@ -88,7 +87,6 @@ const ManageExhibitions = () => {
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send newExhibition as JSON; backend will convert exhibition_image_data to a Buffer.
       const response = await fetch(
         "https://museumdb.onrender.com/manage-exhibition",
         {
@@ -201,7 +199,7 @@ const ManageExhibitions = () => {
             <th>End Date</th>
             <th>Budget ($)</th>
             <th>Location</th>
-            <th>Tickets Sold</th>
+            <th>Ticket Required</th>
             <th>Themes</th>
             <th># Artworks</th>
             <th>Actions</th>
@@ -216,7 +214,7 @@ const ManageExhibitions = () => {
               <td>{new Date(exhibition.End_Date).toLocaleDateString()}</td>
               <td>${parseFloat(exhibition.Budget).toLocaleString()}</td>
               <td>{exhibition.Location}</td>
-              <td>{exhibition.Num_Tickets_Sold}</td>
+              <td>{exhibition.requires_ticket ? "Yes" : "No"}</td>
               <td>{exhibition.Themes}</td>
               <td>{exhibition.Num_Of_Artworks}</td>
               <td>

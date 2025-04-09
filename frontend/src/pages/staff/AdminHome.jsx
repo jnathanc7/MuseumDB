@@ -1,6 +1,6 @@
 import "../../styles/admin.css";
 import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react"; 
+import { useState, useEffect } from "react"; 
 
 
 const AdminHome = () => {
@@ -10,12 +10,19 @@ const AdminHome = () => {
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
-      // Fetch recent notifications
-      fetch("http://localhost:5000/notifications")  // or your deployed URL
-        .then(res => res.json())
-        .then(data => setNotifications(data))
-        .catch(err => console.error("Failed to fetch notifications:", err));
+      const fetchNotifications = async () => {
+        try {
+          const response = await fetch("https://museumdb.onrender.com/notifications");
+          const data = await response.json();
+          setNotifications(data);
+        } catch (err) {
+          console.error("Failed to fetch notifications:", err);
+        }
+      };
+    
+      fetchNotifications();
     }, []);
+    
 
     // Function to handle dropdown selection
     const handleNavigation = (event) => {
@@ -109,6 +116,7 @@ const AdminHome = () => {
                 <option value="/admin/manage-artworks">Manage Artworks</option>
                 <option value="/admin/manage-exhibits">Manage Exhibits</option>
                 <option value="/admin/manage-giftshop">Manage Gift Shop</option>
+                <option value="/admin/manage-tickets">Manage Tickets</option>
             </select>
         </div>
 
