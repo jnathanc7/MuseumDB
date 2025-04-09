@@ -69,7 +69,7 @@ const server = http.createServer((req, res) => {
         return;
     }
     else if (parsedUrl.pathname.startsWith("/exhibition-purchases")) {
-        ticketsRoutes(req, res);
+        exhibitionRoutes(req, res);
         return;
     }
     
