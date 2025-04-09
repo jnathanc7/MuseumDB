@@ -107,14 +107,12 @@ const ExhibitionReport = () => {
   };
 
   // Filter exhibitions based on search, date range (using both Start_Date and End_Date) and special filter.
-  // We require that the exhibition's date range overlaps with the filter range.
   const filteredExhibitions = exhibitions.filter((exhibition) => {
     const exhibitionNameMatch = exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase());
-
     const exhibitionStart = new Date(exhibition.Start_Date);
     const exhibitionEnd = new Date(exhibition.End_Date);
-
-    // Check that the exhibition ends on or after filterStartDate and starts on or before filterEndDate.
+    // Check that the exhibition's End_Date is on/after filterStartDate
+    // and its Start_Date is on/before filterEndDate.
     const passesStartFilter = filterStartDate ? exhibitionEnd >= new Date(filterStartDate) : true;
     const passesEndFilter = filterEndDate ? exhibitionStart <= new Date(filterEndDate) : true;
 
@@ -124,8 +122,8 @@ const ExhibitionReport = () => {
     } else if (specialFilter === "regular") {
       specialMatch = exhibition.requires_ticket === false || exhibition.requires_ticket === 0;
     }
-    
-    // For debugging, log the requires_ticket value for each exhibition.
+
+    // Log for debugging the requires_ticket value.
     console.log(`Exhibition ${exhibition.Exhibition_ID} requires_ticket:`, exhibition.requires_ticket);
 
     return exhibitionNameMatch && passesStartFilter && passesEndFilter && specialMatch;
@@ -145,7 +143,7 @@ const ExhibitionReport = () => {
   };
 
   // Compute totals:
-  // For special exhibitions (those that require a ticket), sum each individually.
+  // For special exhibitions (requires_ticket true), sum each exhibition's aggregated value individually.
   const specialExhibitions = filteredExhibitions.filter(
     (ex) => ex.requires_ticket === true || ex.requires_ticket === 1
   );
@@ -158,14 +156,25 @@ const ExhibitionReport = () => {
     return acc + Number(agg.Tickets_Bought || 0);
   }, 0);
 
-  // For regular exhibitions (requires_ticket false), use the aggregated record (Exhibition_ID === null) only once.
-  const hasRegularExhibition = filteredExhibitions.some(
+  // For regular exhibitions (requires_ticket false), take the aggregated data
+  // from the first regular exhibition only (to avoid duplication).
+  const regularExhibitions = filteredExhibitions.filter(
     (ex) => ex.requires_ticket === false || ex.requires_ticket === 0
   );
-  const regularAgg = exhibitionPurchases.find((item) => item.Exhibition_ID === null) || { Amount_Made: 0, Tickets_Bought: 0 };
-  const regularTotalAmount = hasRegularExhibition ? Number(regularAgg.Amount_Made) : 0;
-  const regularTotalTickets = hasRegularExhibition ? Number(regularAgg.Tickets_Bought) : 0;
+  let regularTotalAmount = 0;
+  let regularTotalTickets = 0;
+  if (regularExhibitions.length > 0) {
+    const firstRegular = regularExhibitions[0];
+    const agg = exhibitionPurchases.find(
+      (item) => Number(item.Exhibition_ID) === Number(firstRegular.Exhibition_ID)
+    );
+    if (agg) {
+      regularTotalAmount = Number(agg.Amount_Made);
+      regularTotalTickets = Number(agg.Tickets_Bought);
+    }
+  }
 
+  // Combine the totals: special sums added individually and regular aggregated once.
   const totalAmountMade = specialTotalAmount + regularTotalAmount;
   const totalTicketsBought = specialTotalTickets + regularTotalTickets;
   const totalComplaints = filteredExhibitions.reduce((acc, ex) => acc + Number(ex.Num_Complaints || 0), 0);
@@ -288,4 +297,3 @@ const ExhibitionReport = () => {
 };
 
 export default ExhibitionReport;
-
