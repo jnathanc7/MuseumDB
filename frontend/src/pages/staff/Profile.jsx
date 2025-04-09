@@ -14,6 +14,10 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [purchaseHistory, setPurchaseHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +52,7 @@ const Profile = () => {
         }
 
         const unifiedProfile = {
+          id: data.customer_id,
           role: data.role,
           first_name: data.first_name || "",
           last_name: data.last_name || "",
@@ -71,6 +76,26 @@ const Profile = () => {
 
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    const fetchPurchases = async () => {
+      try {
+        if (user?.role === "customer" && user?.id) {
+          console.log("Fetching purchases for customer_id:", user.id);
+          const res = await fetch(`https://museumdb.onrender.com/customer/purchases?id=${user.id}`, {
+            credentials: "include",
+          });
+          const data = await res.json();
+          setPurchaseHistory(data);
+        }
+      } catch (err) {
+        console.error("Failed to load purchase history:", err);
+      }
+    };
+  
+    fetchPurchases();
+  }, [user]);
+  
 
   // Redirect to /auth if profile failed to load (likely logged out)
   useEffect(() => {
@@ -200,6 +225,21 @@ const Profile = () => {
 
   return (
     <main className="profile-container">
+       {/* Floating button outside the card */}
+       
+       {purchaseHistory.length > 0 && (
+    <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
+      <button
+        className="edit-button"
+        style={{ backgroundColor: "#2980b9" }}
+        onClick={() => setShowHistory(!showHistory)}
+      >
+        {showHistory ? "Hide Purchase History" : "Purchase History"}
+      </button>
+    </div>
+        )}
+
+      
       <div className="profile-card">
         <h1 className="profile-title">Profile</h1>
         {saveStatus && <p className="save-status">{saveStatus}</p>}
@@ -303,8 +343,10 @@ const Profile = () => {
                 <p><strong>Birthdate:</strong> {user.birthdate}</p>
                 <p><strong>Email:</strong> {user.email}</p>
                 <p><strong>Customer Type:</strong> {user.customer_type}</p>
+               
               </>
-            ) : (
+            ) 
+            : (
               <>
                 <p><strong>Name:</strong> {user.first_name} {user.last_name}</p>
                 <p><strong>Phone:</strong> {user.phone}</p>
@@ -332,8 +374,51 @@ const Profile = () => {
               </button>
             </div>
           </div>
+          
+
         )}
       </div>
+
+      {showHistory && (
+  <div className="modal-overlay">
+    <div className="modal-box">
+      <h2>Purchase History</h2>
+      <ul className="history-list">
+        {purchaseHistory.map((p, i) => (
+          <li key={i} className="history-row">
+            <strong>{new Date(p.Date).toLocaleDateString()}</strong> |{" "}
+            <strong>Type:</strong> {p.Type} |{" "}
+            {p.Type === "ticket" ? (
+              <>
+                <strong>Ticket:</strong> {p.Ticket_Type} |{" "}
+                <strong>Qty:</strong> {p.Quantity} |{" "}
+                <strong>Price:</strong> ${p.Price} |{" "}
+                <strong>Total:</strong> ${p.Total}
+
+
+              </>
+            ) : p.Type === "giftshop" ? (
+              <>
+                <strong>Total:</strong> ${p.Amount} |{" "}
+                <strong>Payment:</strong> {p.Payment_Method}
+              </>
+            ) : p.Type === "membership" ? (
+              <>
+                <strong>Plan:</strong> {p.membership_type} ({p.payment_type}) |{" "}
+                <strong>Paid:</strong> ${p.payment_amount} |{" "}
+                <strong>Status:</strong> {p.status}
+              </>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+      <button className="close-button" onClick={() => setShowHistory(false)}>Close</button>
+    </div>
+  </div>
+)}
+
+
+
     </main>
   );
 };
