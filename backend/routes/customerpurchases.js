@@ -13,10 +13,18 @@ module.exports = (req, res) => {
     }
   
     const purchaseQuery = `
-    SELECT pt.Purchase_ID, pt.Quantity, pt.Ticket_Type, pt.Price, p.Date_Purchased AS Date, 'ticket' AS Type
-    FROM purchase_tickets pt
-    JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
-    WHERE p.Customer_ID = ?
+        SELECT 
+        pt.Purchase_ID, 
+        pt.Quantity, 
+        pt.Ticket_Type, 
+        pt.Price, 
+        (pt.Quantity * pt.Price) AS Total,
+        p.Date_Purchased AS Date, 
+        'ticket' AS Type
+        FROM purchase_tickets pt
+        JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
+        WHERE p.Customer_ID = ?
+
   `;
   
   
