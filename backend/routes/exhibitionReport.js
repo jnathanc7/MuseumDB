@@ -20,11 +20,13 @@ module.exports = (req, res) => {
     if (parsedUrl.pathname === "/exhibition-report" && method === "GET") {
         // Uncomment the next line to require authentication (staff or admin)
         // return authMiddleware(["staff", "admin"])(req, res, () => {
-            db.query("SELECT * FROM exhibitions", (err, results) => {
+            const sql = "SELECT e.*, COUNT(c.Complaint_ID) AS complaintCount, AVG(c.Complaint_Rating) AS averageReview FROM exhibitions e LEFT JOIN complaints c  ON c.Complaint_Type = e.Name GROUP BY e.Exhibition_ID"
+            db.query(sql, (err, results) => {
                 if (err) {
                     res.writeHead(500, { "Content-Type": "application/json" });
                     return res.end(JSON.stringify({ message: "Error retrieving exhibitions", error: err }));
                 }
+                console.log("for exhibit report: ", results)
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify(results));
             });

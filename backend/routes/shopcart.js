@@ -111,6 +111,10 @@ module.exports = (req, res) => {
             const itemQuery = "INSERT INTO gift_shop_items (Transaction_ID, Product_ID, Quantity, Price_Per_Unit) VALUES ?"
             db.query(itemQuery,[itemInserts], (err2) => {
                 if (err2) {
+                    if(err2.sqlState === '45000') {
+                        res.writeHead(400, { "Content-Type": "application/json" });
+                        return res.end(JSON.stringify({ message: err2.message }));
+                    }
                     res.writeHead(500, { "Content-Type": "application/json" });
                     return res.end(JSON.stringify({ message: "Error inserting items", error: err2 }));
                 }

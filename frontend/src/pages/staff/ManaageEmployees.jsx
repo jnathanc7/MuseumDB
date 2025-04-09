@@ -16,7 +16,7 @@ const ManageEmployees = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // State to handle modal visibility
 
     useEffect(() => { // https://museumdb.onrender.com/auth/profile
-        fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
+        fetch("https://museumdb.onrender.com/auth/profile", { // https://museumdb.onrender.com/auth/profile
           method: "GET",
           credentials: "include"
         })
