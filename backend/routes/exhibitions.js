@@ -23,6 +23,37 @@ module.exports = (req, res) => {
     return res.end();
   }
 
+  // NEW: Aggregation endpoint for exhibition purchases
+  if (method === "GET" && parsedUrl.pathname === "/exhibition-purchases") {
+    // This query joins purchase_tickets with tickets to get the Exhibition_ID from tickets,
+    // then aggregates total quantity and revenue per exhibition.
+    const query = `
+      SELECT 
+        t.Exhibition_ID,
+        SUM(pt.Quantity) AS Tickets_Bought,
+        SUM(pt.Quantity * pt.Price) AS Amount_Made
+      FROM purchase_tickets pt
+      JOIN tickets t ON pt.Ticket_ID = t.Ticket_ID
+      GROUP BY t.Exhibition_ID;
+    `;
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error("Error aggregating exhibition purchases:", err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        return res.end(
+          JSON.stringify({
+            error: "Error aggregating exhibition data",
+            details: err.message,
+          })
+        );
+      }
+      console.log("Aggregated exhibition purchases:", results);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify(results));
+    });
+    return;
+  }
+
   // GET /manage-exhibition - Retrieve all active exhibitions
   if (parsedUrl.pathname === "/manage-exhibition" && method === "GET") {
     // Optionally use authMiddleware(["staff", "admin"]) here
@@ -37,37 +68,6 @@ module.exports = (req, res) => {
               error: err,
             })
           );
-        }
-
-        if (
-          method === "GET" &&
-          parsedUrl.pathname === "/exhibition-purchases"
-        ) {
-          const query = `
-              SELECT 
-                t.Exhibition_ID,
-                SUM(pt.Quantity) AS Tickets_Bought,
-                SUM(pt.Quantity * pt.Price) AS Amount_Made
-              FROM purchase_tickets pt
-              JOIN tickets t ON pt.Ticket_ID = t.Ticket_ID
-              GROUP BY t.Exhibition_ID;
-            `;
-          db.query(query, (err, results) => {
-            if (err) {
-              console.error("Error aggregating exhibition purchases:", err);
-              res.writeHead(500, { "Content-Type": "application/json" });
-              return res.end(
-                JSON.stringify({
-                  error: "Error aggregating exhibition data",
-                  details: err.message,
-                })
-              );
-            }
-            console.log("Aggregated exhibition purchases:", results);
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(results));
-          });
-          return;
         }
 
         // Convert any binary exhibition_image to a Base64 data URL
