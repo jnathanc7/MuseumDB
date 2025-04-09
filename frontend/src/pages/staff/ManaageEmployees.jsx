@@ -5,6 +5,9 @@ import "../../styles/admin.css"; // Make sure your CSS handles modal styles
 const ManageEmployees = () => {
     const navigate = useNavigate();
 
+    const [filterStatus, setFilterStatus] = useState("all"); // "all", "active", or "inactive"
+
+
     const [employees, setEmployees] = useState([]);
     const [newEmployee, setNewEmployee] = useState({
         firstName: "", lastName: "", phoneNumber: "", email:"", department:"" , position: "", hireDate: "", salary: "", status: true
@@ -33,22 +36,31 @@ const ManageEmployees = () => {
           });
       }, []);
 
-    useEffect(() => {
+      useEffect(() => {
         fetchEmployees();
-    }, []);
+    }, [filterStatus]);
+    
 
     const fetchEmployees = async () => {
-        try { // https://museumdb.onrender.com/employees
-            const response = await fetch(`https://museumdb.onrender.com/employees`, { // http://localhost:5000/employees
+        try {
+            const response = await fetch("http://localhost:5000/employees", {
                 credentials: "include"
-            });  //azure.net
+            });
             const data = await response.json();
-            console.log("Fetched Employees Data:", data); 
-            setEmployees(data); // Update state with actual database employees
+            console.log("Fetched Employees Data:", data);
+    
+            const filtered = data.filter(emp => {
+                if (filterStatus === "active") return emp.Active_Status === 1;
+                if (filterStatus === "inactive") return emp.Active_Status === 0;
+                return true; // "all"
+            });
+    
+            setEmployees(filtered);
         } catch (error) {
             console.error("Error fetching employees:", error);
         }
     };
+    
 
     // Handle input changes
     const handleInputChange = (e) => {
@@ -124,10 +136,35 @@ const ManageEmployees = () => {
 
     return (
         <main className="manage-employees-container">
-        <div className="manage-header"></div>
+       
 
         <div className="manage-header">
             <h1 className="page-title">Manage Employees</h1>
+            
+
+            <div className="filter-buttons">
+                <button
+                    className={filterStatus === "all" ? "active" : ""}
+                    onClick={() => setFilterStatus("all")}
+                >
+                    All
+                </button>
+                <button
+                    className={filterStatus === "active" ? "active" : ""}
+                    onClick={() => setFilterStatus("active")}
+                >
+                    Active
+                </button>
+                <button
+                    className={filterStatus === "inactive" ? "active" : ""}
+                    onClick={() => setFilterStatus("inactive")}
+                >
+                    Inactive
+                </button>
+            </div>
+
+           
+
             <button className="open-modal-button" onClick={() => setIsModalOpen(true)}>Add Employee</button>
         </div>
             {/* Employee Table */}
