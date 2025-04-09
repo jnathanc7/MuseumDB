@@ -113,7 +113,7 @@ const ManageTickets = () => {
     if (exhibition && exhibition.requires_ticket && ticket.Ticket_Type === exhibition.Name) {
       return exhibition.Name;
     } else {
-      return "N/A";
+      return "Regular";
     }
   };
 
