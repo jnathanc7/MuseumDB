@@ -103,6 +103,38 @@
     margin: 0;
 }
 
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    margin-left: 150px; 
+
+  }
+  
+  .filter-buttons button {
+    padding: 8px 14px;
+    font-size: 14px;
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .filter-buttons button:hover {
+    background-color: #e6e6e6;
+  }
+  
+  .filter-buttons button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  
+  
+
 /* "Add Employee" Button */
 .open-modal-button {
     background-color: #007bff;
