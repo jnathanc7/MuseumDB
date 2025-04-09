@@ -30,7 +30,7 @@ const Header = () => {
     const checkLogin = async () => {
       console.log("[Header] Checking login...");
       try {
-        const res = await fetch("https://museumdb.onrender.com/auth/profile", { // http://localhost:5000/auth/profile
+        const res = await fetch("https://museumdb.onrender.com/auth/profile", { // https://museumdb.onrender.com/auth/profile
           method: "GET", // https://museumdb.onrender.com/auth/profile
           credentials: "include",
         });
@@ -63,7 +63,7 @@ const Header = () => {
 useEffect(() => {
   const handleRefresh = () => {
     if (userRole === "admin") {
-      // fetch("http://localhost:5000/notifications?status=unread")
+      // fetch("https://museumdb.onrender.com/notifications?status=unread")
          fetch("https://museumdb.onrender.com/notifications?status=unread")
 
         .then(res => res.json())

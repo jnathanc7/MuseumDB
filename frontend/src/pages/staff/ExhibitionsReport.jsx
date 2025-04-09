@@ -1,25 +1,23 @@
 import { useState, useEffect } from "react";
-import "../../styles/reports.css"; // New custom CSS file for report styles
+import "../../styles/reports.css"; // Custom CSS file for report styles
 
 const ExhibitionReport = () => {
   const [exhibitions, setExhibitions] = useState([]);
+  const [exhibitionPurchases, setExhibitionPurchases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [newExhibition, setNewExhibition] = useState({
-    Name: "",
-    Tickets_Bought: "",
-    Amount_Made: "",
-    Num_Complaints: "",
-    IsActive: true
-  });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Date filter state variables
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
+  // Special exhibition filter: "" for all, "special" for those that require a ticket, "regular" for those that do not.
+  const [specialFilter, setSpecialFilter] = useState("");
 
   useEffect(() => {
     fetchExhibitions();
+    fetchExhibitionPurchases();
   }, []);
 
   const fetchExhibitions = async () => {
     try {
-      // Replace with your actual endpoint
       const response = await fetch("https://museumdb.onrender.com/exhibition-report");
       if (!response.ok) {
         throw new Error("Failed to fetch exhibitions");
@@ -29,7 +27,7 @@ const ExhibitionReport = () => {
       if (Array.isArray(data)) {
         setExhibitions(data);
       } else {
-        console.error("Data is not an array:", data);
+        console.error("Exhibitions data is not an array:", data);
         setExhibitions([]);
       }
     } catch (error) {
@@ -37,97 +35,211 @@ const ExhibitionReport = () => {
     }
   };
 
-  const handleInputChange = (e) => {
-    setNewExhibition({ ...newExhibition, [e.target.name]: e.target.value });
-  };
-
-  const addExhibition = async () => {
-    // Validate required fields
-    if (
-      !newExhibition.Name ||
-      !newExhibition.Tickets_Bought ||
-      !newExhibition.Amount_Made
-    ) {
-      alert("Please fill out the required fields: Name, Tickets Bought, and Amount Made.");
-      return;
-    }
-
+  const fetchExhibitionPurchases = async () => {
     try {
-      const response = await fetch("https://museumdb.onrender.com/exhibition-report", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newExhibition)
-      });
-      const result = await response.json();
-      if (response.ok) {
-        alert(result.message || "Exhibition added successfully!");
-        fetchExhibitions();
-        // Reset the form fields
-        setNewExhibition({
-          Name: "",
-          Tickets_Bought: "",
-          Amount_Made: "",
-          Num_Complaints: "",
-          IsActive: true
-        });
-        setIsModalOpen(false);
-      } else {
-        alert("Error adding exhibition.");
+      const response = await fetch("https://museumdb.onrender.com/exhibition-purchases");
+      if (!response.ok) {
+        throw new Error("Failed to fetch exhibition purchase data");
       }
+      const data = await response.json();
+     
+      setExhibitionPurchases(data);
     } catch (error) {
-      console.error("Failed to add exhibition:", error);
+      console.error("Error fetching exhibition purchases:", error);
     }
   };
 
-  // Filter exhibitions based on search query
-  const filteredExhibitions = exhibitions.filter((exhibition) =>
-    exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Helper function to format a Date as "YYYY-MM-DD"
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
-  // Aggregate calculations for the summary section
-  const totalExhibits = filteredExhibitions.length;
-  const totalTicketsBought = filteredExhibitions.reduce(
-    (acc, curr) => acc + Number(curr.Tickets_Bought),
-    0
+  // Quick filter functions for date ranges
+  const setLastWeek = () => {
+    const today = new Date();
+    const lastWeek = new Date(today);
+    lastWeek.setDate(today.getDate() - 7);
+    setFilterStartDate(formatDate(lastWeek));
+    setFilterEndDate(formatDate(today));
+  };
+
+  const setLastMonth = () => {
+    const today = new Date();
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(today.getMonth() - 1);
+    setFilterStartDate(formatDate(lastMonth));
+    setFilterEndDate(formatDate(today));
+  };
+
+  const setLastYear = () => {
+    const today = new Date();
+    const lastYear = new Date(today);
+    lastYear.setFullYear(today.getFullYear() - 1);
+    setFilterStartDate(formatDate(lastYear));
+    setFilterEndDate(formatDate(today));
+  };
+
+  const clearDateFilter = () => {
+    setFilterStartDate("");
+    setFilterEndDate("");
+  };
+
+  // Handler for the quick date range dropdown change
+  const handleQuickFilterChange = (e) => {
+    const option = e.target.value;
+    if (option === "lastWeek") {
+      setLastWeek();
+    } else if (option === "lastMonth") {
+      setLastMonth();
+    } else if (option === "lastYear") {
+      setLastYear();
+    } else {
+      clearDateFilter();
+    }
+  };
+
+  // Handler for special exhibition filter dropdown
+  const handleSpecialFilterChange = (e) => {
+    setSpecialFilter(e.target.value);
+  };
+
+  // Filter exhibitions based on search, date range (using both Start_Date and End_Date) and special filter.
+  const filteredExhibitions = exhibitions.filter((exhibition) => {
+    const exhibitionNameMatch = exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase());
+    const exhibitionStart = new Date(exhibition.Start_Date);
+    const exhibitionEnd = new Date(exhibition.End_Date);
+    // Check that the exhibition's End_Date is on/after filterStartDate
+    // and its Start_Date is on/before filterEndDate.
+    const passesStartFilter = filterStartDate ? exhibitionEnd >= new Date(filterStartDate) : true;
+    const passesEndFilter = filterEndDate ? exhibitionStart <= new Date(filterEndDate) : true;
+
+    let specialMatch = true;
+    if (specialFilter === "special") {
+      specialMatch = exhibition.requires_ticket === 1;
+    } else if (specialFilter === "regular") {
+      specialMatch = exhibition.requires_ticket === 0;
+    }
+
+    return exhibitionNameMatch && passesStartFilter && passesEndFilter && specialMatch;
+  });
+
+  // Helper: Get aggregated purchase data for an exhibition.
+  const getAggregatedDataForExhibition = (exhibition) => {
+    const agg = exhibitionPurchases.find(
+      (item) => Number(item.Exhibition_ID) === Number(exhibition.Exhibition_ID)
+    );
+    if (!agg) {
+      console.log(`For exhibition ${exhibition.Exhibition_ID}, no aggregated record found—using default.`);
+      return { Tickets_Bought: 0, Amount_Made: 0 };
+    }
+    console.log(`For exhibition ${exhibition.Exhibition_ID}, aggregated data:`, agg);
+    return agg;
+  };
+
+  // Compute totals:
+  // For special exhibitions (requires_ticket true), sum each exhibition's aggregated value individually.
+  const specialExhibitions = filteredExhibitions.filter(
+    (ex) => ex.requires_ticket === 1
   );
-  const totalAmountMade = filteredExhibitions.reduce(
-    (acc, curr) => acc + Number(curr.Amount_Made),
-    0
+  const specialTotalAmount = specialExhibitions.reduce((acc, ex) => {
+    const agg = getAggregatedDataForExhibition(ex);
+    return acc + Number(agg.Amount_Made || 0);
+  }, 0);
+  const specialTotalTickets = specialExhibitions.reduce((acc, ex) => {
+    const agg = getAggregatedDataForExhibition(ex);
+    return acc + Number(agg.Tickets_Bought || 0);
+  }, 0);
+
+  // For regular exhibitions (requires_ticket false), take the aggregated data
+  // from the first regular exhibition only (to avoid duplication).
+  const regularExhibitions = filteredExhibitions.filter(
+    (ex) => ex.requires_ticket === 0
   );
-  const totalComplaints = filteredExhibitions.reduce(
-    (acc, curr) => acc + Number(curr.Num_Complaints),
-    0
-  );
+  let regularTotalAmount = 0;
+  let regularTotalTickets = 0;
+  if (regularExhibitions.length > 0) {
+    const firstRegular = regularExhibitions[0];
+    const agg = exhibitionPurchases.find(
+      (item) => Number(item.Exhibition_ID) === Number(firstRegular.Exhibition_ID)
+    );
+    if (agg) {
+      regularTotalAmount = Number(agg.Amount_Made);
+      regularTotalTickets = Number(agg.Tickets_Bought);
+    }
+  }
+
+  // Combine the totals: special sums added individually and regular aggregated once.
+  const totalAmountMade = specialTotalAmount + regularTotalAmount;
+  const totalTicketsBought = specialTotalTickets + regularTotalTickets;
+  const totalComplaints = filteredExhibitions.reduce((acc, ex) => acc + Number(ex.Num_Complaints || 0), 0);
 
   return (
     <main className="exh-report-container">
       <div className="exh-report-header">
         <h1>Exhibition Report</h1>
-        <button
-          className="exh-btn exh-btn-open"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Add Exhibition
-        </button>
       </div>
 
-      {/* Total Summary Section at the Top */}
+      {/* Combined Controls: Quick Date Range Dropdown, Manual Date Inputs, Special Filter, and Search Bar */}
+      <div className="exh-report-controls">
+        <div className="exh-report-date-controls">
+          <div className="exh-report-date-select">
+            <select id="quickDateRange" onChange={handleQuickFilterChange}>
+              <option value="">--Select Range--</option>
+              <option value="lastWeek">Last Week</option>
+              <option value="lastMonth">Last Month</option>
+              <option value="lastYear">Last Year</option>
+              <option value="clear">Clear</option>
+            </select>
+          </div>
+          <div className="exh-report-manual-dates">
+            <div>
+              <label htmlFor="startDate">Start Date:</label>
+              <input
+                id="startDate"
+                type="date"
+                value={filterStartDate}
+                onChange={(e) => setFilterStartDate(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="endDate">End Date:</label>
+              <input
+                id="endDate"
+                type="date"
+                value={filterEndDate}
+                onChange={(e) => setFilterEndDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="exh-report-special-filter">
+            <label htmlFor="specialFilter">Special Exhibition:</label>
+            <select id="specialFilter" onChange={handleSpecialFilterChange}>
+              <option value="">All</option>
+              <option value="special">Special Only</option>
+              <option value="regular">Regular Only</option>
+            </select>
+          </div>
+        </div>
+        <div className="exh-report-search">
+          <input
+            type="text"
+            placeholder="Search exhibitions..."
+            className="search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Total Summary Section */}
       <div className="exh-report-summary">
-        <div>Total Exhibits: {totalExhibits}</div>
+        <div>Total Exhibits: {filteredExhibitions.length}</div>
         <div>Total Tickets Bought: {totalTicketsBought}</div>
         <div>Total Amount Made: ${parseFloat(totalAmountMade).toLocaleString()}</div>
         <div>Total Complaints: {totalComplaints}</div>
-      </div>
-
-      {/* Search Filter */}
-      <div className="exh-report-search">
-        <input
-          type="text"
-          placeholder="Search exhibitions..."
-          className="search-input"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
       </div>
 
       {/* Exhibitions Table */}
@@ -135,8 +247,10 @@ const ExhibitionReport = () => {
         <table className="exh-report-table">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Exhibit Name</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Special Exhibition</th>
               <th>Tickets Bought</th>
               <th>Amount Made ($)</th>
               <th># Of Reviews</th>
@@ -145,93 +259,31 @@ const ExhibitionReport = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredExhibitions.map((exhibition) => (
-              <tr key={exhibition.Exhibition_ID}>
-                <td>{exhibition.Exhibition_ID}</td>
-                <td>{exhibition.Name}</td>
-                <td>{exhibition.Tickets_Bought}</td>
-                <td>${parseFloat(exhibition.Amount_Made).toLocaleString()}</td>
-                <td>{exhibition.complaintCount}</td>
-                <td>{exhibition.averageReview !== null ? Number(exhibition.averageReview).toFixed(1) : 'N/A'}</td>
-                <td>
-                  {exhibition.IsActive ? (
-                    <span className="badge-active">Active</span>
-                  ) : (
-                    <span className="badge-inactive">Inactive</span>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {filteredExhibitions.map((exhibition) => {
+              const agg = getAggregatedDataForExhibition(exhibition);
+              return (
+                <tr key={exhibition.Exhibition_ID}>
+                  <td>{exhibition.Name}</td>
+                  <td>{new Date(exhibition.Start_Date).toLocaleDateString()}</td>
+                  <td>{new Date(exhibition.End_Date).toLocaleDateString()}</td>
+                  <td>{(exhibition.requires_ticket === true || exhibition.requires_ticket === 1) ? "Yes" : "No"}</td>
+                  <td>{agg.Tickets_Bought}</td>
+                  <td>${parseFloat(agg.Amount_Made).toLocaleString()}</td>
+                  <td>{exhibition.complaintCount}</td>
+                  <td>{exhibition.averageReview !== null ? Number(exhibition.averageReview).toFixed(1) : 'N/A'}</td>
+                  <td>
+                    {exhibition.IsActive ? (
+                      <span className="badge-active">Active</span>
+                    ) : (
+                      <span className="badge-inactive">Inactive</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
-
-      {/* Modal for Adding New Exhibition */}
-      {isModalOpen && (
-        <div className="exh-modal-overlay">
-          <div className="exh-modal-content">
-            <h2>Add New Exhibition</h2>
-            <input
-              type="text"
-              name="Name"
-              placeholder="Exhibition Name"
-              value={newExhibition.Name}
-              onChange={handleInputChange}
-              className="exh-input"
-            />
-            <input
-              type="number"
-              name="Tickets_Bought"
-              placeholder="Tickets Bought"
-              value={newExhibition.Tickets_Bought}
-              onChange={handleInputChange}
-              className="exh-input"
-            />
-            <input
-              type="number"
-              step="0.01"
-              name="Amount_Made"
-              placeholder="Amount Made"
-              value={newExhibition.Amount_Made}
-              onChange={handleInputChange}
-              className="exh-input"
-            />
-            <input
-              type="number"
-              name="Num_Complaints"
-              placeholder="# Of Complaints"
-              value={newExhibition.Num_Complaints}
-              onChange={handleInputChange}
-              className="exh-input"
-            />
-            <select
-              name="IsActive"
-              value={newExhibition.IsActive}
-              onChange={(e) =>
-                setNewExhibition({
-                  ...newExhibition,
-                  IsActive: e.target.value === "true"
-                })
-              }
-              className="exh-input"
-            >
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-            </select>
-            <div className="exh-modal-buttons">
-              <button className="exh-btn exh-btn-add" onClick={addExhibition}>
-                Add Exhibition
-              </button>
-              <button
-                className="exh-btn exh-btn-close"
-                onClick={() => setIsModalOpen(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 };

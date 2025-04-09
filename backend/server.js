@@ -14,6 +14,8 @@ const contactRoutes = require("./routes/contact");
 const notificationRoutes = require("./routes/adminnotification");
 const manageGiftshopRoutes = require("./routes/manageGiftshop");
 const exhibitionRoutes = require("./routes/exhibitions");
+const customerPurchasesRoute = require("./routes/customerpurchases");
+
 
 const allowedOrigins = [
     "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
@@ -68,6 +70,11 @@ const server = http.createServer((req, res) => {
         // });
         return;
     }
+    else if (parsedUrl.pathname.startsWith("/exhibition-purchases")) {
+        exhibitionRoutes(req, res);
+        return;
+    }
+    
     else if (parsedUrl.pathname.startsWith("/exhibition-report")) {
         // authMiddleware(["staff", "admin"])(req, res, () => {
             exhibitionReportRoutes(req, res);
@@ -116,6 +123,10 @@ const server = http.createServer((req, res) => {
         notificationRoutes(req, res, parsedUrl); 
         return;
       }
+      else if (parsedUrl.pathname.startsWith("/customer/purchases")) {
+        customerPurchasesRoute(req, res, parsedUrl);
+        return;
+      }
       
       
     
@@ -123,6 +134,7 @@ const server = http.createServer((req, res) => {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ message: "Route not found" }));
     }
+    
 
 });
 

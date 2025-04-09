@@ -2,16 +2,15 @@ import { useState, useEffect } from "react";
 import "../../styles/manage.css";
 
 const ManageTickets = () => {
-  // State for tickets and exhibitions
+  // State for tickets and exhibitions (exhibitions are only used for displaying a title if linked)
   const [tickets, setTickets] = useState([]);
   const [exhibitions, setExhibitions] = useState([]);
   // Modal state for adding a new ticket
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  // Ticket form state, including an optional Exhibition_ID field
+  // Ticket form state - now only requires Ticket_Type and Price
   const [newTicket, setNewTicket] = useState({
     Ticket_Type: "",
     Price: "",
-    Exhibition_ID: "", // Optional; if provided, should be a number
   });
 
   // Fetch tickets and exhibitions on mount
@@ -64,16 +63,16 @@ const ManageTickets = () => {
     setter((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Submit the add ticket form
+  // Submit the add ticket form.
+  // This sends a POST request to /tickets with only the Ticket_Type and Price fields.
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Convert Exhibition_ID to a number if provided; otherwise set to null
       const ticketData = {
-        ...newTicket,
-        Exhibition_ID: newTicket.Exhibition_ID ? parseInt(newTicket.Exhibition_ID, 10) : null,
+        Ticket_Type: newTicket.Ticket_Type,
+        Price: newTicket.Price,
       };
-      const response = await fetch("https://museumdb.onrender.com/purchase", {
+      const response = await fetch("https://museumdb.onrender.com/tickets", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +87,6 @@ const ManageTickets = () => {
         setNewTicket({
           Ticket_Type: "",
           Price: "",
-          Exhibition_ID: "",
         });
         setIsAddModalOpen(false);
       } else {
@@ -99,22 +97,15 @@ const ManageTickets = () => {
     }
   };
 
-  // Helper function that returns the exhibition title for a given ticket.
-  // The logic is:
-  // - If ticket.Exhibition_ID exists, find that exhibition.
-  // - If found and exhibition.requires_ticket is true and the ticket's Ticket_Type
-  //   exactly matches the exhibition's Name, return the exhibition's Name.
-  // - Otherwise, return "N/A".
+  // Helper function to return the exhibition title for a given ticket.
+  // Since regular tickets are not linked to any exhibition, we return "Regular".
+  // If a ticket has an Exhibition_ID and the corresponding exhibition is found, we return its title.
   const getExhibitionTitle = (ticket) => {
-    if (!ticket.Exhibition_ID) return "N/A";
+    if (!ticket.Exhibition_ID) return "Regular";
     const exhibition = exhibitions.find(
       (ex) => ex.Exhibition_ID === ticket.Exhibition_ID
     );
-    if (exhibition && exhibition.requires_ticket && ticket.Ticket_Type === exhibition.Name) {
-      return exhibition.Name;
-    } else {
-      return "N/A";
-    }
+    return exhibition ? exhibition.Name : "Regular";
   };
 
   return (
@@ -199,16 +190,6 @@ const ManageTickets = () => {
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
 
-              <label>Exhibition ID (optional):</label>
-              <input
-                type="number"
-                name="Exhibition_ID"
-                placeholder="Exhibition ID"
-                value={newTicket.Exhibition_ID}
-                onChange={(e) => handleInputChange(e, setNewTicket)}
-                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
-              />
-
               <div
                 style={{
                   display: "flex",
@@ -236,3 +217,4 @@ const ManageTickets = () => {
 };
 
 export default ManageTickets;
+

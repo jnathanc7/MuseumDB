@@ -66,7 +66,7 @@ const TotalReport = () => {
     //             "total-memberships": "memberships"
     //         };
     
-    //         let url = "http://localhost:5000/total-report?";
+    //         let url = "https://museumdb.onrender.com/total-report?";
             
     //         if (reportType !== "total-sales") {
     //             url += `type=${typeMap[reportType]}&`;

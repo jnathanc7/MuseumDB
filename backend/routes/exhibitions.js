@@ -23,6 +23,53 @@ module.exports = (req, res) => {
     return res.end();
   }
 
+  // NEW: Aggregation endpoint for exhibition purchases
+  if (method === "GET" && parsedUrl.pathname === "/exhibition-purchases") {
+    const query = `
+      SELECT 
+        e.Exhibition_ID,
+        CASE 
+          WHEN e.requires_ticket THEN COALESCE(agg.Tickets_Bought, 0)
+          ELSE COALESCE(regular.Tickets_Bought, 0)
+        END AS Tickets_Bought,
+        CASE 
+          WHEN e.requires_ticket THEN COALESCE(agg.Amount_Made, 0)
+          ELSE COALESCE(regular.Amount_Made, 0)
+        END AS Amount_Made
+      FROM exhibitions e
+      LEFT JOIN (
+        SELECT 
+          t.Exhibition_ID,
+          SUM(pt.Quantity) AS Tickets_Bought,
+          SUM(pt.Quantity * pt.Price) AS Amount_Made
+        FROM purchase_tickets pt
+        JOIN tickets t ON pt.Ticket_ID = t.Ticket_ID
+        GROUP BY t.Exhibition_ID
+      ) agg ON e.Exhibition_ID = agg.Exhibition_ID
+      CROSS JOIN (
+        SELECT 
+          SUM(pt.Quantity) AS Tickets_Bought,
+          SUM(pt.Quantity * pt.Price) AS Amount_Made
+        FROM purchase_tickets pt
+        JOIN tickets t ON pt.Ticket_ID = t.Ticket_ID
+        WHERE t.Exhibition_ID IS NULL
+      ) regular
+      WHERE e.is_active = TRUE;
+    `;
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error("Error aggregating exhibition purchases:", err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ error: "Error aggregating exhibition data", details: err.message }));
+      }
+      console.log("Detailed Aggregated exhibition purchases:", results);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify(results));
+    });
+    return;
+  }
+  
+
   // GET /manage-exhibition - Retrieve all active exhibitions
   if (parsedUrl.pathname === "/manage-exhibition" && method === "GET") {
     // Optionally use authMiddleware(["staff", "admin"]) here
