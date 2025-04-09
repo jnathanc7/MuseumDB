@@ -21,7 +21,7 @@ const ManageTickets = () => {
 
   const fetchTickets = async () => {
     try {
-      // Now fetch all tickets (both Available and Sold)
+      // Fetch all tickets (both Available and Sold) for management
       const response = await fetch("https://museumdb.onrender.com/tickets");
       if (!response.ok) {
         throw new Error("Failed to fetch tickets");
@@ -59,6 +59,7 @@ const ManageTickets = () => {
     setter((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Submit the add ticket form
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -87,6 +88,7 @@ const ManageTickets = () => {
     }
   };
 
+  // Submit the edit ticket form
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -157,7 +159,7 @@ const ManageTickets = () => {
     }
   };
 
-  // Helper: Get exhibition title for a ticket.
+  // Helper: Get exhibition title for a ticket. If no Exhibition_ID, return "Regular".
   const getExhibitionTitle = (ticket) => {
     if (!ticket.Exhibition_ID) return "Regular";
     const exhibition = exhibitions.find((ex) => ex.Exhibition_ID === ticket.Exhibition_ID);
@@ -191,7 +193,7 @@ const ManageTickets = () => {
               <td>{ticket.Ticket_Type}</td>
               <td>${parseFloat(ticket.Price).toFixed(2)}</td>
               <td>{getExhibitionTitle(ticket)}</td>
-              <td>{ticket.Status}</td>
+              <td>{ticket.Status === "Sold" ? "Unavailable" : "Available"}</td>
               <td>
                 {ticket.Status === "Available" ? (
                   <>
