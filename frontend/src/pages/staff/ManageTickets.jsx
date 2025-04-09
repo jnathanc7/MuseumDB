@@ -2,16 +2,19 @@ import { useState, useEffect } from "react";
 import "../../styles/manage.css";
 
 const ManageTickets = () => {
-  // State for tickets and exhibitions (exhibitions are only used for displaying a title if linked)
+  // State for tickets and exhibitions (exhibitions are only used for display purposes)
   const [tickets, setTickets] = useState([]);
   const [exhibitions, setExhibitions] = useState([]);
-  // Modal state for adding a new ticket
+  // Modal state for adding a new ticket and editing an existing ticket
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  // Ticket form state - now only requires Ticket_Type and Price
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  // Ticket form state for adding a new ticket (only requires Ticket_Type and Price)
   const [newTicket, setNewTicket] = useState({
     Ticket_Type: "",
     Price: "",
   });
+  // Ticket form state for editing an existing ticket (allows editing Ticket_Type, Price, and Exhibition_ID)
+  const [editTicket, setEditTicket] = useState(null);
 
   // Fetch tickets and exhibitions on mount
   useEffect(() => {
@@ -19,7 +22,7 @@ const ManageTickets = () => {
     fetchExhibitions();
   }, []);
 
-  // Fetch tickets from the backend
+  // Fetch tickets from the backend (GET /tickets - should return only tickets with Status 'Available')
   const fetchTickets = async () => {
     try {
       const response = await fetch("https://museumdb.onrender.com/tickets");
@@ -38,7 +41,7 @@ const ManageTickets = () => {
     }
   };
 
-  // Fetch exhibitions from the backend
+  // Fetch exhibitions from the backend (GET /manage-exhibition)
   const fetchExhibitions = async () => {
     try {
       const response = await fetch("https://museumdb.onrender.com/manage-exhibition");
@@ -63,8 +66,7 @@ const ManageTickets = () => {
     setter((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Submit the add ticket form.
-  // This sends a POST request to /tickets with only the Ticket_Type and Price fields.
+  // Submit the add ticket form (POST /tickets)
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -83,11 +85,7 @@ const ManageTickets = () => {
       if (response.ok) {
         alert(result.message || "Ticket added successfully!");
         fetchTickets();
-        // Reset the form state
-        setNewTicket({
-          Ticket_Type: "",
-          Price: "",
-        });
+        setNewTicket({ Ticket_Type: "", Price: "" });
         setIsAddModalOpen(false);
       } else {
         alert("Error adding ticket.");
@@ -97,14 +95,59 @@ const ManageTickets = () => {
     }
   };
 
-  // Helper function to return the exhibition title for a given ticket.
-  // Since regular tickets are not linked to any exhibition, we return "Regular".
-  // If a ticket has an Exhibition_ID and the corresponding exhibition is found, we return its title.
+  // Submit the edit ticket form (PUT /tickets).
+  // Now allows editing Ticket_Type, Price, and Exhibition_ID.
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("https://museumdb.onrender.com/tickets", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editTicket),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message || "Ticket updated successfully!");
+        fetchTickets();
+        setEditTicket(null);
+        setIsEditModalOpen(false);
+      } else {
+        alert("Error updating ticket.");
+      }
+    } catch (error) {
+      console.error("Failed to update ticket:", error);
+    }
+  };
+
+  // Deactivate a ticket (updates Status to "Sold") using PUT /tickets/deactivate
+  const handleDeactivate = async (ticketID) => {
+    if (!window.confirm("Are you sure you want to deactivate this ticket?")) return;
+    try {
+      const response = await fetch("https://museumdb.onrender.com/tickets/deactivate", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ Ticket_ID: ticketID }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message || "Ticket deactivated successfully!");
+        fetchTickets();
+      } else {
+        alert("Error deactivating ticket.");
+      }
+    } catch (error) {
+      console.error("Failed to deactivate ticket:", error);
+    }
+  };
+
+  // Helper function: If a ticket is linked to an exhibition, returns its title; otherwise returns "Regular".
   const getExhibitionTitle = (ticket) => {
     if (!ticket.Exhibition_ID) return "Regular";
-    const exhibition = exhibitions.find(
-      (ex) => ex.Exhibition_ID === ticket.Exhibition_ID
-    );
+    const exhibition = exhibitions.find((ex) => ex.Exhibition_ID === ticket.Exhibition_ID);
     return exhibition ? exhibition.Name : "Regular";
   };
 
@@ -124,6 +167,7 @@ const ManageTickets = () => {
             <th>Ticket Type</th>
             <th>Price ($)</th>
             <th>Exhibition</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -133,6 +177,25 @@ const ManageTickets = () => {
               <td>{ticket.Ticket_Type}</td>
               <td>${parseFloat(ticket.Price).toFixed(2)}</td>
               <td>{getExhibitionTitle(ticket)}</td>
+              <td>
+                <button
+                  className="add-btn"
+                  style={{ marginRight: "5px" }}
+                  onClick={() => {
+                    setEditTicket(ticket);
+                    setIsEditModalOpen(true);
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  className="add-btn"
+                  style={{ backgroundColor: "#dc3545" }}
+                  onClick={() => handleDeactivate(ticket.Ticket_ID)}
+                >
+                  Deactivate
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -178,7 +241,6 @@ const ManageTickets = () => {
                 onChange={(e) => handleInputChange(e, setNewTicket)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Price ($):</label>
               <input
                 type="number"
@@ -189,7 +251,6 @@ const ManageTickets = () => {
                 onChange={(e) => handleInputChange(e, setNewTicket)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <div
                 style={{
                   display: "flex",
@@ -212,9 +273,93 @@ const ManageTickets = () => {
           </div>
         </div>
       )}
+
+      {/* Modal for Editing a Ticket */}
+      {isEditModalOpen && editTicket && (
+        <div
+          className="modal-overlay"
+          onClick={() => setIsEditModalOpen(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "#2c2a2a",
+              padding: "20px",
+              borderRadius: "5px",
+              width: "90%",
+              maxWidth: "400px",
+            }}
+          >
+            <h2 style={{ color: "#ffcc00" }}>Edit Ticket</h2>
+            <form onSubmit={handleEditSubmit}>
+              <label>Ticket Type:</label>
+              <input
+                type="text"
+                name="Ticket_Type"
+                placeholder="Ticket Type"
+                value={editTicket.Ticket_Type}
+                onChange={(e) => handleInputChange(e, setEditTicket)}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <label>Price ($):</label>
+              <input
+                type="number"
+                step="0.01"
+                name="Price"
+                placeholder="Price"
+                value={editTicket.Price}
+                onChange={(e) => handleInputChange(e, setEditTicket)}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <label>Exhibition ID (optional):</label>
+              <input
+                type="number"
+                name="Exhibition_ID"
+                placeholder="Exhibition ID"
+                value={editTicket.Exhibition_ID || ""}
+                onChange={(e) => handleInputChange(e, setEditTicket)}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "20px",
+                }}
+              >
+                <button type="submit" className="add-btn">
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  className="add-btn"
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setEditTicket(null);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default ManageTickets;
-
