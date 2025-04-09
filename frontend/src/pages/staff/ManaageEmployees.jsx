@@ -43,7 +43,8 @@ const ManageEmployees = () => {
 
     const fetchEmployees = async () => {
         try {
-            const response = await fetch("http://localhost:5000/employees", {
+            // const response = await fetch("http://localhost:5000/employees", {
+            const response = await fetch("https://museumdb.onrender.com/employees", {
                 credentials: "include"
             });
             const data = await response.json();
