@@ -5,6 +5,11 @@ const ExhibitionReport = () => {
   const [exhibitions, setExhibitions] = useState([]);
   const [exhibitionPurchases, setExhibitionPurchases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  // Date filter state variables (used by both manual inputs and dropdown)
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
+  // State for filtering by special exhibition status
+  const [specialFilter, setSpecialFilter] = useState("");
 
   useEffect(() => {
     fetchExhibitions();
@@ -44,27 +49,89 @@ const ExhibitionReport = () => {
     }
   };
 
-  // Filter exhibitions based on search query
-  const filteredExhibitions = exhibitions.filter((exhibition) =>
-    exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Helper function to format a Date object as "YYYY-MM-DD"
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  // Quick filter functions for date ranges
+  const setLastWeek = () => {
+    const today = new Date();
+    const lastWeek = new Date(today);
+    lastWeek.setDate(today.getDate() - 7);
+    setFilterStartDate(formatDate(lastWeek));
+    setFilterEndDate(formatDate(today));
+  };
+
+  const setLastMonth = () => {
+    const today = new Date();
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(today.getMonth() - 1);
+    setFilterStartDate(formatDate(lastMonth));
+    setFilterEndDate(formatDate(today));
+  };
+
+  const setLastYear = () => {
+    const today = new Date();
+    const lastYear = new Date(today);
+    lastYear.setFullYear(today.getFullYear() - 1);
+    setFilterStartDate(formatDate(lastYear));
+    setFilterEndDate(formatDate(today));
+  };
+
+  const clearDateFilter = () => {
+    setFilterStartDate("");
+    setFilterEndDate("");
+  };
+
+  // Handler for the quick date range dropdown change
+  const handleQuickFilterChange = (e) => {
+    const option = e.target.value;
+    if (option === "lastWeek") {
+      setLastWeek();
+    } else if (option === "lastMonth") {
+      setLastMonth();
+    } else if (option === "lastYear") {
+      setLastYear();
+    } else {
+      clearDateFilter();
+    }
+  };
+
+  // Handler for special exhibition filter dropdown
+  const handleSpecialFilterChange = (e) => {
+    setSpecialFilter(e.target.value);
+  };
+
+  // Filter exhibitions based on search query, date range (using Start_Date), and special exhibition filter.
+  const filteredExhibitions = exhibitions.filter((exhibition) => {
+    const exhibitionNameMatch = exhibition.Name.toLowerCase().includes(searchQuery.toLowerCase());
+    const exhibitionStart = new Date(exhibition.Start_Date);
+    const passesStartFilter = filterStartDate ? exhibitionStart >= new Date(filterStartDate) : true;
+    const passesEndFilter = filterEndDate ? exhibitionStart <= new Date(filterEndDate) : true;
+
+    let specialMatch = true;
+    if (specialFilter === "special") {
+      specialMatch = exhibition.requires_ticket === true;
+    } else if (specialFilter === "regular") {
+      specialMatch = exhibition.requires_ticket === false;
+    }
+    return exhibitionNameMatch && passesStartFilter && passesEndFilter && specialMatch;
+  });
 
   // Helper: Get aggregated purchase data for an exhibition.
-  // Look for the row with matching Exhibition_ID. If none exists, default to 0.
   const getAggregatedDataForExhibition = (exhibition) => {
     const agg = exhibitionPurchases.find(
       (item) => Number(item.Exhibition_ID) === Number(exhibition.Exhibition_ID)
     );
     if (!agg) {
-      console.log(
-        `For exhibition ${exhibition.Exhibition_ID}, no aggregated record found—using default.`
-      );
+      console.log(`For exhibition ${exhibition.Exhibition_ID}, no aggregated record found—using default.`);
       return { Tickets_Bought: 0, Amount_Made: 0 };
     }
-    console.log(
-      `For exhibition ${exhibition.Exhibition_ID}, aggregated data:`,
-      agg
-    );
+    console.log(`For exhibition ${exhibition.Exhibition_ID}, aggregated data:`, agg);
     return agg;
   };
 
@@ -91,6 +158,58 @@ const ExhibitionReport = () => {
         <h1>Exhibition Report</h1>
       </div>
 
+      {/* Combined Controls: Quick Date Range Dropdown, Manual Date Inputs, Special Filter, and Search Bar */}
+      <div className="exh-report-controls">
+        <div className="exh-report-date-controls">
+          <div className="exh-report-date-select">
+            <select id="quickDateRange" onChange={handleQuickFilterChange}>
+              <option value="">--Select Range--</option>
+              <option value="lastWeek">Last Week</option>
+              <option value="lastMonth">Last Month</option>
+              <option value="lastYear">Last Year</option>
+              <option value="clear">Clear</option>
+            </select>
+          </div>
+          <div className="exh-report-manual-dates">
+            <div>
+              <label htmlFor="startDate">Start Date:</label>
+              <input
+                id="startDate"
+                type="date"
+                value={filterStartDate}
+                onChange={(e) => setFilterStartDate(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="endDate">End Date:</label>
+              <input
+                id="endDate"
+                type="date"
+                value={filterEndDate}
+                onChange={(e) => setFilterEndDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="exh-report-special-filter">
+            <label htmlFor="specialFilter">Special Exhibition:</label>
+            <select id="specialFilter" onChange={handleSpecialFilterChange}>
+              <option value="">All</option>
+              <option value="special">Special Only</option>
+              <option value="regular">Regular Only</option>
+            </select>
+          </div>
+        </div>
+        <div className="exh-report-search">
+          <input
+            type="text"
+            placeholder="Search exhibitions..."
+            className="search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
+
       {/* Total Summary Section */}
       <div className="exh-report-summary">
         <div>Total Exhibits: {filteredExhibitions.length}</div>
@@ -99,24 +218,15 @@ const ExhibitionReport = () => {
         <div>Total Complaints: {totalComplaints}</div>
       </div>
 
-      {/* Search Filter */}
-      <div className="exh-report-search">
-        <input
-          type="text"
-          placeholder="Search exhibitions..."
-          className="search-input"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
-
       {/* Exhibitions Table */}
       <div className="exh-report-table-container">
         <table className="exh-report-table">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Exhibit Name</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Special Exhibition</th>
               <th>Tickets Bought</th>
               <th>Amount Made ($)</th>
               <th># Of Complaints</th>
@@ -128,8 +238,10 @@ const ExhibitionReport = () => {
               const agg = getAggregatedDataForExhibition(exhibition);
               return (
                 <tr key={exhibition.Exhibition_ID}>
-                  <td>{exhibition.Exhibition_ID}</td>
                   <td>{exhibition.Name}</td>
+                  <td>{new Date(exhibition.Start_Date).toLocaleDateString()}</td>
+                  <td>{new Date(exhibition.End_Date).toLocaleDateString()}</td>
+                  <td>{exhibition.requires_ticket ? "Yes" : "No"}</td>
                   <td>{agg.Tickets_Bought}</td>
                   <td>${parseFloat(agg.Amount_Made).toLocaleString()}</td>
                   <td>{exhibition.Num_Complaints || 0}</td>
@@ -151,6 +263,5 @@ const ExhibitionReport = () => {
 };
 
 export default ExhibitionReport;
-
 
 
