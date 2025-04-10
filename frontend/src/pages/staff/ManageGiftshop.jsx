@@ -10,6 +10,7 @@ const ManageGiftshop = () => {
   const [restockAmount, setRestockAmount] = useState(null);
   const [selectedProductId, setselectedProductId] = useState(null);
   const [categories, setCategories] = useState([])
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("All");
   const [newProduct, setNewProduct] = useState({
     Name: "", Category_ID: "", Price: "", Stock_Quantity:"", Description:"" ,image: null});
 
@@ -202,9 +203,24 @@ const ManageGiftshop = () => {
     <div className="manage-wrapper">
       <div className="manage-header">
         <h1>Manage Giftshop</h1>
-        <button className="add-btn" onClick={() => setIsModalOpen(true)}>
-          Add Product
-        </button>
+        <div style={{ display: "flex", gap: "10px" }}>
+    <select
+      className="report-dropdown"
+      value={selectedCategoryFilter}
+      onChange={(e) => setSelectedCategoryFilter(e.target.value)}
+    >
+      <option value="All">All Categories</option>
+      {categories.map((cat) => (
+        <option key={cat.Category_ID} value={cat.Name}>
+          {cat.Name}
+        </option>
+      ))}
+    </select>
+
+    <button className="add-btn" onClick={() => setIsModalOpen(true)}>
+      Add Product
+    </button>
+  </div>
       </div>
       <table className="manage-table">
         <thead>
@@ -222,7 +238,12 @@ const ManageGiftshop = () => {
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
+          {products
+          .filter((product) =>
+            selectedCategoryFilter === "All"
+              ? true
+              : categories.find((cat) => cat.Category_ID === product.Category_ID)?.Name === selectedCategoryFilter
+          ).map((product) => (
             <tr key={product.Product_ID}>
             <td>{product.Product_ID}</td>
               <td>{product.Name}</td>
