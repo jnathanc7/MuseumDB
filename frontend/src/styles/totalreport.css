@@ -78,14 +78,14 @@
 
 .report-table th,
 .report-table td {
-    padding: 15px;
-    border: 1px solid #ccc;
-    text-align: center;
+  padding: 10px;
+  border: 1px solid #555;
+  text-align: left;
 }
 
 .report-table th {
-    background-color: #313639;
-    color: white;
+  font-weight: bold;
+  color: #fff;
 }
 
 /* Report Table scroll */
@@ -93,10 +93,10 @@
     max-height: 65vh;   /* adjust as needed */
     overflow-y: auto;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 0px;
     display: block; 
     margin: 0 auto; /* Center the table within its container */
-    width: 90%;
+    width: 100%;
   }
 
 /* Sticky header */

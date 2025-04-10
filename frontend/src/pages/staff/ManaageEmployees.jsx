@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/admin.css"; // Make sure your CSS handles modal styles
+import "../../styles/manage.css";
 
 const ManageEmployees = () => {
     const navigate = useNavigate();
@@ -136,11 +137,11 @@ const ManageEmployees = () => {
     };
 
     return (
-        <main className="manage-employees-container">
+        <main className="manage-wrapper">
        
 
         <div className="manage-header">
-            <h1 className="page-title">Manage Employees</h1>
+            <h1 >Manage Employees</h1>
             
 
             <div className="filter-buttons">
@@ -170,7 +171,7 @@ const ManageEmployees = () => {
         </div>
             {/* Employee Table */}
             <div className="employee-table-container">
-                <table className="employee-table">
+                <table className="manage-table">
                     <thead>
                         <tr>
                             <th>Staff ID</th>

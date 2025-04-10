@@ -1,5 +1,6 @@
 import "../../styles/totalreport.css";
 import { useState, useEffect } from "react";
+import "../../styles/reports.css";
 
 const TotalReport = () => {
     // Dummy Sales Data 
@@ -111,8 +112,10 @@ const TotalReport = () => {
         
 
     return (
-        <main className="total-report-container">
-          <h1 className="report-title">Sales Report</h1>
+        // <main className="total-report-container">
+           <main className = "exh-report-container">
+          {/* <h1 className="report-title">Sales Report</h1> */}
+          <h1 className="exh-report-header">Sales Report</h1>
     
           {/* Filters */}
           <div className="filters">
@@ -256,7 +259,7 @@ const TotalReport = () => {
     
             {/* Report Table */}
             <div className="report-table-scroll">
-            <table className="report-table">
+            <table className="exh-report-table">
             <thead>
             <tr>
                 <th>#</th>
