@@ -7,7 +7,7 @@ const CuratorHome = () => {
 
   useEffect(() => {
     console.log("[DEBUG - CuratorHome] Fetching profile to verify Curator access...");
-    fetch("http://localhost:5000/auth/profile", { // https://museumdb.onrender.com/auth/profile
+    fetch("https://museumdb.onrender.com/auth/profile", { // https://museumdb.onrender.com/auth/profile
       method: "GET", // http://localhost:5000/auth/profile
       credentials: "include",
     })
