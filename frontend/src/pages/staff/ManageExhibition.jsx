@@ -142,7 +142,7 @@ const ManageExhibitions = () => {
   const handleDeactivateExhibition = async (exhibitionId) => {
     if (!window.confirm("Are you sure you want to deactivate this exhibition?")) return;
     try {
-      const response = await fetch("https://museumdb.onrender.com/manage-exhibition", {
+      const response = await fetch("https://museumdb.onrender.com/manage-exhibition/deactivate", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Exhibition_ID: exhibitionId, is_active: false }),

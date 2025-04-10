@@ -355,6 +355,44 @@ module.exports = (req, res) => {
     return;
   }
 
+  // 🔹 PUT /manage-exhibition/deactivate - Deactivate an exhibition by updating is_active to false
+if (method === "PUT" && parsedUrl.pathname === "/manage-exhibition/deactivate") {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk;
+  });
+  req.on("end", () => {
+    try {
+      const { Exhibition_ID } = JSON.parse(body);
+      if (!Exhibition_ID) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ error: "Exhibition_ID is required" }));
+      }
+      // Update only the is_active column
+      const sql = "UPDATE exhibitions SET is_active = false WHERE Exhibition_ID = ?";
+      db.query(sql, [Exhibition_ID], (err, result) => {
+        if (err) {
+          console.error("Error deactivating exhibition:", err);
+          res.writeHead(500, { "Content-Type": "application/json" });
+          return res.end(
+            JSON.stringify({ error: "Error deactivating exhibition", details: err.message })
+          );
+        }
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Exhibition deactivated successfully" }));
+      });
+    } catch (parseError) {
+      console.error("JSON Parse Error:", parseError);
+      res.writeHead(400, { "Content-Type": "application/json" });
+      return res.end(
+        JSON.stringify({ error: "Invalid JSON format", details: parseError.message })
+      );
+    }
+  });
+  return;
+}
+
+
   // DELETE /manage-exhibition - Delete an exhibition (if implemented)
   if (parsedUrl.pathname === "/manage-exhibition" && method === "DELETE") {
     let body = "";
