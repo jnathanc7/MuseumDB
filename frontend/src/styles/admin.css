@@ -274,4 +274,39 @@
   .close-modal-button:hover {
     background-color: #c82333;
   }
+
+  /* === Restock Button === */
+.restock-btn {
+    background-color: #27ae60;
+    color: white;
+    font-weight: bold;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 4px 4px 0 0;
+    transition: background-color 0.2s ease;
+  }
+  
+  .restock-btn:hover {
+    background-color: #1e874b;
+  }
+  
+  /* === Delete Button === */
+  .delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    font-weight: bold;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 4px 0 0 0;
+    transition: background-color 0.2s ease;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c0392b;
+  }
+  
   
