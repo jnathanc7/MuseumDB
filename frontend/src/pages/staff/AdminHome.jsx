@@ -83,43 +83,60 @@ const AdminHome = () => {
       }, []);
 
     return (
-        <main className="admin-container">
-          <div className="admin-title-container"></div>
-          
+      <main className="admin-container px-10 py-8">
+      {/* Dashboard Title */}
+      <h3 className="text-[#313639] text-4xl mb-8 tracking-wide text-center">
+        Admin Dashboard
+      </h3>
 
-        <div className="admin-dashboard">
-            
-        <div className="admin-title-container">
-            <h3 className="text-[#313639] text-4xl mb-2 tracking-wide">
-                Admin Dashboard
-            </h3>
-        </div>
-  
-    
-            {/* Profile Button */}
-            <button onClick={() => navigate('/profile')} className="admin-button">
-                Profile
-            </button>
-    
-            {/* View Reports Dropdown */}
-            <select name="reports" className="admin-button admin-dropdown" onChange={handleNavigation}>
-                <option value="">View Reports...</option>
-                <option value="/admin/total-report">View Total Sale Reports</option>
-                <option value="/admin/exhibition-report">View Exhibit Reports</option>
-                <option value="/admin/view-complaints">View Complaints</option>
-            </select>
-    
-            {/* Management Options Dropdown */}
-            <select name="management" className="admin-button admin-dropdown" onChange={handleNavigation}>
-                <option value="">Management Options</option>
-                <option value="/admin/manage-employees">Manage Employees</option>
-                <option value="/admin/manage-artworks">Manage Artworks</option>
-                <option value="/admin/manage-exhibits">Manage Exhibits</option>
-                <option value="/admin/manage-giftshop">Manage Gift Shop</option>
-                <option value="/admin/manage-tickets">Manage Tickets</option>
-            </select>
+      {/* Two Column Layout */}
+      <div className="admin-dashboard flex justify-between gap-10">
+        
+        {/* Right Column: Reports */}
+        <div className="admin-reports flex flex-col gap-4">
+          <h4 className="text-2xl font-semibold text-[#1e1e1e]">Reports</h4>
+          <button onClick={() => navigate('/admin/total-report')} className="admin-button">
+            Total Sales Report
+          </button>
+          <button onClick={() => navigate('/admin/exhibition-report')} className="admin-button">
+            Exhibit Report
+          </button>
+          <button onClick={() => navigate('/admin/view-complaints')} className="admin-button">
+            Complaint Reports
+          </button>
         </div>
 
+        {/* Left Column: Manage */}
+        <div className="admin-management flex flex-col gap-4">
+          <h4 className="text-2xl font-semibold text-[#1e1e1e]">Manage</h4>
+          <button onClick={() => navigate('/admin/manage-employees')} className="admin-button">
+            Manage Employees
+          </button>
+          <button onClick={() => navigate('/admin/manage-artworks')} className="admin-button">
+            Manage Artworks
+          </button>
+          <button onClick={() => navigate('/admin/manage-exhibits')} className="admin-button">
+            Manage Exhibits
+          </button>
+          <button onClick={() => navigate('/admin/manage-giftshop')} className="admin-button">
+            Manage Gift Shop
+          </button>
+          <button onClick={() => navigate('/admin/manage-tickets')} className="admin-button">
+            Manage Tickets
+          </button>
+        </div>
+
+      </div>
+
+      {/* Profile Button Centered at Bottom */}
+      <div className="mt-10 text-center">
+        <button
+          onClick={() => navigate('/profile')}
+          className="admin-button bg-[#1e1e1e] hover:bg-black"
+        >
+          Go to Profile
+        </button>
+      </div>
     </main>
     
     

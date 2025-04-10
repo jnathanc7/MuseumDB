@@ -1,18 +1,22 @@
 .total-report-container {
-    width: 100vw; 
-    height: 100vh; 
-    background-image: url('/manageemployees.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+  min-height: 100vh; /* keep this */
+  height: auto; /* remove the fixed height */
+  width: 100vw;
+  background-image: url('/manageemployees.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
-    display: flex; /* <-- important */
-    flex-direction: column;
-    align-items: flex-start; /* use flex-start instead of left */
-    justify-content: flex-start; 
-    padding-top: 90px;
-    overflow: visible; /* <-- allow children like table headers to position sticky */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 90px;
+
+  /* prevent scroll-related white background issue */
+  background-color: #000; /* or match your image bg */
 }
+
 
 .report-title {
     font-size: 2.5rem;

@@ -18,7 +18,7 @@ module.exports = (req, res) => {
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  if (method === "OPTIONS") {
+  if (method === "OPTIONS") { 
     res.writeHead(204);
     return res.end();
   }
