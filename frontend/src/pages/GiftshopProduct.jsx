@@ -118,6 +118,7 @@ const GiftshopProduct = () =>{
                         >
                         <Plus className="icon" />
                     </div>
+                     <p>Stock Quantity: {product?.Stock_Quantity || "loading..."}</p>
                 </div>
                     {product ? (
                     <button className = {`cart-button ${addedToCart ? "added" : ""}`} onClick = {AddToCart}>
