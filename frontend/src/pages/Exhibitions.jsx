@@ -21,7 +21,7 @@ const Exhibitions = () => {
     try {
       // Fetch data from your backend endpoint.
       const response = await fetch(
-        "https://museumdb.onrender.com/manage-exhibition/manage"
+        "https://museumdb.onrender.com/manage-exhibition"
       );
       if (!response.ok) {
         throw new Error("Failed to fetch exhibitions");
