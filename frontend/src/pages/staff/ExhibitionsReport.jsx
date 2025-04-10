@@ -253,8 +253,7 @@ const ExhibitionReport = () => {
               <th>Special Exhibition</th>
               <th>Tickets Bought</th>
               <th>Amount Made ($)</th>
-              <th># Of Reviews</th>
-              <th>Average Rating</th>
+              <th># Of Complaints</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -269,8 +268,7 @@ const ExhibitionReport = () => {
                   <td>{(exhibition.requires_ticket === true || exhibition.requires_ticket === 1) ? "Yes" : "No"}</td>
                   <td>{agg.Tickets_Bought}</td>
                   <td>${parseFloat(agg.Amount_Made).toLocaleString()}</td>
-                  <td>{exhibition.complaintCount}</td>
-                  <td>{exhibition.averageReview !== null ? Number(exhibition.averageReview).toFixed(1) : 'N/A'}</td>
+                  <td>{exhibition.Num_Complaints || 0}</td>
                   <td>
                     {exhibition.IsActive ? (
                       <span className="badge-active">Active</span>
