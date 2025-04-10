@@ -121,7 +121,7 @@ const ExhibitionReport = () => {
   const totalAmountMade = specialTotalAmount + regularTotalAmount;
   const totalTicketsBought = specialTotalTickets + regularTotalTickets;
   const totalComplaints = filteredExhibitions.reduce(
-    (acc, ex) => acc + Number(ex.Num_Complaints || 0),
+    (acc, ex) => acc + Number(ex.complaintCount || 0),
     0
   );
 
@@ -159,7 +159,7 @@ const ExhibitionReport = () => {
         <div>
           Total Amount Made: ${parseFloat(totalAmountMade).toLocaleString()}
         </div>
-        <div>Total Complaints: {totalComplaints}</div>
+        <div>Total Feedback: {totalComplaints}</div>
       </div>
 
       {/* Exhibitions Table */}
