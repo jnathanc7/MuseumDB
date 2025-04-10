@@ -145,6 +145,7 @@ useEffect(() => {
         {userRole === "admin" && (
         <div className="notification-icon-container" style={{ position: "relative" }}>
           <FaBell
+            className="notification-icon"
             style={{ cursor: "pointer", marginRight: "10px" }}
             onClick={() => setShowNotifications(prev => !prev)}
             onDoubleClick={() => {
