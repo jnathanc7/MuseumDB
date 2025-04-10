@@ -57,14 +57,28 @@
     width: 100%;
 
 }
+.admin-reports {
+    display: flex;
+    flex-direction: column; /* Stacks buttons vertically */
+    gap: 1rem;
+    width: 250px; /* Adjust width as needed */
+  }
+  .admin-management {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 250px;
+}
+
 
 .admin-dashboard {
-    width: 60%;
-    font-size: 30px;
-    text-align: center;
-    position: relative;
-    top: -50px;
-}
+    display: flex;
+    justify-content: space-between; /* Pushes first item left and second item right */
+    align-items: flex-start;
+    width: 70%; /* Ensure full width of the container */
+    gap: 20px; /* Optional: add space between columns */
+  }
+  
 
 .admin-dropdown {
     display: block;
