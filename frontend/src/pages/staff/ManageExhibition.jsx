@@ -24,10 +24,11 @@ const ManageExhibitions = () => {
     fetchExhibitions();
   }, []);
 
+  // Note: This endpoint now returns all exhibitions (active and inactive)
   const fetchExhibitions = async () => {
     try {
       const response = await fetch(
-        "https://museumdb.onrender.com/manage-exhibition"
+        "https://museumdb.onrender.com/manage-exhibition/manage"
       );
       if (!response.ok) {
         throw new Error("Failed to fetch exhibitions");
@@ -70,11 +71,10 @@ const ManageExhibitions = () => {
     }
   };
 
-  // Converts a file to a Base64 data URL and stores it under 'exhibition_image_data'.
+  // Converts a file to a Base64 data URL and stores only the Base64 data.
   const convertFileToBase64 = (file, stateSetter) => {
     const reader = new FileReader();
     reader.onloadend = () => {
-      // Store only the Base64 portion
       stateSetter((prev) => ({
         ...prev,
         exhibition_image_data: reader.result.split(",")[1],
@@ -91,9 +91,7 @@ const ManageExhibitions = () => {
         "https://museumdb.onrender.com/manage-exhibition",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newExhibition),
         }
       );
@@ -131,9 +129,7 @@ const ManageExhibitions = () => {
         "https://museumdb.onrender.com/manage-exhibition",
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(editExhibition),
         }
       );
@@ -151,28 +147,45 @@ const ManageExhibitions = () => {
     }
   };
 
-  // Delete Exhibition (DELETE)
-  const handleDeleteExhibition = async (exhibitionId) => {
-    if (!window.confirm("Are you sure you want to delete this exhibition?"))
-      return;
+  // Deactivate Exhibition: update is_active to false.
+  const handleDeactivateExhibition = async (exhibitionId) => {
+    if (!window.confirm("Are you sure you want to deactivate this exhibition?")) return;
     try {
-      const response = await fetch(
-        "https://museumdb.onrender.com/manage-exhibition",
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ Exhibition_ID: exhibitionId }),
-        }
-      );
+      const response = await fetch("https://museumdb.onrender.com/manage-exhibition/deactivate", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Exhibition_ID: exhibitionId }),
+      });
       const result = await response.json();
       if (response.ok) {
-        alert(result.message || "Exhibition deleted successfully!");
+        alert(result.message || "Exhibition deactivated successfully!");
         fetchExhibitions();
       } else {
-        alert("Error deleting exhibition.");
+        alert("Error deactivating exhibition.");
       }
     } catch (error) {
-      console.error("Failed to delete exhibition:", error);
+      console.error("Failed to deactivate exhibition:", error);
+    }
+  };
+
+  // Reactivate Exhibition: update is_active to true.
+  const handleReactivateExhibition = async (exhibitionId) => {
+    if (!window.confirm("Are you sure you want to reactivate this exhibition?")) return;
+    try {
+      const response = await fetch("https://museumdb.onrender.com/manage-exhibition/reactivate", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Exhibition_ID: exhibitionId }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message || "Exhibition reactivated successfully!");
+        fetchExhibitions();
+      } else {
+        alert("Error reactivating exhibition.");
+      }
+    } catch (error) {
+      console.error("Failed to reactivate exhibition:", error);
     }
   };
 
@@ -202,6 +215,7 @@ const ManageExhibitions = () => {
             <th>Ticket Required</th>
             <th>Themes</th>
             <th># Artworks</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -217,23 +231,34 @@ const ManageExhibitions = () => {
               <td>{exhibition.requires_ticket ? "Yes" : "No"}</td>
               <td>{exhibition.Themes}</td>
               <td>{exhibition.Num_Of_Artworks}</td>
+              <td>{exhibition.is_active ? "Active" : "Inactive"}</td>
               <td>
-                <button
-                  className="add-btn"
-                  style={{ marginRight: "5px" }}
-                  onClick={() => handleEdit(exhibition)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="add-btn"
-                  style={{ backgroundColor: "#dc3545" }}
-                  onClick={() =>
-                    handleDeleteExhibition(exhibition.Exhibition_ID)
-                  }
-                >
-                  Delete
-                </button>
+                {exhibition.is_active ? (
+                  <>
+                    <button
+                      className="add-btn"
+                      style={{ marginRight: "5px" }}
+                      onClick={() => handleEdit(exhibition)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="add-btn"
+                      style={{ backgroundColor: "#dc3545" }}
+                      onClick={() => handleDeactivateExhibition(exhibition.Exhibition_ID)}
+                    >
+                      Deactivate
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    className="add-btn"
+                    style={{ backgroundColor: "#28a745" }}
+                    onClick={() => handleReactivateExhibition(exhibition.Exhibition_ID)}
+                  >
+                    Reactivate
+                  </button>
+                )}
               </td>
             </tr>
           ))}
@@ -245,7 +270,6 @@ const ManageExhibitions = () => {
         <div
           className="modal-overlay"
           onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => handleDrop(e, setNewExhibition)}
           style={{
             position: "fixed",
             top: 0,
@@ -282,7 +306,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setNewExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Start Date:</label>
               <input
                 type="date"
@@ -291,7 +314,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setNewExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>End Date:</label>
               <input
                 type="date"
@@ -300,7 +322,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setNewExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Budget ($):</label>
               <input
                 type="number"
@@ -311,7 +332,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setNewExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Location:</label>
               <input
                 type="text"
@@ -321,7 +341,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setNewExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Theme:</label>
               <input
                 type="text"
@@ -331,7 +350,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setNewExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Number of Artworks:</label>
               <input
                 type="number"
@@ -341,7 +359,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setNewExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Description:</label>
               <textarea
                 name="description"
@@ -350,7 +367,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setNewExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               ></textarea>
-
               <label>Exhibition Image (File Upload):</label>
               <div
                 className="drop-zone"
@@ -394,7 +410,6 @@ const ManageExhibitions = () => {
               >
                 Select Image
               </button>
-
               <label style={{ display: "block", marginBottom: "10px" }}>
                 <span>Ticket Required?</span>
                 <input
@@ -405,7 +420,6 @@ const ManageExhibitions = () => {
                   style={{ marginLeft: "10px" }}
                 />
               </label>
-
               <div
                 style={{
                   display: "flex",
@@ -469,7 +483,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Start Date:</label>
               <input
                 type="date"
@@ -478,7 +491,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>End Date:</label>
               <input
                 type="date"
@@ -487,7 +499,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Budget ($):</label>
               <input
                 type="number"
@@ -498,7 +509,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Location:</label>
               <input
                 type="text"
@@ -508,7 +518,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Theme:</label>
               <input
                 type="text"
@@ -518,7 +527,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Number of Artworks:</label>
               <input
                 type="number"
@@ -528,7 +536,6 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               />
-
               <label>Description:</label>
               <textarea
                 name="description"
@@ -537,62 +544,23 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
               ></textarea>
-
-              <label>Exhibition Image (File Upload):</label>
-              <div
-                className="drop-zone"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => handleDrop(e, setEditExhibition)}
-                style={{
-                  border: "2px dashed #555",
-                  padding: "10px",
-                  textAlign: "center",
-                  marginBottom: "10px",
-                }}
-              >
-                {editExhibition.exhibition_image_data ? (
-                  <img
-                    src={`data:image/jpeg;base64,${editExhibition.exhibition_image_data}`}
-                    alt="Preview"
-                    style={{ maxWidth: "100%", maxHeight: "200px" }}
-                  />
-                ) : (
-                  <p style={{ color: "black" }}>
-                    Drop image here or click to select
-                  </p>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileChange(e, setEditExhibition)}
-                  style={{ display: "none" }}
-                  id="editFileInput"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => document.getElementById("editFileInput").click()}
-                style={{
-                  marginBottom: "10px",
-                  padding: "10px",
-                  width: "100%",
-                  cursor: "pointer",
-                }}
-              >
-                Select Image
-              </button>
-
-              <label style={{ display: "block", marginBottom: "10px" }}>
-                <span>Ticket Required?</span>
-                <input
-                  type="checkbox"
-                  name="requires_ticket"
-                  checked={editExhibition.requires_ticket}
-                  onChange={(e) => handleInputChange(e, setEditExhibition)}
-                  style={{ marginLeft: "10px" }}
-                />
-              </label>
-
+              <label>Requires Ticket:</label>
+              <input
+                type="checkbox"
+                name="requires_ticket"
+                checked={editExhibition.requires_ticket}
+                onChange={(e) => handleInputChange(e, setEditExhibition)}
+                style={{ marginBottom: "10px" }}
+              />
+              <label>Exhibition ID (optional):</label>
+              <input
+                type="number"
+                name="Exhibition_ID"
+                placeholder="Exhibition ID"
+                value={editExhibition.Exhibition_ID || ""}
+                onChange={(e) => handleInputChange(e, setEditExhibition)}
+                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+              />
               <div
                 style={{
                   display: "flex",
@@ -623,3 +591,4 @@ const ManageExhibitions = () => {
 };
 
 export default ManageExhibitions;
+
