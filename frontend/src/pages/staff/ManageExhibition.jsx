@@ -149,13 +149,17 @@ const ManageExhibitions = () => {
 
   // Deactivate Exhibition: update is_active to false.
   const handleDeactivateExhibition = async (exhibitionId) => {
-    if (!window.confirm("Are you sure you want to deactivate this exhibition?")) return;
+    if (!window.confirm("Are you sure you want to deactivate this exhibition?"))
+      return;
     try {
-      const response = await fetch("https://museumdb.onrender.com/manage-exhibition/deactivate", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Exhibition_ID: exhibitionId }),
-      });
+      const response = await fetch(
+        "https://museumdb.onrender.com/manage-exhibition/deactivate",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ Exhibition_ID: exhibitionId }),
+        }
+      );
       const result = await response.json();
       if (response.ok) {
         alert(result.message || "Exhibition deactivated successfully!");
@@ -170,13 +174,17 @@ const ManageExhibitions = () => {
 
   // Reactivate Exhibition: update is_active to true.
   const handleReactivateExhibition = async (exhibitionId) => {
-    if (!window.confirm("Are you sure you want to reactivate this exhibition?")) return;
+    if (!window.confirm("Are you sure you want to reactivate this exhibition?"))
+      return;
     try {
-      const response = await fetch("https://museumdb.onrender.com/manage-exhibition/reactivate", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Exhibition_ID: exhibitionId }),
-      });
+      const response = await fetch(
+        "https://museumdb.onrender.com/manage-exhibition/reactivate",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ Exhibition_ID: exhibitionId }),
+        }
+      );
       const result = await response.json();
       if (response.ok) {
         alert(result.message || "Exhibition reactivated successfully!");
@@ -245,7 +253,9 @@ const ManageExhibitions = () => {
                     <button
                       className="add-btn"
                       style={{ backgroundColor: "#dc3545" }}
-                      onClick={() => handleDeactivateExhibition(exhibition.Exhibition_ID)}
+                      onClick={() =>
+                        handleDeactivateExhibition(exhibition.Exhibition_ID)
+                      }
                     >
                       Deactivate
                     </button>
@@ -254,7 +264,9 @@ const ManageExhibitions = () => {
                   <button
                     className="add-btn"
                     style={{ backgroundColor: "#28a745" }}
-                    onClick={() => handleReactivateExhibition(exhibition.Exhibition_ID)}
+                    onClick={() =>
+                      handleReactivateExhibition(exhibition.Exhibition_ID)
+                    }
                   >
                     Reactivate
                   </button>
@@ -552,15 +564,50 @@ const ManageExhibitions = () => {
                 onChange={(e) => handleInputChange(e, setEditExhibition)}
                 style={{ marginBottom: "10px" }}
               />
-              <label>Exhibition ID (optional):</label>
-              <input
-                type="number"
-                name="Exhibition_ID"
-                placeholder="Exhibition ID"
-                value={editExhibition.Exhibition_ID || ""}
-                onChange={(e) => handleInputChange(e, setEditExhibition)}
-                style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
-              />
+              <label>Exhibition Image:</label>
+              <div
+                className="drop-zone"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => handleDrop(e, setEditExhibition)}
+                style={{
+                  border: "2px dashed #555",
+                  padding: "10px",
+                  textAlign: "center",
+                  marginBottom: "10px",
+                }}
+              >
+                {editExhibition.exhibition_image_data ? (
+                  <img
+                    src={`data:image/jpeg;base64,${editExhibition.exhibition_image_data}`}
+                    alt="Preview"
+                    style={{ maxWidth: "100%", maxHeight: "200px" }}
+                  />
+                ) : (
+                  <p style={{ color: "black" }}>
+                    Drop image here or click to select
+                  </p>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, setEditExhibition)}
+                  style={{ display: "none" }}
+                  id="editFileInput"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => document.getElementById("editFileInput").click()}
+                style={{
+                  marginBottom: "10px",
+                  padding: "10px",
+                  width: "100%",
+                  cursor: "pointer",
+                }}
+              >
+                Select Image
+              </button>
               <div
                 style={{
                   display: "flex",
@@ -591,4 +638,3 @@ const ManageExhibitions = () => {
 };
 
 export default ManageExhibitions;
-
