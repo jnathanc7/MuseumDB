@@ -1,4 +1,4 @@
-SELECT * FROM tickets;
+SELECT * FROM exhibitions;
 
 
 
