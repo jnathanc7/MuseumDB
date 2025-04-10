@@ -9,7 +9,7 @@ const ManageGiftshop = () => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [restockAmount, setRestockAmount] = useState(null);
   const [selectedProductId, setselectedProductId] = useState(null);
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState([]) 
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("All");
   const [newProduct, setNewProduct] = useState({
     Name: "", Category_ID: "", Price: "", Stock_Quantity:"", Description:"" ,image: null});
