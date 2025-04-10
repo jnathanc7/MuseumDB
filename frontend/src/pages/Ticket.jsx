@@ -15,7 +15,7 @@ const Tickets = () => {
 
   // 🔹 Fetch ticket prices dynamically from backend
   useEffect(() => {
-    fetch("https://museumdb.onrender.com/tickets")
+    fetch("https://museumdb.onrender.com/tickets/customers")
       .then((response) => response.json())
       .then((data) => {
         setTicketTypes(data);

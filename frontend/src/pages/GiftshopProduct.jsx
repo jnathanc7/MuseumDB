@@ -97,6 +97,7 @@ const GiftshopProduct = () =>{
                     <h1>{product?.Name || "loading..."}</h1>
                     <p>${product?.Price || "loading..."}</p>
                     <p>{product?.Description || "loading..."}</p>
+                    <p>Stock Quantity: {product?.Stock_Quantity || "loading..."}</p>
                     {/*borrowing arsals buttons */}
                 <div className = "product-counter">
                     
