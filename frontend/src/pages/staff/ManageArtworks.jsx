@@ -110,6 +110,7 @@ const ManageArtworks = () => {
       const response = await fetch("https://museumdb.onrender.com/manage-artworks", { // http://localhost:5000/manage-artworks
         method: "POST", // https://museumdb.onrender.com/manage-artworks
         headers: { "Content-Type": "application/json" },
+        credentials: "include", 
         body: JSON.stringify(newArtwork),
       });
       console.log("[ManageArtworks.jsx] POST response:", response);
@@ -144,6 +145,7 @@ const ManageArtworks = () => {
       const response = await fetch("https://museumdb.onrender.com/manage-artworks", { // http://localhost:5000/manage-artworks
         method: "PUT", // https://museumdb.onrender.com/manage-artworks
         headers: { "Content-Type": "application/json" },
+        credentials: "include", 
         body: JSON.stringify(editArtwork),
       });
       console.log("[ManageArtworks.jsx] PUT response:", response);
@@ -172,6 +174,7 @@ const ManageArtworks = () => {
       const response = await fetch("https://museumdb.onrender.com", { // http://localhost:5000/manage-artworks
         method: "DELETE", // https://museumdb.onrender.com/manage-artworks
         headers: { "Content-Type": "application/json" },
+        credentials: "include", 
         body: JSON.stringify({ Artwork_ID: artworkId }),
       });
       console.log("[ManageArtworks.jsx] DELETE response:", response);

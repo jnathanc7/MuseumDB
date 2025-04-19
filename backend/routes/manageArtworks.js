@@ -1,7 +1,13 @@
 const url = require("url");
 const db = require("../db");
+const authMiddleware = require("../middleware/authMiddleware"); // Import Authentication Middleware
 
 module.exports = (req, res) => {
+  return authMiddleware({
+    roles: ["staff", "admin"],
+    jobTitles: ["Curator", "Administrator"]
+  })(req, res, () => {
+
   const parsedUrl = url.parse(req.url, true);
   const method = req.method;
 
@@ -187,4 +193,5 @@ module.exports = (req, res) => {
   console.warn("[manageArtworks.js] No matching route for", parsedUrl.pathname);
   res.writeHead(404, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ message: "Route not found" }));
+});
 };
