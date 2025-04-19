@@ -17,11 +17,6 @@ module.exports = (req, res) => {
   }
 
   if (method === "GET") {
-    return authMiddleware({
-    roles: ["staff", "admin"],
-    jobTitles: ["Curator", "Administrator"]
-    })(req, res, () => {
-
     const { exhibition_id } = parsedUrl.query;
     if (!exhibition_id) {
       res.writeHead(400, { "Content-Type": "application/json" });
@@ -51,7 +46,6 @@ module.exports = (req, res) => {
       res.end(JSON.stringify(updatedResults));
     });
     return;
-  });
   }
 
   console.warn("[artworks.js] No matching route for", parsedUrl.pathname);
