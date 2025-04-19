@@ -15,7 +15,7 @@ const ManageEmployees = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        fetch("http://localhost:5000/auth/profile", {
+        fetch("https://museumdb.onrender.com/auth/profile", {
             method: "GET",
             credentials: "include"
         })
@@ -79,7 +79,7 @@ const ManageEmployees = () => {
         console.log("Sending New Employee Data:", JSON.stringify(newEmployee));
 
         try {
-            const response = await fetch("http://localhost:5000/employees", {
+            const response = await fetch("https://museumdb.onrender.com/employees", {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
@@ -106,7 +106,7 @@ const ManageEmployees = () => {
 
     const toggleStatus = async (staffId) => {
         try {
-            const response = await fetch(`http://localhost:5000/employees/toggle?id=${staffId}`, {
+            const response = await fetch(`https://museumdb.onrender.com/employees/toggle?id=${staffId}`, {
                 method: "PUT",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
