@@ -35,9 +35,7 @@ const ExhibitionReport = () => {
 
   const fetchExhibitionPurchases = async () => {
     try {
-      const response = await fetch("https://museumdb.onrender.com/exhibition-purchases", {
-        credentials: "include",
-      });
+      const response = await fetch("https://museumdb.onrender.com/exhibition-purchases");
       if (!response.ok) {
         throw new Error("Failed to fetch exhibition purchase data");
       }
