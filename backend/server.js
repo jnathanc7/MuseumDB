@@ -85,9 +85,6 @@ const server = http.createServer((req, res) => {
         // });
         return;
     }
-    else if (req.url.startsWith("/exhibition")) {
-        return exhibitionsPage(req, res);
-    }
     else if (parsedUrl.pathname.startsWith("/manage-artworks")) {
         manageArtworksRoutes(req, res);
         return;
@@ -100,6 +97,9 @@ const server = http.createServer((req, res) => {
         // 🔻 No middleware here either for aggregated exhibition data
         exhibitionRoutes(req, res);
         return;
+    }
+    else if (req.url.startsWith("/exhibition")) {
+        return exhibitionsPage(req, res);
     }
     else if (parsedUrl.pathname.startsWith("/manageGiftshop")) {
         authMiddleware({
