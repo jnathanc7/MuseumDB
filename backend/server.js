@@ -144,14 +144,15 @@ const server = http.createServer((req, res) => {
         customerPurchasesRoute(req, res, parsedUrl);
         return;
     }
+    else if (req.url.startsWith("/exhibition")) {
+        return exhibitionsPage(req, res);
+    }
     else {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ message: "Route not found" }));
     }
 
-    if (req.url.startsWith("/exhibition")) {
-        return exhibitionsPage(req, res);
-    }
+    
 });
 
 const PORT = process.env.PORT || 5000;
