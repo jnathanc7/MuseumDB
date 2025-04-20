@@ -1,15 +1,16 @@
-const http = require("http"); // Import Node.js HTTP module to create a server
-const url = require("url"); // Import URL module for parsing request URLs
-const employeesRoutes = require("./routes/employees"); // Import employees routes
-const reportsRoutes = require("./routes/reports"); // Import reports routes
-const authRoutes = require("./routes/auth"); // Import authentication routes
-const authMiddleware = require("./middleware/authMiddleware"); // Import authentication middleware
-const giftshopRoutes = require("./routes/giftshop"); // Import giftshop routes
-const shopCartRoutes = require("./routes/shopcart"); // Import shop cart routes
+const http = require("http");
+const url = require("url");
+
+const employeesRoutes = require("./routes/employees");
+const reportsRoutes = require("./routes/reports");
+const authRoutes = require("./routes/auth");
+const authMiddleware = require("./middleware/authMiddleware");
+const giftshopRoutes = require("./routes/giftshop");
+const shopCartRoutes = require("./routes/shopcart");
 const complaintsRoutes = require("./routes/complaints");
 const exhibitionReportRoutes = require("./routes/exhibitionReport");
-const ticketsRoutes = require("./routes/tickets"); // Import tickets routes
-const membershipRoutes = require("./routes/membership"); // Import membership routes
+const ticketsRoutes = require("./routes/tickets");
+const membershipRoutes = require("./routes/membership");
 const contactRoutes = require("./routes/contact");
 const notificationRoutes = require("./routes/adminnotification");
 const manageGiftshopRoutes = require("./routes/manageGiftshop");
@@ -19,16 +20,13 @@ const artworksRoutes = require("./routes/artworks");
 const customerPurchasesRoute = require("./routes/customerpurchases");
 const exhibitionsPage = require("./routes/exhibitionsPage");
 
-
 const allowedOrigins = [
-    "https://museum-db-kappa.vercel.app", // Vercel frontend (adjust if different)
-    "http://localhost:5183", // Local frontend
-    "http://localhost:5173", // gabe local frontend
+    "https://museum-db-kappa.vercel.app",
+    "http://localhost:5183",
+    "http://localhost:5173",
 ];
- 
-// Start HTTP Server
-const server = http.createServer((req, res) => { 
-    // CORS Headers below
+
+const server = http.createServer((req, res) => {
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
         res.setHeader("Access-Control-Allow-Origin", origin);
@@ -43,8 +41,8 @@ const server = http.createServer((req, res) => {
         return res.end();
     }
 
-    const parsedUrl = url.parse(req.url, true);      
- 
+    const parsedUrl = url.parse(req.url, true);
+
     if (parsedUrl.pathname === "/") {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ message: "Welcome to the Museum Database API" }));
@@ -64,39 +62,42 @@ const server = http.createServer((req, res) => {
         return;
     }
     else if (parsedUrl.pathname.startsWith("/total-report")) {
-            reportsRoutes(req, res);
+        reportsRoutes(req, res);
         return;
     }
     else if (parsedUrl.pathname.startsWith("/manage-exhibition")) {
-        authMiddleware({
-            roles: ["staff", "admin"],
-            jobTitles: ["Curator", "Administrator"]
-        })(req, res, () => {
+        // 🔻 Removed middleware for exhibition routes
+        // authMiddleware({
+        //     roles: ["staff", "admin"],
+        //     jobTitles: ["Curator", "Administrator"]
+        // })(req, res, () => {
             exhibitionRoutes(req, res);
-        });
+        // });
         return;
     }
     else if (parsedUrl.pathname.startsWith("/exhibition-report")) {
-        authMiddleware({
-            roles: ["staff", "admin"],
-            jobTitles: ["Curator", "Administrator"]
-        })(req, res, () => {
+        // 🔻 Removed middleware for exhibition report
+        // authMiddleware({
+        //     roles: ["staff", "admin"],
+        //     jobTitles: ["Curator", "Administrator"]
+        // })(req, res, () => {
             exhibitionReportRoutes(req, res);
-        });
+        // });
         return;
     }
     else if (req.url.startsWith("/exhibition")) {
         return exhibitionsPage(req, res);
     }
     else if (parsedUrl.pathname.startsWith("/manage-artworks")) {
-            manageArtworksRoutes(req, res);
+        manageArtworksRoutes(req, res);
         return;
     }
     else if (parsedUrl.pathname.startsWith("/artworks")) {
         artworksRoutes(req, res);
         return;
-    }    
+    }
     else if (parsedUrl.pathname.startsWith("/exhibition-purchases")) {
+        // 🔻 No middleware here either for aggregated exhibition data
         exhibitionRoutes(req, res);
         return;
     }
@@ -105,14 +106,12 @@ const server = http.createServer((req, res) => {
             roles: ["staff", "admin"],
             jobTitles: ["Manager", "Administrator"]
         })(req, res, () => {
-            manageGiftshopRoutes(req,res);
+            manageGiftshopRoutes(req, res);
         });
         return;
     }
     else if (req.url.startsWith("/complaints")) {
-        // authMiddleware(["staff", "admin"])(req, res, () => {
-            complaintsRoutes(req, res);
-        // });
+        complaintsRoutes(req, res);
         return;
     }
     else if (parsedUrl.pathname.startsWith("/cart")) {
@@ -140,9 +139,9 @@ const server = http.createServer((req, res) => {
         return;
     }
     else if (parsedUrl.pathname.startsWith("/notifications")) {
-        notificationRoutes(req, res, parsedUrl); 
+        notificationRoutes(req, res, parsedUrl);
         return;
-    } 
+    }
     else if (parsedUrl.pathname.startsWith("/customer/purchases")) {
         customerPurchasesRoute(req, res, parsedUrl);
         return;
