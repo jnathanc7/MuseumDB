@@ -28,6 +28,40 @@ Our mini-world revolves around two major components:
 
 ---
 
+## Run Locally
+
+### Requirements
+
+- Node.js and npm installed
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/ArsalJafri/MuseumDB.git
+
+### 2. Navigate to the Frontend Folder
+cd MuseumDB/client
+
+###3. Install Dependencies
+npm install
+
+###4. Start the React App
+npm start
+
+##5. Open the App
+Visit: http://localhost:3000
+
+##6. Log In Using Demo Credentials
+
+
+
+
+
+
+
+
+---
+
 # Project Requirements
 
 1. [**User Authentication for different user roles**](#user-auth)
@@ -200,7 +234,27 @@ WHERE e.is_active = TRUE;
 ```
 
 ### 3. Ticket Sales Aggregation Query
-*(Jonathan to--do)*
+Tickets only 
+This query will give a summary when the admin chooses to filter the sales report as tickets only.
+It joins purchase_tickets, purchases and  customers tables.
+
+purchase_tickets – holds ticket-specific sale details
+purchases – links ticket sales to customers and purchase dates
+customers – provides customer name inform
+
+ SELECT
+            CONCAT(pt.Purchase_ID, '-', pt.Ticket_ID) AS Sale_ID,
+            CONCAT(c.First_Name, ' ', c.Last_Name) AS Customer_Name,
+            'Ticket' AS Sale_Type,
+            pt.Quantity * pt.Price AS Amount,
+            pt.Quantity AS Quantity,
+            p.Date_Purchased AS Sale_Date,
+            NULL AS Product_Names
+        FROM purchase_tickets pt
+        JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
+        JOIN customers c ON p.Customer_ID = c.Customer_ID
+        ${ticketDateFilter}
+
 
 ---
 
@@ -225,7 +279,19 @@ Admin/Manager dashboard for complaint handling:
 ### Sales Report (jonathan to do) :
 - Aggregates purchase data across exhibits
 - Shows top-earning exhibitions and ticket volumes
-![Total Sales Report Dashboard](./documentationFiles/totalSalesReport.png)
+
+Admin can view filtered and total sales reports for:
+- Tickets
+- Gift Shop
+- Memberships
+
+Includes summaries like:
+- Top-selling product
+- Top revenue source
+- Most active customer
+- Most popular membership type
+
+
 
 --------------------------------------------------
 Hosted Weblink Information:
