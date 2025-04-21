@@ -66,6 +66,7 @@ Our mini-world revolves around two major components:
 - Buy Memberships: Users can choose from different membership tiers (e.g., Regular, Member, Executive) and purchase a membership for added perks. This creates a membership record in the database and links it to their customer account. Membership purchases are included in the sales report and affect access privileges across the site.
 - Update Membership Type
 Depending on system setup, users may be allowed to update membership type on the Memberships page.
+- Purchase Gift Shop Items: Logged-in users can browse gift shop items, add them to a virtual cart, and proceed to checkout. Each completed transaction is stored in the purchase history and affects product inventory. This form allows customers to buy merchandise while contributing to sales analytics and inventory tracking.
 
 ### Admin/Manager/Curator:
 - Manage Employees: This entry form allows the admin to add new employees, or deactivate employees. This form allows the admin to filter by all, active, or inactive.
