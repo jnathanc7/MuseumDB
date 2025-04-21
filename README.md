@@ -234,10 +234,11 @@ WHERE e.is_active = TRUE;
 ```
 
 ### 3. Ticket Sales Aggregation Query
-Tickets only 
-This query will give a summary when the admin chooses to filter the sales report as tickets only.
-It joins purchase_tickets, purchases and  customers tables.
+- Tickets only 
+- This query will give a summary when the admin chooses to filter the sales report as tickets only.
+- It joins purchase_tickets, purchases and  customers tables.
 
+```sql
 purchase_tickets – holds ticket-specific sale details
 purchases – links ticket sales to customers and purchase dates
 customers – provides customer name inform
@@ -254,7 +255,7 @@ customers – provides customer name inform
         JOIN purchases p ON pt.Purchase_ID = p.Purchase_ID
         JOIN customers c ON p.Customer_ID = c.Customer_ID
         ${ticketDateFilter}
-
+```
 
 ---
 
@@ -280,16 +281,17 @@ Admin/Manager dashboard for complaint handling:
 - Aggregates purchase data across exhibits
 - Shows top-earning exhibitions and ticket volumes
 
-Admin can view filtered and total sales reports for:
+- Admin can view filtered and total sales reports for the following:
 - Tickets
 - Gift Shop
 - Memberships
 
-Includes summaries like:
+- Also includes summaries like the following :
 - Top-selling product
 - Top revenue source
 - Most active customer
 - Most popular membership type
+![Reviews/Complaints Report Dashboard](./documentationFiles/totalSalesReport.png)
 
 ![Sales Report](./documentationFiles/totalSalesReport.png)
 
