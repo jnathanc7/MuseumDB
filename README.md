@@ -291,6 +291,9 @@ Includes summaries like:
 - Most active customer
 - Most popular membership type
 
+![Sales Report](./documentationFiles/totalSalesReport.png)
+
+
 
 
 --------------------------------------------------
