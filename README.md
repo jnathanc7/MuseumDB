@@ -213,17 +213,19 @@ Summarizes active exhibitions, showing:
 - Number of Complaints, Average Review Rating
 - Filters by name or type (special vs. regular)
 - Aggregates: Total Exhibits, Total Tickets, Total Revenue, Total Feedback
+![Exhibit Report Dashboard](./documentationFiles/exhibitReport.png)
 
 ### Complaints/Reviews Report:
 Admin/Manager dashboard for complaint handling:
 - Filters by complaint type (exhibit) and date range
 - Editable notes and toggle status (Resolved/Pending)
 - Summary cards: Open, Resolved, Top Type, Busiest Day, Avg. Rating
+![Reviews/Complaints Report Dashboard](./documentationFiles/complaintsReport.png)
 
 ### Sales Report (jonathan to do) :
 - Aggregates purchase data across exhibits
 - Shows top-earning exhibitions and ticket volumes
-
+![Total Sales Report Dashboard](./documentationFiles/totalSalesReport.png)
 
 --------------------------------------------------
 Hosted Weblink Information:
