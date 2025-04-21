@@ -276,7 +276,7 @@ Admin/Manager dashboard for complaint handling:
 - Summary cards: Open, Resolved, Top Type, Busiest Day, Avg. Rating
 ![Reviews/Complaints Report Dashboard](./documentationFiles/complaintsReport.png)
 
-### Sales Report (jonathan to do) :
+### Sales Report:
 - Aggregates purchase data across exhibits
 - Shows top-earning exhibitions and ticket volumes
 
@@ -290,6 +290,9 @@ Includes summaries like:
 - Top revenue source
 - Most active customer
 - Most popular membership type
+
+![Sales Report](./documentationFiles/totalSalesReport.png)
+
 
 
 
