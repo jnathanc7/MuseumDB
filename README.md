@@ -16,7 +16,7 @@ Welcome to the Houston Museum Database full-stack project! This system was built
 #### Mini-World Description:
 Our mini-world revolves around two major components:
 
-- **Users**: Customers, staff, managers, and admins each have role-specific access to the platform. The system supports registration, login, profile management, ticket purchasing, and complaints submission.
+- **Users**: Customers, managers, curators, and admins each have role-specific access to the platform. The system supports registration, login, profile management, ticket purchasing, membership purchasing, giftshop purchasing, and complaints submission.
 - **Museum Operations**: The database manages exhibitions, ticket sales, customer feedback, and staff records. Admins and managers are empowered with reports to make data-driven decisions.
 
 #### Key Relationships:
@@ -48,7 +48,7 @@ Our mini-world revolves around two major components:
 
 ---
 
-## User Authentication for Different User Roles (DONE)
+## User Authentication for Different User Roles
 
 - **Customer**: Can register, purchase tickets, view exhibits, and submit complaints.
 - **Manager**: Oversees each departments’ staff, staff performance, overall reviews, and gift shop maintenance.
@@ -57,14 +57,14 @@ Our mini-world revolves around two major components:
 
 ---
 
-## Data Entry Forms (DONE)
+## Data Entry Forms
 
 ### Public:
 - Sign Up / Login / Edit Profile / Change Password: Users can register for an account by providing their personal and contact information. Once logged in, they can update their profile details (like name, phone number, and birthday), and securely change their password. These forms ensure user identity and give customers control over their account information.
 - Submit Complaint Form: Logged-in users can submit complaints or feedback about their museum experience, selecting an exhibit, providing a message, and optionally rating it. This form sends the complaint to the database, where it can be reviewed and resolved by staff or admins. It helps improve visitor satisfaction by enabling a structured way to express concerns.
 - Purchase Tickets: Customers can browse active exhibitions and purchase tickets by selecting quantity and ticket type. Each transaction generates a new record in the ticketing and purchase system, contributing to sales reports and exhibition analytics. This form allows users to directly engage with the museum's offerings.
 - Buy Memberships: Users can choose from different membership tiers (e.g., Regular, Member, Executive) and purchase a membership for added perks. This creates a membership record in the database and links it to their customer account. Membership purchases are included in the sales report and affect access privileges across the site.
-- Update Membership Type (if available)
+- Update Membership Type
 Depending on system setup, users may be allowed to update membership type on the Memberships page.
 
 ### Admin/Manager/Curator:
@@ -76,7 +76,7 @@ Depending on system setup, users may be allowed to update membership type on the
 
 ---
 
-## Triggers (DONE)
+## Triggers
 
 ### 1. Complaint Notification:
 - Trigger is located in the complaints table.
@@ -84,7 +84,7 @@ Depending on system setup, users may be allowed to update membership type on the
 - This alert is intended to notify admins for potential follow-up or resolution.
 - Purpose: Helps maintain customer satisfaction by ensuring poor experiences are flagged automatically.
 - The following is the trigger code:
-
+```sql
 CREATE DEFINER=`dbadmin`@`%` TRIGGER `trg_low_rating_complaint`
 AFTER INSERT ON `complaints`
 FOR EACH ROW
@@ -111,6 +111,7 @@ BEGIN
         );
     END IF;
 END;
+```
 
 ### 2. Low Stock Notification:
 When a complaint is logged, the system generates a manager notification suggesting an employee to handle it.
@@ -120,7 +121,7 @@ When a complaint is logged, the system generates a manager notification suggesti
 - The frontend system reads these messages and alerts staff or management accordingly.
 - Semantic Constraint: Enforces a business rule to always generate alerts when inventory is critically low, preventing stockouts and ensuring smooth gift shop operations.
 - The following is the trigger code:
-
+```sql
 CREATE DEFINER=`dbadmin`@`%` TRIGGER `notify_low_stock`
 AFTER UPDATE ON `products`
 FOR EACH ROW
@@ -134,23 +135,27 @@ BEGIN
         );
     END IF;
 END;
+```
 
 ---
 
-## Queries (UNFINISHED)
+## Queries
 
 ### 1. Complaints Summary Query:
 - This query was built to generate a comprehensive complaints report using data from the complaints and customers tables. It allows admins and managers to view all submitted complaints, track their status (pending or resolved), identify trends in complaint types, and monitor feedback patterns over time. By aggregating data such as total open and resolved complaints, most frequently reported exhibit, busiest complaint day, and average rating, the report helps the museum address recurring issues, improve visitor experience, and ensure accountability through structured resolution workflows.
 
+```sql
 SELECT
   (SELECT COUNT(*) FROM complaints WHERE Status = 'Pending') AS open_complaints,
   (SELECT COUNT(*) FROM complaints WHERE Status = 'Resolved') AS resolved_complaints,
   (SELECT Complaint_Type FROM complaints GROUP BY Complaint_Type ORDER BY COUNT(*) DESC LIMIT 1) AS top_complaint_type,
   (SELECT DATE(Complaint_Date) FROM complaints GROUP BY DATE(Complaint_Date) ORDER BY COUNT(*) DESC LIMIT 1) AS busiest_day,
   (SELECT AVG(Complaint_Rating) FROM complaints WHERE Complaint_Rating IS NOT NULL) AS avg_rating;
+```
 
 ### 2. Exhibition Report Query
 - These queries were built to generate detailed reports for exhibitions. The first query pulls data from the exhibitions and complaints tables to show how many complaints each active exhibit has received and what their average ratings are, helping admins assess visitor satisfaction. The second query aggregates ticket purchases and revenue from the tickets and purchase_tickets tables, allowing admins to see how much money was made and how many tickets were sold for each exhibit—separating results for special ticketed exhibitions versus regular free ones.
+```sql
 
 SELECT e., 
        COUNT(c.Complaint_ID) AS complaintCount, 
@@ -159,7 +164,9 @@ FROM exhibitions e
 LEFT JOIN complaints c ON c.Complaint_Type = e.Name 
 WHERE e.is_active = TRUE 
 GROUP BY e.Exhibition_ID;
+```
 
+```sql
 SELECT 
   e.Exhibition_ID,
   CASE 
@@ -189,14 +196,14 @@ CROSS JOIN (
   WHERE t.Exhibition_ID IS NULL
 ) regular
 WHERE e.is_active = TRUE;
-
+```
 
 ### 3. Ticket Sales Aggregation Query
-*(See ticket report dashboard—tracks revenue and tickets sold per exhibit)*
+*(Jonathan to--do)*
 
 ---
 
-## Reports (UNFINISHED)
+## Reports
 
 ### Exhibition Report:
 Summarizes active exhibitions, showing:
@@ -212,7 +219,7 @@ Admin/Manager dashboard for complaint handling:
 - Editable notes and toggle status (Resolved/Pending)
 - Summary cards: Open, Resolved, Top Type, Busiest Day, Avg. Rating
 
-### Sales Report :
+### Sales Report (jonathan to do) :
 - Aggregates purchase data across exhibits
 - Shows top-earning exhibitions and ticket volumes
 
