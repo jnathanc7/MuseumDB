@@ -28,37 +28,37 @@ Our mini-world revolves around two major components:
 
 ---
 
-## Run Locally
+## Running Locally
 
 ### Requirements
 
 - Node.js and npm installed
 
-### 1. Clone the Repository
+### Steps for Installation
+1. Clone the Repository
 
 ```bash
 git clone https://github.com/ArsalJafri/MuseumDB.git
-
-### 2. Navigate to the Frontend Folder
+```
+2. Navigate to the Frontend Folder
+```bash
 cd MuseumDB/client
+```
 
-###3. Install Dependencies
+3. Install Dependencies
+```bash
 npm install
+```
 
-###4. Start the React App
+4. Start the React App
+```bash
 npm start
+```
 
-##5. Open the App
+5. Open the App
+```bash
 Visit: http://localhost:3000
-
-##6. Log In Using Demo Credentials
-
-
-
-
-
-
-
+```
 
 ---
 
