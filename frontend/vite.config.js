@@ -4,7 +4,13 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
-
-  ],
+    react(),],
+    optimizeDeps: {
+      include: ['swiper/react', 'swiper/modules'],
+    },
+    build: {
+      commonjsOptions: {
+        include: [/node_modules/],
+      },
+    },
 })

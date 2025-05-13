@@ -1,29 +1,47 @@
-import { useState } from "react";
-import { Calendar, Plus, Minus } from "lucide-react"; // Import Lucide icons
+import { useState, useEffect } from "react";
+import { Calendar, Plus, Minus, CreditCard } from "lucide-react"; // Import Lucide icons
 import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker"; // Import DatePicker
 import "react-datepicker/dist/react-datepicker.css"; // Import styles
 import "../styles/ticket.css"; // Keep your existing styling
 
 const Tickets = () => {
-  const ticketTypes = [
-    { type: "Adult Admission (18+)", price: 25 },
-    { type: "Senior Admission (65+)", price: 20 },
-    { type: "Youth Admission (13-17)", price: 15 },
-    { type: "Child Admission (12 & Under)", price: 0 },
-    { type: "Student Admission (with valid ID)", price: 10 },
-    { type: "Veteran Admission (with valid ID)", price: 0 },
-  ];
-
+  const [ticketTypes, setTicketTypes] = useState([]); // Fetch ticket types from backend
   const [selectedDate, setSelectedDate] = useState(null); // State for date
-  const [ticketCounts, setTicketCounts] = useState(
-    ticketTypes.reduce((acc, ticket) => ({ ...acc, [ticket.type]: 0 }), {})
-  );
+  const [ticketCounts, setTicketCounts] = useState({}); // Tracks ticket selections
+  const [paymentMethod, setPaymentMethod] = useState("Credit Card"); // Store payment method
+  const [message, setMessage] = useState(""); // Store purchase success/failure message
+  const [loading, setLoading] = useState(true); // Loading state
 
+  // Fetch ticket prices dynamically from backend
+  useEffect(() => {
+    fetch("https://museumdb.onrender.com/tickets/customers")
+      .then((response) => response.json())
+      .then((data) => {
+        setTicketTypes(data);
+        setLoading(false);
+        // Initialize ticketCounts with zero for each ticket type
+        const initialCounts = data.reduce(
+          (acc, ticket) => ({
+            ...acc,
+            [ticket.Ticket_Type]: 0,
+          }),
+          {}
+        );
+        setTicketCounts(initialCounts);
+      })
+      .catch((error) => {
+        setMessage("Error loading tickets.");
+        setLoading(false);
+      });
+  }, []);
+
+  // Handle ticket selection (increment)
   const handleIncrement = (type) => {
     setTicketCounts((prev) => ({ ...prev, [type]: prev[type] + 1 }));
   };
 
+  // Handle ticket deselection (decrement)
   const handleDecrement = (type) => {
     setTicketCounts((prev) => ({
       ...prev,
@@ -31,10 +49,63 @@ const Tickets = () => {
     }));
   };
 
+  // Calculate subtotal
   const subtotal = ticketTypes.reduce(
-    (total, { type, price }) => total + ticketCounts[type] * price,
+    (total, { Ticket_Type, Price }) =>
+      total + (ticketCounts[Ticket_Type] || 0) * Price,
     0
   );
+
+  // Handle ticket purchase submission
+  const handlePurchase = async () => {
+    if (!selectedDate) {
+      setMessage("Please select a date.");
+      return;
+    }
+  
+    const ticketsToBuy = ticketTypes
+      .filter(({ Ticket_Type }) => ticketCounts[Ticket_Type] > 0)
+      .map(({ Ticket_ID, Ticket_Type }) => ({
+        ticket_ID: Ticket_ID,
+        quantity: ticketCounts[Ticket_Type],
+      }));
+  
+    if (ticketsToBuy.length === 0) {
+      setMessage("Please select at least one ticket.");
+      return;
+    }
+  
+    const purchaseData = {
+      payment_Method: paymentMethod,
+      tickets: ticketsToBuy,
+    };
+  
+    try {
+      const response = await fetch("https://museumdb.onrender.com/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(purchaseData),
+        credentials: "include",
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.error || "Unknown error occurred");
+      }
+  
+      setMessage(data.message || "Purchase successful!");
+      setTicketCounts(
+        ticketTypes.reduce((acc, ticket) => {
+          acc[ticket.Ticket_Type] = 0;
+          return acc;
+        }, {})
+      );
+    } catch (error) {
+      console.error("Error making purchase:", error);
+      setMessage(error.message || "Error processing purchase.");
+    }
+  };
 
   return (
     <div className="ticket-page">
@@ -57,28 +128,38 @@ const Tickets = () => {
         </div>
 
         {/* Ticket Options */}
+        {loading ? (
+          <p>Loading ticket options...</p>
+        ) : (
         <div className="ticket-options">
-          {ticketTypes.map(({ type, price }) => (
-            <div key={type} className="ticket-row">
-              <span className="ticket-type">{type}</span>
-              <span className="ticket-price">${price.toFixed(2)}</span>
+            {ticketTypes.map(({ Ticket_ID, Ticket_Type, Price }) => (
+              <div key={Ticket_ID} className="ticket-row">
+                <span className="ticket-type">{Ticket_Type}</span>
+                <span className="ticket-price">
+                  ${(Number(Price) || 0).toFixed(2)}
+                </span>
+
               <div className="ticket-counter">
                 <div
                   className="icon-button"
                   role="button"
                   tabIndex="0"
-                  onClick={() => handleDecrement(type)}
-                  onKeyPress={(e) => { if (e.key === 'Enter') handleDecrement(type); }}
+                    onClick={() => handleDecrement(Ticket_Type)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") handleDecrement(Ticket_Type);
+                    }}
                 >
                   <Minus className="icon" />
                 </div>
-                <span>{ticketCounts[type]}</span>
+                  <span>{ticketCounts[Ticket_Type]}</span>
                 <div
                   className="icon-button"
                   role="button"
                   tabIndex="0"
-                  onClick={() => handleIncrement(type)}
-                  onKeyPress={(e) => { if (e.key === 'Enter') handleIncrement(type); }}
+                    onClick={() => handleIncrement(Ticket_Type)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") handleIncrement(Ticket_Type);
+                    }}
                 >
                   <Plus className="icon" />
                 </div>
@@ -86,6 +167,7 @@ const Tickets = () => {
             </div>
           ))}
         </div>
+        )}
 
         <hr className="divider" />
 
@@ -95,16 +177,34 @@ const Tickets = () => {
           <span className="subtotal-amount">${subtotal.toFixed(2)}</span>
         </div>
 
-        {/* Next Button */}
+        {/* Payment Method Selection */}
+        <div className="payment-box">
+          <CreditCard className="payment-icon" />
+          <select
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            className="payment-select"
+          >
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+          </select>
+        </div>
+
+        {/* Purchase Button */}
         <div
           className="next-button"
           role="button"
           tabIndex="0"
-          onClick={() => console.log("Proceeding to the next step")}
-          onKeyPress={(e) => { if (e.key === 'Enter') console.log("Proceeding to the next step"); }}
+          onClick={handlePurchase}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") handlePurchase();
+          }}
         >
-          Next
+          Purchase
         </div>
+
+        {/* Show purchase confirmation message */}
+        {message && <p className="purchase-message">{message}</p>}
       </div> 
 
       {/* Right Section: Membership Info */}
@@ -114,7 +214,9 @@ const Tickets = () => {
           Members receive free admission, exclusive access to exhibitions, and more. 
           Consider joining today!
         </p>
-        <Link to="/memberships" className="membership-link">Learn More</Link>
+        <Link to="/memberships" className="membership-link">
+          Learn More
+        </Link>
       </div>
     </div>
   );

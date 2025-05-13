@@ -2,16 +2,14 @@
     padding: 60px;
     background-color: #f8f9fa;
     min-height: 100vh;
-    background-image: url('/manageemployees.jpg'); 
+    background-image: url('/manageemployees.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-
+    display: block;
+  }
   
-    display: block; /* Remove flex centering */
-}
-
-.complaints-header {
+  .complaints-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -19,35 +17,161 @@
     background-color: #afcae6;
     color: white;
     border-radius: 5px;
-}
-
-.page-title {
+  }
+  
+  .page-title {
     margin: 0;
     font-size: 24px;
-}
-
-.complaints-table-container {
+  }
+  
+  /* Summary Cards */
+  .summary-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .report-summary-grid {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: nowrap;
+    margin: 2rem auto;
+    max-width: 1900px;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .summary-card {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    height: 120px;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .summary-card h3 {
+    margin-bottom: 0.4rem;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  .summary-card p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #0077cc;
+  }
+  /* end of Summary */
+  
+  .complaints-table-container {
     margin-top: 20px;
     overflow-x: auto;
-}
-
-.complaints-table {
+  }
+  
+  .complaints-table {
     width: 100%;
     border-collapse: collapse;
     background-color: white;
-}
-
-.complaints-table th, .complaints-table td {
+  }
+  
+  .complaints-table th,
+  .complaints-table td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
-}
-
-.complaints-table th {
+  }
+  
+  .complaints-table th {
     background-color: #5076a0;
     color: white;
-}
-
-.complaints-table tr:hover {
+  }
+  
+  .complaints-table tr:hover {
     background-color: #f1f1f1;
-}
+  }
+  
+  .status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .status-pending {
+    color: #dc3545;
+    font-weight: 600;
+  }
+  
+  .status-resolved {
+    color: #28a745;
+    font-weight: 600;
+  }
+  
+  .btn-status-toggle {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    background-color: #6c757d;
+    color: white;
+  }
+  
+  .btn-status-toggle:hover {
+    opacity: 0.85;
+  }
+  
+  .notes-edit-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .notes-textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  
+  .notes-button-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-notes {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .btn-notes.edit {
+    background-color: #5076a0;
+    color: white;
+  }
+  
+  .btn-notes.save {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .btn-notes.cancel {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .btn-notes:hover {
+    opacity: 0.85;
+  }
+  

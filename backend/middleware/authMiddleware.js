@@ -1,51 +1,65 @@
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie"); // Use 'cookie' module for better parsing
+const db = require("../db");
 const { env } = require("process");
 
-// Middleware to verify JWT and enforce role-based access
-module.exports = (allowedRoles = []) => {
-    if (typeof allowedRoles === "string") allowedRoles = [allowedRoles]; // edge case: convert to array if string is passed from route
-    
+// Middleware to verify JWT and enforce both role-based and job-title–based access
+module.exports = ({ roles = [], jobTitles = [] } = {}) => {
     return (req, res, next) => {
-        try {
-            const token = extractToken(req);
-            if (!token) {
-                return respondWithError(res, 401, "Access denied. No token provided.");
+        const token = extractToken(req);
+        if (!token) {
+            return respondWithError(res, 401, "Access denied. No token provided.");
+        }
+
+        return jwt.verify(token, env.JWT_SECRET, (err, decoded) => {
+            if (err) {
+                return respondWithError(res, 403, "Invalid or expired token.");
+            }
+            req.user = decoded; // decoded contains id, role, and jobTitle (when embedded)
+
+            // 1) Role check
+            if (roles.length && !roles.includes(req.user.role)) {
+                return respondWithError(res, 403, "Access denied. Insufficient role.");
             }
 
-            // Verify JWT
-            jwt.verify(token, env.JWT_SECRET, (err, decoded) => {
-                if (err) {
-                    console.error("🔴 JWT Verification Error:", err); // DEBUGGING ADMIN LACK OF PERM
-                    return respondWithError(res, 403, "Invalid or expired token.");
+            // 2) Job title check (only for staff/admin)
+            if (jobTitles.length) {
+                const userJobTitle = req.user.jobTitle;
+                if (!userJobTitle) {
+                    // fallback: look up in DB if not embedded
+                    return db.query(
+                        "SELECT Job_title FROM staff WHERE Staff_ID = ?",
+                        [req.user.id],
+                        (dbErr, results) => {
+                            if (dbErr || !results.length) {
+                                return respondWithError(res, 500, "Unable to verify job title.");
+                            }
+                            if (!jobTitles.includes(results[0].Job_title)) {
+                                return respondWithError(res, 403, "Access denied. Insufficient job title.");
+                            }
+                            next();
+                        }
+                    );
                 }
-
-                req.user = decoded; // Attach user data to request
-
-                // Role-based access check (supports multiple roles)
-                if (allowedRoles.length && !allowedRoles.includes(req.user.role)) {
-                    return respondWithError(res, 403, "Access denied. Insufficient permissions.");
+                if (!jobTitles.includes(userJobTitle)) {
+                    return respondWithError(res, 403, "Access denied. Insufficient job title.");
                 }
-
-                next(); // Proceed to next middleware or route handler
-            });
-
-        } catch (error) {
-            console.error("JWT Middleware Error:", error);
-            respondWithError(res, 500, "Internal server error.");
-        }
+            }
+            next();
+        });
     };
 };
 
-// Helper to extract JWT from cookies
+// helper to extract JWT from cookies
 function extractToken(req) {
     if (!req.headers.cookie) return null;
     const cookies = cookie.parse(req.headers.cookie);
-    return cookies.jwt || null; // Extract 'jwt' cookie if available
+    return cookies.jwt || null;
 }
 
-// Generic error response helper
+// generic error response helper
 function respondWithError(res, statusCode, message) {
     res.writeHead(statusCode, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: message }));
 }
+ 

@@ -1,0 +1,108 @@
+/* Design Tokens */
+:root {
+  --primary-color: #b3000c;       /* Example primary color */
+  --bg-color: #1a1a1a;             /* Dark page background */
+  --card-bg: #2c2c2c;              /* Inactive card background */
+  --text-color: #fff;             /* White text */
+  --border-radius: 16px;          /* Rounded corners for cards */
+  --transition-duration: 0.3s;
+}
+
+/* Wrapper for Exhibitions page */
+.exhibitions-page {
+  position: relative;
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  padding: 100px 20px;
+}
+
+/* Background overlay with gradient dots.
+   The radial-gradient uses the CSS variable "--dot-color" to set the dot color.
+*/
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, var(--dot-color, rgba(255,255,255,0.1)) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-blend-mode: multiply;
+}
+
+/* Container */
+.exhibitions-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Helvetica Neue', sans-serif;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header Section */
+.exhibitions-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.exhibitions-header h1 {
+  font-size: 2.5rem;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.exhibitions-header p {
+  font-size: 1rem;
+  color: #ccc;
+}
+
+/* Exhibitions Grid */
+.exhibitions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Exhibition Card */
+.exhibition-card {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform var(--transition-duration) ease;
+}
+
+/* Card Link */
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+/* Card Image */
+.exhibition-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Card Content */
+.card-content {
+  padding: 15px;
+}
+
+.card-content h2 {
+  font-size: 1.5rem;
+  margin: 0 0 10px;
+  color: var(--text-color);
+}
+
+.card-content p {
+  font-size: 1rem;
+  color: #ccc;
+}
+
